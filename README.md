@@ -98,7 +98,7 @@ Start-Service Sysmon64
 If Sysmon was uninstalled, reinstall it from the project tools folder:
 
 ```powershell
-cd "C:\Personal\Uni stuff\Project\Context Aware SIEM\tools\sysmon"
+cd "C:\Personal\UniStuff\Project\ContextAwareSIEM\tools\sysmon"
 .\Sysmon64.exe -accepteula -i .\sysmonconfig-export.xml
 ```
 
@@ -145,7 +145,7 @@ This keeps Sysmon collecting locally but stops forwarding events into Wazuh.
 To fully remove Sysmon, run this in PowerShell as Administrator:
 
 ```powershell
-cd "C:\Personal\Uni stuff\Project\Context Aware SIEM\tools\sysmon"
+cd "C:\Personal\UniStuff\Project\ContextAwareSIEM\tools\sysmon"
 .\Sysmon64.exe -u
 ```
 
