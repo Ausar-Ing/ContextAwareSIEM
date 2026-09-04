@@ -1,0 +1,17 @@
+# Windows "mark of the web" metadata streams, not real content
+*:Zone.Identifier
+
+# OS / editor cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Wazuh install artifacts and secrets - never commit these
+wazuh-install-files.tar
+wazuh-install-files/
+*wazuh-passwords*
+
+# Local logs and scratch
+*.log
