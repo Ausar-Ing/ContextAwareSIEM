@@ -15,3 +15,11 @@ wazuh-install-files/
 
 # Local logs and scratch
 *.log
+
+# LaTeX build artifacts (keep the compiled figure PDFs)
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
