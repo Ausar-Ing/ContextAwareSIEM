@@ -39,6 +39,45 @@ Two forms of "context" appear in the literature and the distinction matters for 
 
 DEEPCASE [ref15] establishes that a fixed window of preceding events on the same device carries sufficient signal to classify the current event, and that operators can triage clusters of such windows rather than individual events. AlertPro [ref5] reports that context features derived from alert sequences outperform features taken from raw alert fields alone. This system model adopts temporal-sequence context as its primary signal and treats entity-enrichment context as a secondary modifier.
 
+### 2.3 Log Sources and Log Types in Scope
+
+Wazuh's `log_format` setting, declared per source in the `localfile` block of `ossec.conf`, tells the log collector how to parse a source. Supported values include `eventchannel`, `syslog`, `json`, `audit`, `journald`, `multi-line`, `command` and `full_command`.
+
+This is an **ingestion-time** concern only. Once the collector has read a record and `analysisd` has decoded it against the ruleset, every source converges on a single unified alert structure written to `alerts.json`. The prioritization layer sits downstream of that convergence and therefore consumes one format regardless of origin. Adding a log source does not require a new pipeline branch; it requires only that the source has a decoder.
+
+The sources in scope, classified by the type of record each carries:
+
+| Source | `log_format` | Log type | Content |
+|---|---|---|---|
+| Windows Security channel | `eventchannel` | Security audit log | Logon and logoff, privilege use, account management |
+| Sysmon/Operational channel | `eventchannel` | Endpoint (host) telemetry | Process creation, network connections, image loads, registry activity |
+| Linux `auditd` on the VM, if enabled | `audit` | Security audit log | Syscall and file-access auditing |
+| Wazuh agent `ossec.log` | n/a | Application log | Agent health only; not an analysis input |
+
+The analytical inputs to this system are therefore **security audit logs and endpoint telemetry**, not application logs. The distinction matters for the argument in Section 2.1: audit and endpoint records describe discrete, attributable actions by a subject upon an object, which is what makes per-entity sequencing meaningful in the first place. Application logs describe internal program state and do not decompose into subject-action-object in the same way.
+
+### 2.4 Correlation and Anomaly Scoring
+
+Correlation and anomaly scoring are distinct operations, and this design contains both. The terms are frequently conflated, so they are separated here explicitly.
+
+**Correlation** answers *which alerts belong together*. It is a grouping operation whose output is a set of related alerts.
+
+**Anomaly scoring** answers *how unusual is this group*. It is a scoring operation whose output is a number.
+
+Correlation is logically prior: there is nothing to score until something has been grouped.
+
+| Operation | Component | Mechanism |
+|---|---|---|
+| Correlation (window level) | 5 | Entity-and-time grouping: alerts sharing an entity within lookback `T` form one context |
+| Anomaly scoring | 6 | Isolation Forest over the correlated window's feature vector |
+| Correlation (incident level) | 8 | Decaying risk accumulation per entity, gated on multi-tactic spread |
+
+Component 5 performs attribute-based correlation, the simplest and most robust family: alerts are related if they concern the same entity within a bounded interval. Component 8 escalates a correlated group to an incident. Component 6 evaluates a group but does not form one.
+
+**Relationship to Wazuh's native correlation.** Wazuh already performs rule-level correlation through composite rule options: `frequency` combined with `timeframe`, `if_matched_sid`, `if_group`, `if_level`, and field constraints such as `same_source_ip` and `same_user`. Baseline system B0 therefore already contains correlation, and this project does not claim to introduce it.
+
+The proposed distinction is that Wazuh's correlation is **authored**, while the correlation in Components 5 and 8 is **derived**. Authored correlation requires an analyst to anticipate a pattern and encode it as a rule with a fixed threshold; it detects only what someone thought to write down. Derived correlation forms a window mechanically for every alert regardless of pattern, and what counts as unusual within that window is learned from observed data rather than declared in advance. Stating this contrast is necessary rather than optional: without it, a reviewer may reasonably ask what the layer offers over a `frequency`-based rule.
+
 ## 3. Architecture Overview
 
 ```text
@@ -81,6 +120,9 @@ DEEPCASE [ref15] establishes that a fixed window of preceding events on the same
 Components [1]-[4] are stateless per alert. Components [5], [6] and [8] hold state and are where the design requirement of Section 2 is satisfied.
 
 ## 4. Component Specification
+
+**Note on parameter values.** Every numeric parameter in this section and in Section 6 — window size `N`, lookback `T`, decay half-life `h`, escalation threshold `θ`, label tolerance `δ`, and the scoring weights — is a **provisional estimate**, stated so that the model is concrete and implementable. None is derived from measurement. Each will be re-derived from observed alert-stream behaviour during the baseline collection phase, and the sensitivity of results to each is reported in the evaluation. They are starting points, not findings.
+
 
 ### 4.1 Component 1 — Alert Ingestion
 
@@ -128,7 +170,7 @@ Attaches attributes that do not depend on alert history.
 
 **Design note.** The testbed contains a small number of hosts and one human user. Attributes that depend on organizational structure — department, business role, peer-group deviation — cannot be meaningfully populated and are **excluded from the implemented system**. Including them in the model while stubbing them in the implementation would make the evaluation dishonest. The asset inventory is authored deliberately as a synthetic but documented artifact of the testbed, and its contents are reported alongside results.
 
-### 4.5 Component 5 — Temporal Context Window Builder
+### 4.5 Component 5 — Temporal Context Window Builder (Window-Level Correlation)
 
 **This is the core component of the system model.**
 
@@ -163,6 +205,8 @@ Every feature is computed from the Wazuh alert stream alone. No feature requires
 ### 4.6 Component 6 — Sequence Anomaly Scoring
 
 Converts the window vector into a scalar anomaly score `S_seq ∈ [0,100]`.
+
+This component scores the correlated window produced by Component 5; it does not itself determine which alerts are related. The separation is deliberate — correlation is a structural decision that should remain inspectable, while scoring is where the learned model belongs.
 
 **Method:** Isolation Forest, trained unsupervised on window vectors collected during a benign baseline period.
 
@@ -200,7 +244,7 @@ where
 
 The scoring function remains linear and inspectable. Each term's contribution to a given alert's score can be displayed to the analyst.
 
-### 4.8 Component 8 — Entity Risk Accumulation
+### 4.8 Component 8 — Entity Risk Accumulation (Incident-Level Correlation)
 
 Maintains a decaying risk total per entity, so that a sustained campaign of individually unremarkable alerts becomes visible.
 
@@ -318,19 +362,26 @@ Attack execution is confined to the VM. The host is not a target of emulated tec
 | Excluded | Reason |
 |---|---|
 | Cross-source correlation | Out of the stated design requirement (Section 2) |
-| Graph neural network | The testbed's entity graph is too small for message passing to be meaningful; see Section 9 |
+| Graph neural network | Agreed with the supervisor and dropped: the testbed's entity graph is too small for message passing to be meaningful, and the project focuses on machine-learning methods |
 | Organizational context (department, peer group) | Not populatable in a testbed with one user |
 | Analyst feedback loops / learning-to-defer | Requires sustained analyst interaction unavailable in this project |
 | Automated response | Prioritization layer only |
 
-## 9. Open Design Questions
+## 9. Design Questions
 
-Questions requiring supervisor input, in priority order:
+### 9.1 Resolved
 
-1. **Does excluding the graph neural network conflict with Deliverable 1?** Deliverable 1's scope commits to applying a GNN over an alert graph, while this system model argues the testbed cannot support one meaningfully. This must be resolved before implementation begins.
-2. **Is emulation-derived ground truth acceptable** as the evaluation basis, or is a public labelled dataset expected in addition?
-3. **Is the ablation (B0-B3) the expected form of evaluation,** or is a comparison against a published method required?
-4. **Is the synthetic asset inventory acceptable,** given that asset criticality cannot be authentic in a testbed?
+**Graph neural network.** Agreed with the supervisor: the GNN component is dropped and the project focuses on machine-learning methods. This supersedes scope item 4 of Deliverable 1, which committed to applying a GNN over an alert graph. The final report must state the change and its justification explicitly rather than omitting the item silently, since the earlier scope is on record.
+
+### 9.2 Outstanding
+
+Listed in the order they block work.
+
+1. **What form would supervisor-provided ground truth take?** The answer determines whether adversary emulation is needed at all, so it gates the week 3-4 phase. The distinction that matters is host-based versus network-based data. A public IDS benchmark such as CICIDS2017 or UNSW-NB15 consists of network flow records rather than Wazuh alerts, and could not be consumed by this system without either replaying traffic through a network sensor — which discards the Sysmon endpoint telemetry the design depends on — or abandoning the Wazuh-specific claim entirely. Host-based labelled data, or a lab capture that can be replayed through a Wazuh agent, would be usable directly. Emulation remains the fallback and is assumed until this is settled.
+
+2. **Is the B0-B3 ablation the expected form of evaluation,** or is a comparison against a published method required? The ablation isolates the contribution of temporal context, which is the project's claim; a comparison against published work would require reimplementing a baseline from the literature and is a materially larger undertaking.
+
+3. **Is a synthetic asset inventory acceptable** as the source of asset criticality, given that no authentic inventory exists for a testbed?
 
 ## 10. Schedule and Risks
 
