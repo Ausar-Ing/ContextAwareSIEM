@@ -1,19 +1,26 @@
 % Architecture diagram - Context-Aware Alert Prioritization for Wazuh (System Model, Fig. 1)
 %
 % Standalone compile:   pdflatex architecture.tex
-% Include in the paper: \includegraphics[width=0.62\columnwidth]{figures/architecture}
+% Include in the paper: \includestandalone[width=0.62\columnwidth]{figures/architecture}  % or \includegraphics on the PDF
 %
 % Shading carries meaning: dark boxes hold state across alerts, light boxes do not.
 \documentclass[border=4pt]{standalone}
 \usepackage{times}
 \usepackage{tikz}
+\usepackage{xcolor}
 \usetikzlibrary{arrows.meta,positioning}
+
+% Stateful components are tinted; the tint is dark enough to survive
+% greyscale printing, and the darker border carries the distinction if it does not.
+\definecolor{statefulfill}{RGB}{179,212,238}
+\definecolor{statefuledge}{RGB}{31,90,140}
+\definecolor{statelessfill}{RGB}{246,246,246}
 
 \begin{document}
 \begin{tikzpicture}[
   box/.style     = {draw, rounded corners=2pt, align=center, font=\footnotesize,
-                    minimum height=9mm, minimum width=40mm, fill=black!4},
-  stateful/.style= {box, fill=black!16, thick},
+                    minimum height=9mm, minimum width=40mm, fill=statelessfill},
+  stateful/.style= {box, fill=statefulfill, draw=statefuledge, very thick},
   term/.style    = {draw, rounded corners=7pt, align=center, font=\footnotesize\itshape,
                     minimum height=9mm, minimum width=40mm, fill=white},
   fl/.style      = {-{Latex[length=2mm]}, semithick},
