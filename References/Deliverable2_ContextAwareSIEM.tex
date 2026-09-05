@@ -1,0 +1,205 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+
+\begin{document}
+
+\title{Context-Aware Alert Prioritization for Wazuh SIEM\\
+Using Temporal Correlation and Unsupervised Machine Learning}
+
+\author{%
+\IEEEauthorblockN{Anawin Suwannapha, Worathun Termjitcharoen}
+\IEEEauthorblockA{\textit{School of Information, Computer and Communication Technology (ICT)}\\
+\textit{Sirindhorn International Institute of Technology, Thammasat University, Thailand}\\
+6622780573@g.siit.tu.ac.th, 6622790168@g.siit.tu.ac.th}
+}
+
+\maketitle
+
+\begin{abstract}
+Security Information and Event Management (SIEM) systems generate far more alerts than analysts can investigate, and ranking those alerts by static rule severity does not reflect the operational risk of the underlying activity. Existing enrichment approaches attach contextual attributes to each alert independently, which leaves them unable to distinguish an isolated event from the same event occurring as part of a sustained campaign. This paper presents the system model for a context-aware alert prioritization layer built on top of Wazuh. Rather than evaluating alerts in isolation, the proposed layer derives context across time within a single alert stream: for every incoming alert it forms a bounded window of preceding alerts belonging to the same entity, and encodes that window as a feature vector describing rule diversity, severity trend, MITRE ATT\&CK tactic progression, and arrival timing. An unsupervised anomaly model scores the window, and the resulting score is combined with Wazuh rule severity and static asset context in a transparent hybrid scoring function. A decaying per-entity risk accumulator escalates sustained low-severity activity to incident level. The design is evaluated by an ablation over four ranking systems using ground truth obtained from MITRE ATT\&CK-aligned adversary emulation, measured with ranking metrics rather than classification metrics. The contribution of this paper is the system model and its evaluation protocol; implementation and results follow.
+\end{abstract}
+
+\begin{IEEEkeywords}
+alert prioritization, Wazuh, SIEM, alert correlation, anomaly detection, alert fatigue, MITRE ATT\&CK
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Security Information and Event Management (SIEM) systems are widely used in modern Security Operations Centers (SOCs) to collect, correlate, and analyze security events, but large alert volumes can overwhelm analysts and delay the investigation of high-risk incidents \cite{ref14}. A major limitation is that alerts are often ranked mainly by static rule severity or identifiers, which may not reflect the real operational risk of an event when factors such as asset criticality, user behavior, vulnerability exposure, timing, and surrounding attack patterns are considered. Prior research has therefore explored context-aware alert classification, adaptive SIEM correlation, contextual log filtering, reinforcement learning-based prioritization, and explainable graph-based triage to reduce alert fatigue and help analysts focus on alerts with greater security impact \cite{ref1,ref5,ref6,ref7,ref8}.
+
+Wazuh provides a suitable base for this type of research because it already supports log analysis, endpoint monitoring, rule-based detection, vulnerability detection, threat intelligence integration, MITRE ATT\&CK-aligned evaluation, and active response workflows. Recent Wazuh-focused studies have explored real-time threat feed integration \cite{ref3}, MITRE ATT\&CK evaluation \cite{ref12}, and machine learning-based improvements to threat detection \cite{ref13}. However, many of these approaches focus mainly on detection accuracy, threat intelligence enrichment, or response automation. Less attention has been given to an additional Wazuh-based prioritization layer that uses created context to decide which alerts should be investigated first.
+
+A prioritization layer that evaluates each alert independently, however, cannot express the distinction that matters most to an analyst. Consider two alerts that are identical in every recorded field: the same Wazuh rule, the same host, the same severity level. In the first case the alert is the only one raised on that host in six hours. In the second it is the fortieth occurrence of that rule within ninety seconds, immediately followed by a successful authentication. The second is a successful brute-force attack and the first is routine noise, yet no amount of attribute enrichment separates them, because the difference does not reside in the alert. It resides in the sequence of alerts surrounding it. Temporal context is therefore not a refinement that improves an enrichment pipeline; for this class of activity it is the only signal that distinguishes the two cases at all.
+
+This paper proposes a context-aware alert prioritization layer for Wazuh whose primary signal is derived across time within a single alert stream. The layer does not replace Wazuh's detection rules or introduce new detections; it consumes alerts that Wazuh has already raised and re-orders them. For each incoming alert it forms a bounded window of preceding alerts that concern the same entity, and encodes that window as a feature vector capturing rule diversity, severity trend, MITRE ATT\&CK tactic progression, arrival timing, and novelty. An unsupervised anomaly model rates the window, and that rating is combined with Wazuh rule severity and the static asset context available in the deployment to produce an interpretable priority score. Transparent scoring is retained because risk-based prioritization work in SIEM environments shows that analysts must be able to understand and challenge a ranking \cite{ref9}, and broader alert management research supports combining multiple alert features during prioritization \cite{ref10}. Finally, a decaying per-entity risk accumulator raises sustained activity to incident level, so that a campaign of individually unremarkable alerts becomes visible without requiring any single alert to be scored highly.
+
+The contributions of this paper are as follows. First, a system model for a Wazuh-based prioritization layer in which correlation is derived mechanically from the alert stream rather than authored in advance as rule thresholds. Second, a temporal context feature set computed entirely from Wazuh alert fields, requiring no data source beyond the SIEM itself. Third, a hybrid scoring model that combines rule severity, static context, and an unsupervised anomaly score while remaining inspectable term by term. Fourth, an evaluation protocol based on MITRE ATT\&CK-aligned adversary emulation \cite{ref12} that yields labelled ground truth for a testbed in which no labelled alert corpus exists, together with an ablation that isolates the contribution of temporal context specifically. This paper presents the system model and its evaluation design; implementation and experimental results are the subject of subsequent work.
+
+\section{Related Work}
+
+\subsection{Rule-Based Correlation in SIEM Platforms}
+
+Correlation is not absent from existing SIEM platforms. Wazuh supports composite rules through options such as \texttt{frequency} paired with \texttt{timeframe}, \texttt{if\_matched\_sid}, \texttt{if\_group}, and field constraints including \texttt{same\_source\_ip} and \texttt{same\_user}. These allow an analyst to express that a pattern spanning several events should raise a higher-severity alert. The limitation is not capability but authorship: each such rule requires someone to anticipate a specific pattern and encode a fixed threshold for it, so the system detects only what has already been imagined and written down. The approach proposed here is complementary rather than competing, forming a context window mechanically for every alert and learning what is unusual within it from observed data.
+
+\subsection{Context-Aware Alert Prioritization}
+
+Cinque et al. \cite{ref7} demonstrate contextual filtering and prioritization of application logs for situational awareness, establishing that context external to an individual record improves the assessment of that record. Suarez-Tangil et al. \cite{ref6} frame SIEM correlation as an adaptive process, arguing that static correlation cannot accommodate multi-step attacks. Roy and Balde \cite{ref1} apply large language models to context-aware alert classification, separating organizational context from fixed SIEM rules. These works establish the value of context but largely treat it as attributes attached to an alert, rather than as structure recovered from the alert sequence.
+
+\subsection{Sequence Context and Alert Correlation}
+
+DEEPCASE \cite{ref15} establishes the mechanism this work adopts. For each security event it constructs a window of preceding events from the same device and uses an attention-based encoder-decoder to identify which contextual events are relevant, then clusters the resulting attention vectors so that operators triage groups rather than individual events. It reports filtering of 86.72\% of events and a 90.53\% reduction in analyst workload. AlertPro \cite{ref5} extracts context features from alert sequences together with history features from previously investigated alerts, and reports that context features outperform features drawn from raw alert fields alone. Both confirm that the preceding-event window carries substantial discriminative signal. DEEPCASE, however, requires a volume of event data and a training budget that a small testbed cannot supply, and AlertPro depends on a continuous expert feedback loop.
+
+\subsection{Machine Learning Applied to Wazuh}
+
+Chamkar et al. \cite{ref13} apply machine learning to improve threat detection in Wazuh, and Al Siam et al. \cite{ref3} integrate real-time threat feeds with Wazuh for automated malware detection and response. Winkler and Sharma \cite{ref12} evaluate Wazuh against the MITRE ATT\&CK framework using adversary emulation, and their methodology is adopted here for ground-truth generation. These works target detection accuracy or enrichment rather than the ordering of the resulting alert queue.
+
+Closest to the present work, Alboushy et al. \cite{ref17} propose Smart-SIEM, which constructs a per-source-IP behavioural context vector from the most recent $N$ events within Wazuh and classifies web application attacks using a LightGBM and XGBoost cascade. An ablation over $N \in \{3,\dots,35\}$ identifies $N = 30$, and context features are reported to improve all eight algorithms tested by 0.25 to 0.35 $F_1$, leading the authors to conclude that the context vector rather than the choice of algorithm is the primary contribution. That finding directly motivates the ablation design used here. The present work differs in three respects. Smart-SIEM performs classification, deciding whether an event is an attack and of which category, whereas this work performs ranking and is evaluated with ranking metrics. Smart-SIEM is fully supervised and required a purpose-built corpus of 46{,}454 labelled events with synthetic oversampling to address class imbalance, whereas the anomaly model proposed here is trained without labels on benign baseline activity. Finally, Smart-SIEM operates on HTTP application-layer telemetry, while this work operates on host security audit logs and endpoint telemetry, and it adds an incident-level accumulation stage that Smart-SIEM does not include.
+
+\subsection{Graph-Based Approaches}
+
+Chaurasia et al. \cite{ref4} predict attack paths from Wazuh event correlation using graph neural networks, and Pomsathit \cite{ref11} applies graph neural networks with continual learning to Wazuh EDR telemetry. Malach et al. \cite{ref8} use an informative graph representation with Shapley-based explanation to prioritize and triage alerts, reinforcing that analysts require reasons accompanying a ranking. Graph-based propagation is not pursued in this work: the entity graph produced by the intended testbed contains too few distinct hosts and accounts for message passing to propagate meaningful signal, and a method that cannot be evaluated on the available infrastructure would not support a defensible result. The explainability requirement identified in \cite{ref8} is nonetheless retained.
+
+\subsection{Risk-Based Prioritization and Human Feedback}
+
+Shamsi et al. \cite{ref9} present human-centric risk-based alert prioritization in Splunk, and operational risk-based alerting practice \cite{ref19} accumulates risk per entity and escalates when a threshold is crossed together with evidence from multiple distinct sources or techniques. This model informs the accumulation stage described in Section III-E. Khayat et al. \cite{ref10} combine multiple alert features using ensembled deep learning and hybrid optimization. Jalalvand et al. \cite{ref18} adapt prioritization through learning to defer with analyst feedback; the survey by the same authors \cite{ref16} organizes prioritization approaches by the degree of human-AI teaming involved. Feedback-driven adaptation is treated here as future work, as it presupposes sustained analyst interaction that this project cannot provide.
+
+Across these approaches, contextual enrichment, graph propagation, and supervised classification have each been applied to SIEM alerts, but the combination of stream-local temporal correlation, label-free anomaly scoring, and transparent ranking has not been evaluated for Wazuh.
+
+\section{Proposed System}
+
+\subsection{System Overview}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/architecture}
+\caption{Proposed context-aware alert prioritization architecture. Shaded components retain state across alerts; unshaded components process each alert independently.}
+\label{fig:architecture}
+\end{figure}
+
+Fig.~\ref{fig:architecture} presents the proposed system model. Alerts are consumed from the Wazuh manager and pass through nine components. Components 1 to 4 are stateless: each processes a single alert without reference to any other. Components 5, 6 and 8 retain state across alerts, and it is in these components that the temporal requirement of Section I is satisfied.
+
+Component 1 ingests alerts from the Wazuh manager and preserves the original record for audit and reprocessing. Component 2 projects each alert onto a fixed internal schema retaining rule identifier and level, MITRE ATT\&CK technique and tactic where present, agent identity, and the network, user and process fields supplied by the relevant decoder. Because Wazuh normalizes all monitored sources into a unified alert structure before this point, the layer consumes a single format regardless of whether a record originated from a Windows event channel, a Linux audit log, or a syslog source. Component 3 resolves the entities an alert concerns, namely host, user, and source address, which are the units over which temporal context accumulates. Component 4 attaches attributes that do not depend on alert history: asset criticality and environment from an inventory, open vulnerability counts and maximum CVSS from the Wazuh vulnerability detector, and address reputation from threat intelligence.
+
+\subsection{Temporal Context Window Builder}
+
+Component 5 is the core of the design. For each incoming alert $a$ and each entity $e$ that $a$ resolves to, the builder retrieves the preceding $N$ alerts concerning $e$ within a maximum lookback $T$, and encodes that window as a feature vector. This is an attribute-based correlation step: alerts are treated as related when they concern the same entity within a bounded interval.
+
+The window features fall into five groups, summarized in Table~\ref{tab:features}. Every feature is computed from Wazuh alert fields alone, so the component requires no data source beyond the SIEM and can be reproduced by any Wazuh deployment.
+
+\begin{table}[t]
+\caption{Temporal context window features}
+\label{tab:features}
+\centering
+\footnotesize
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Group} & \textbf{Features} \\
+\midrule
+Volume & \texttt{window\_size}, \texttt{window\_duration} \\
+Diversity & \texttt{distinct\_rule\_count}, \texttt{repeat\_ratio} \\
+Severity & \texttt{rule\_level\_max}, \texttt{\_mean}, \texttt{\_trend} \\
+ATT\&CK & \texttt{distinct\_technique\_count}, \\
+        & \texttt{distinct\_tactic\_count}, \texttt{tactic\_progression} \\
+Timing & \texttt{inter\_arrival\_mean}, \texttt{\_min}, \texttt{burst\_ratio} \\
+Novelty & \texttt{novel\_rule\_flag}, \texttt{night\_fraction} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The tracked ATT\&CK techniques are selected in advance of data collection by inspecting the public Wazuh ruleset at a pinned release, retaining techniques referenced by at least ten distinct rules in the Windows or Sysmon rule groups and associated with host-based intrusion activity in the ATT\&CK Enterprise matrix. This a priori procedure follows \cite{ref17} and prevents feature selection from being influenced by results. Each tactic is assigned an ordinal approximating adversary progression, and \texttt{tactic\_progression} is the Spearman rank correlation between an alert's position in the window and the ordinal of its tactic. Because ATT\&CK tactics are not strictly sequential, this ordering is a heuristic and the feature is interpreted as a weak ordering signal only.
+
+\subsection{Machine Learning Components}
+
+Component 6 converts the window vector into a scalar anomaly score $S_\mathrm{seq} \in [0,100]$. \textbf{The primary model is an Isolation Forest, trained without labels on window vectors collected during a benign baseline period.}
+
+This choice is driven by label availability. No labelled corpus of Wazuh alerts exists for the intended deployment, and obtaining one requires the adversary emulation described in Section III-F, which produces labels only for the techniques actually executed. An unsupervised model avoids this dependency entirely: it learns the shape of normal windows and scores departures from it, so it can rank activity that no label ever described. Isolation Forest is also the established choice for this role in the alert triage literature \cite{ref5}, and its training and inference costs are low enough for real-time operation at testbed scale.
+
+It is worth stating explicitly why a supervised ensemble such as Random Forest is not used in this role. Random Forest requires labelled examples of both classes in order to learn a decision boundary, so it could not be trained before emulation has been performed, and once trained it would recognize only activity resembling the emulated techniques. Isolation Forest and Random Forest are both tree ensembles, but they answer different questions: the former asks how unusual an observation is relative to a learned notion of normal, the latter asks which of several known classes an observation belongs to. Only the former can be trained on the data available at the time the system must begin operating.
+
+A supervised arm nonetheless has a defensible place in the evaluation. Once emulation has produced labels, a supervised ranker such as Random Forest or gradient boosting may be trained on one emulation session and tested on a disjoint one, giving an upper bound on the performance attainable when labels are available. This is reported as an optional additional system rather than as part of the proposed layer, and its limitation, that it generalizes only to techniques resembling those emulated, is reported with it.
+
+Deep sequence models are excluded. The attention-based architecture of DEEPCASE \cite{ref15} is more expressive than the approach adopted here, but requires event volumes and training budgets that the intended testbed cannot supply.
+
+\subsection{Hybrid Priority Scoring}
+
+Component 7 combines the transparent and learned signals into a single priority score,
+\begin{equation}
+P(a) = w_r S_\mathrm{rule}(a) + w_c S_\mathrm{ctx}(a) + w_s S_\mathrm{seq}(a),
+\end{equation}
+where $S_\mathrm{rule}$ is the Wazuh rule level normalized to $[0,100]$, $S_\mathrm{ctx}$ is the static context score from Component 4, and $S_\mathrm{seq}$ is the anomaly score from Component 6. The function is linear and each term's contribution to a given alert can be displayed to the analyst, which preserves the explainability requirement identified in \cite{ref8}.
+
+The weights are not asserted as general values. Results are reported under a documented default, a sensitivity analysis over the weight simplex is performed to show how ranking quality varies, and the weights that maximize ranking quality on a tuning set are reported separately as a fitted upper bound. All numeric parameters in this system model, including $N$, $T$ and the weights, are provisional estimates to be re-derived from observed alert behaviour.
+
+\subsection{Entity Risk Accumulation}
+
+Component 8 maintains a decaying risk total per entity so that a sustained campaign of individually unremarkable alerts becomes visible,
+\begin{equation}
+R_e(t) = \sum_{i \in \mathrm{alerts}(e)} P(a_i)\, 2^{-(t - t_i)/h},
+\end{equation}
+with half-life $h$. An entity is escalated to a risk notable when $R_e(t)$ exceeds a threshold $\theta$ \emph{and} the contributing alerts span at least two distinct ATT\&CK tactics. The second condition suppresses the characteristic failure of accumulation models, in which a single noisy repeating rule crosses the threshold unaided. Component 9 emits the ranked queue together with, for each entry, the highest-contributing scoring terms, the window features that most influenced $S_\mathrm{seq}$, and the alerts contributing to $R_e$.
+
+\subsection{Evaluation Design}
+
+Wazuh alerts carry no labels, so ground truth is produced by controlled attack execution following \cite{ref12}. Benign activity runs continuously to generate background alerts, attack techniques are executed from a manifest recording technique identifier, target host, and start and end times, and an alert is labelled positive when it falls within the execution interval on the target host.
+
+Four systems are compared in an ablation: B0 ranks by Wazuh rule level alone; B1 adds static context; B2 adds the sequence anomaly score; and B3 adds entity accumulation. The comparison of B2 against B1 isolates the contribution of temporal context and is the measurement the design exists to make. Because prioritization produces an ordering rather than a decision, it is measured with ranking metrics: normalized discounted cumulative gain at $k$, precision at $k$, the fraction of executed techniques represented in the top $k$, and mean reciprocal rank.
+
+Three controls protect the measurement. The benign baseline is collected with no emulation running, and the highest-scoring baseline windows are inspected before the anomaly model is frozen, so that attack activity is not learned as normal. The anomaly model is fitted only on baseline data preceding the evaluation period and is never refitted on evaluation data. Emulation is executed as two disjoint sessions, with all parameter and weight selection performed on the first and every reported comparison drawn from the second, so that tuning does not inflate the reported result.
+
+\section{Conclusion}
+
+This paper has presented the system model for a context-aware alert prioritization layer for Wazuh in which context is derived across time within a single alert stream rather than attached to alerts individually. The design combines mechanically derived window-level correlation, label-free anomaly scoring, transparent hybrid ranking, and decaying entity-level accumulation, and specifies an evaluation protocol that isolates the contribution of temporal context using emulation-derived ground truth. Implementation and experimental results will follow.
+
+\begin{thebibliography}{19}
+\scriptsize
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+
+\bibitem{ref1} J. Roy and E. A. Balde, ``Toward Context-Aware Alert Classification in Security Operations Centers Using LLMs,'' 2026 IEEE 5th International Conference on AI in Cybersecurity (ICAIC), Houston, TX, USA, 2026, pp. 1--10, doi: 10.1109/ICAIC67076.2026.11395735.
+
+\bibitem{ref2} A. Hassan, A. Rauf, N. Shafqat, R. Latif, and H. Khan, ``ZenGuard a machine learning based zero trust framework for context aware threat mitigation using SIEM SOAR and UEBA,'' Scientific Reports, vol. 15, 2025, doi: 10.1038/s41598-025-20998-4.
+
+\bibitem{ref3} A. Al Siam, M. M. Hassan, A. K. M. Masum, and T. Bhuiyan, ``Automating Malware Detection and Response via Real-Time Threat Feed Integration with Wazuh SIEM,'' 2025 IEEE 2nd International Conference on Computing, Applications and Systems (COMPAS), Kushtia, Bangladesh, 2025, pp. 1--6, doi: 10.1109/COMPAS67506.2025.11381876.
+
+\bibitem{ref4} S. Chaurasia, A. Singh, S. K. Maurya, D. P. Bajpai, and S. Yadav, ``Graph Neural Threat Intelligence: Real-Time Attack Path Prediction Using Event Correlation from Wazuh SIEM,'' 2026 International Conference on Intelligent Processing, Hardware, Electronics, and Radio Systems (CIPHER), Jalandhar, India, 2026, pp. 1--5, doi: 10.1109/CIPHER70417.2026.11523812.
+
+\bibitem{ref5} X. Wang, X. Yang, X. Liang, X. Zhang, W. Zhang, and X. Gong, ``Combating alert fatigue with AlertPro: Context-aware alert prioritization using reinforcement learning for multi-step attack detection,'' Computers \& Security, vol. 137, 2024, Art. no. 103583, doi: 10.1016/j.cose.2023.103583.
+
+\bibitem{ref6} G. Suarez-Tangil, E. Palomar, A. Ribagorda, and I. Sanz, ``Providing SIEM systems with self-adaptation,'' Information Fusion, vol. 21, pp. 145--158, 2015, doi: 10.1016/j.inffus.2013.04.009.
+
+\bibitem{ref7} M. Cinque, R. Della Corte, and A. Pecchia, ``Contextual filtering and prioritization of computer application logs for security situational awareness,'' Future Generation Computer Systems, vol. 111, pp. 668--680, 2020, doi: 10.1016/j.future.2019.09.005.
+
+\bibitem{ref8} A. Malach, P. N. Wudali, S. Momiyama, J. Furukawa, T. Araki, Y. Elovici, and A. Shabtai, ``CyberShapley: Explanation, prioritization, and triage of cybersecurity alerts using informative graph representation,'' Computers \& Security, vol. 150, 2025, Art. no. 104270, doi: 10.1016/j.cose.2024.104270.
+
+\bibitem{ref9} Z. Shamsi, N. V. S. Manohar, P. Likhitha, M. J. S. S. S. Jahnavi, and K. E. Rao, ``A Human Centric Risk-Based Security Alert Prioritization Using Splunk,'' 2026 IEEE Guwahati Subsection Conference (GCON), Guwahati, India, 2026, pp. 1--7, doi: 10.1109/GCON69192.2026.11649152.
+
+\bibitem{ref10} M. Khayat, E. Barka, M. A. Serhani, F. Sallabi, K. Shuaib, and H. M. Khater, ``Advanced Techniques for Alert Management in Security Information and Event Management Systems With Ensembled Deep Learning, Hybrid Optimization, and Multi-Feature Extraction,'' IEEE Open Journal of the Communications Society, vol. 6, pp. 7349--7368, 2025, doi: 10.1109/OJCOMS.2025.3603000.
+
+\bibitem{ref11} A. Pomsathit, ``Adaptive Detection of Advanced Persistent Threats (APT) With Graph Neural Networks and Rehearsal-Based Continual Learning on Wazuh EDR Telemetry,'' IEEE Access, vol. 13, pp. 212973--212982, 2025, doi: 10.1109/ACCESS.2025.3639270.
+
+\bibitem{ref12} A. M. Winkler and P. Sharma, ``Proactive threat detection in enterprise systems using Wazuh: A MITRE ATT\&CK Evaluation,'' Computers \& Security, vol. 159, 2025, Art. no. 104702, doi: 10.1016/j.cose.2025.104702.
+
+\bibitem{ref13} S. A. Chamkar, M. Zaydi, Y. Maleh, and N. Gherabi, ``Improving Threat Detection in Wazuh Using Machine Learning Techniques,'' Journal of Cybersecurity and Privacy, vol. 5, no. 2, Art. no. 34, 2025, doi: 10.3390/jcp5020034.
+
+\bibitem{ref14} S. Ndichu, T. Ban, S. Ozawa, T. Takahashi, and D. Inoue, ``AI-Driven Security Alert Screening and Alert Fatigue Mitigation in Security Operations Centers: A Survey,'' arXiv:2605.08316 [cs.CR], May 2026, doi: 10.48550/arXiv.2605.08316.
+
+\bibitem{ref15} T. van Ede et al., ``DEEPCASE: Semi-Supervised Contextual Analysis of Security Events,'' 2022 IEEE Symposium on Security and Privacy (SP), San Francisco, CA, USA, 2022, pp. 522--539, doi: 10.1109/SP46214.2022.9833671.
+
+\bibitem{ref16} F. Jalalvand, M. Baruwal Chhetri, S. Nepal, and C. Paris, ``Alert Prioritisation in Security Operations Centres: A Systematic Survey on Criteria and Methods,'' ACM Computing Surveys, 2024, doi: 10.1145/3695462.
+
+\bibitem{ref17} B. Alboushy, A. Jafar, M. Aljnidi, M. B. Disoki, and A. Shaheed, ``Context-Aware Web Attack Detection in Open-Source SIEM Systems via MITRE ATT\&CK-Enriched Behavioral Profiling,'' arXiv:2605.13337 [cs.CR], May 2026.
+
+\bibitem{ref18} F. Jalalvand, M. Baruwal Chhetri, S. Nepal, and C. Paris, ``Adaptive alert prioritisation in security operations centres via learning to defer with human feedback,'' arXiv:2506.18462, 2025.
+
+\bibitem{ref19} Splunk, ``How risk-based alerting works in Splunk Enterprise Security,'' Splunk Enterprise Security Documentation, accessed Sep. 2026.
+
+\end{thebibliography}
+\end{document}
