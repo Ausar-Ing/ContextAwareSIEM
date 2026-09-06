@@ -23,3 +23,6 @@ wazuh-install-files/
 *.synctex.gz
 *.fdb_latexmk
 *.fls
+
+# Sample Wazuh alert export used for log analysis, not a project artifact
+wazuh_dataset.json
