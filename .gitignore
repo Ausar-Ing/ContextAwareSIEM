@@ -45,3 +45,7 @@ provenance/raw/
 
 # editor/script backups
 *.bak
+
+# Wazuh installer credentials live in WSL ~/wazuh-setup, never in this repo
+Pass.txt
+wazuh-passwords.txt
