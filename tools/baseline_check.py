@@ -155,18 +155,27 @@ def main():
             continue
     alerts.sort(key=lambda a: (a.ts, a.ingest_seq))
 
+    # Raw Wazuh agent id, NOT the host entity: HOST_ALIASES folds a re-enrolled
+    # agent onto its old id, which is right for windowing but would hide the
+    # re-enrollment here, where it has to be visible.
     by_agent = collections.Counter()
+    agent_span = {}
     for a in alerts:
-        for t, v in a.entities:
-            if t == "host":
-                by_agent[v] += 1
+        by_agent[a.agent_id] += 1
+        lo, hi = agent_span.get(a.agent_id, (a.ts, a.ts))
+        agent_span[a.agent_id] = (min(lo, a.ts), max(hi, a.ts))
+    newest_any = max(a.ts for a in alerts)
+    _tz = dt.timezone(dt.timedelta(hours=SITE_UTC_OFFSET_H))
     if args.by_agent or (keep_agents is None and len(by_agent) > 1):
         print("=" * 72)
         print("AGENTS PRESENT IN THIS CORPUS")
         print("=" * 72)
         for ag, n in by_agent.most_common():
             note = "   <- the WSL manager itself; your own sudo activity" if ag == "000" else ""
-            print(f"  agent {ag:>6}  {n:8d} alerts  ({100*n/max(len(alerts),1):5.1f}%){note}")
+            lo, hi = agent_span[ag]
+            print(f"  agent {ag:>6}  {n:8d} alerts  ({100*n/max(len(alerts),1):5.1f}%)  "
+                  f"{dt.datetime.fromtimestamp(lo, _tz):%d %b %H:%M} -> "
+                  f"{dt.datetime.fromtimestamp(hi, _tz):%d %b %H:%M}{note}")
         if keep_agents is None and len(by_agent) > 1:
             print("\n  More than one agent. Decide which belong in the baseline and pass")
             print("  --agent <ids>. Mixing agent 000 in inflates the gate: its volume comes")
@@ -176,8 +185,7 @@ def main():
 
     n_raw = len(alerts)
     if keep_agents is not None:
-        alerts = [a for a in alerts
-                  if any(t == "host" and v in keep_agents for t, v in a.entities)]
+        alerts = [a for a in alerts if a.agent_id in keep_agents]
         rep["alerts_dropped_other_agents"] = n_raw - len(alerts)
         n_raw = len(alerts)
     if t_since is not None:
@@ -236,6 +244,26 @@ def main():
             print(f"    {la:%a %d %b %H:%M}  for {fmt_dur(b-a)}")
         if len(down) > 12:
             print(f"    ... and {len(down)-12} more")
+
+    # --- staleness: are the KEPT agents still reporting? ---------------------
+    # 2026-09-30: agent 001 went silent on 27 Sep when the endpoint was
+    # re-enrolled as 002; the gate kept printing GO on a corpus that ended three
+    # days earlier, because it only ever looked at the agents it was told to
+    # keep. Compare against the newest alert from ANY agent: if the manager is
+    # still writing alerts and ours are not among them, the corpus is lying.
+    stale_s = newest_any - ts[-1]
+    rep["kept_agents_stale_h"] = round(stale_s / 3600, 2)
+    stale = keep_agents is not None and t_until is None and stale_s > 6 * 3600
+    if stale:
+        print("\n" + "!" * 72)
+        print(f"  KEPT AGENTS SILENT FOR {stale_s/3600:.1f} h WHILE OTHER AGENTS REPORT")
+        print(f"  newest alert from --agent {','.join(sorted(keep_agents))}: "
+              f"{t1:%Y-%m-%d %H:%M}")
+        print(f"  newest alert from any agent:        "
+              f"{dt.datetime.fromtimestamp(newest_any, _tz):%Y-%m-%d %H:%M}")
+        print("  Likely a re-enrolled agent (new id in client.keys) or a dropped")
+        print("  connection. Run with --by-agent. Every number below is wrong.")
+        print("!" * 72)
 
     # --- entity resolution --------------------------------------------------
     print("\n" + "=" * 72)
@@ -326,6 +354,12 @@ def main():
                days_to_floor=round(need_f, 1), days_to_target=round(need_t, 1),
                projected_total_days=round(total_days, 1))
     print()
+    if stale:
+        rep["verdict"] = "STALE"
+        print("  VERDICT: STALE -- the kept agents stopped reporting. No verdict")
+        print("           until that is explained; see the warning above.")
+        _emit(rep, args.json_out)
+        return 2
     if total_days <= 35:
         rep["verdict"] = "GO"
         print("  VERDICT: GO. Phase 2 as scheduled.")

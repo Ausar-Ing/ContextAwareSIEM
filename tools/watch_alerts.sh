@@ -41,14 +41,15 @@ case "${1:-}" in
     echo "=== services (want: active x3) ==="
     systemctl is-active wazuh-indexer wazuh-manager wazuh-dashboard 2>&1 | sed 's/^/  /'
     echo
-    echo "=== agents (want: 001 Active) ==="
+    echo "=== agents (want: 002 Active; 001 retired 27 Sep, re-enrolled as 002) ==="
     sudo /var/ossec/bin/agent_control -l 2>&1 | sed 's/^/  /'
     echo
     echo "=== alert flow ==="
     sudo tail -n 4000 "$A/alerts.json" 2>/dev/null | python3 -c '
 import sys, json, datetime as dt, collections
 now = dt.datetime.now(dt.timezone.utc)
-last = None; buckets = collections.Counter()
+last = None; buckets = collections.Counter(); per_agent = {}
+CORPUS = {"001", "002"}   # keep in step with AGENT in weekly_check.sh
 for ln in sys.stdin:
     ln = ln.strip()
     if not ln:
@@ -66,6 +67,9 @@ for ln in sys.stdin:
         continue
     if last is None or d > last:
         last = d
+    ag = str((r.get("agent") or {}).get("id") or "?")
+    if ag not in per_agent or d > per_agent[ag]:
+        per_agent[ag] = d
     age = (now - d).total_seconds()
     if age <= 3600:
         buckets["1h"] += 1
@@ -80,8 +84,22 @@ print("  age            %.0f s" % age)
 print("  last 10 min    %d alerts" % buckets["10m"])
 print("  last hour      %d alerts" % buckets["1h"])
 print("")
-if age < 900:
-    print("  HEALTHY -- alerts are arriving.")
+for ag in sorted(per_agent):
+    a_age = (now - per_agent[ag]).total_seconds()
+    tag = "  <- corpus" if ag in CORPUS else ""
+    print("  agent %s newest  %s  (%.0f min ago)%s"
+          % (ag, per_agent[ag].astimezone().strftime("%m-%d %H:%M"), a_age / 60, tag))
+print("")
+corp = [per_agent[a] for a in CORPUS if a in per_agent]
+corp_age = (now - max(corp)).total_seconds() if corp else float("inf")
+if age < 900 and corp_age > 3600:
+    print("  CORPUS AGENT SILENT -- the manager is writing alerts but none from")
+    print("  %s in the last %s. Check agent_control above: a re-enrolled agent"
+          % ("/".join(sorted(CORPUS)),
+             "4000 alerts" if corp_age == float("inf") else "%.1f h" % (corp_age / 3600)))
+    print("  shows up under a NEW id. Nothing from it reaches the baseline.")
+elif age < 900:
+    print("  HEALTHY -- alerts are arriving from the corpus agent.")
 elif age < 7200:
     print("  QUIET -- nothing for %.0f min. Plausible on an idle desktop," % (age / 60))
     print("  but confirm the agent shows Active above.")

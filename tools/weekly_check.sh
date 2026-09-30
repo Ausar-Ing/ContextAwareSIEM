@@ -16,7 +16,11 @@
 set -uo pipefail
 
 T0="2026-09-12T12:14"          # COLLECTION_RECORD.md A.1 -- do not change
-AGENT="001"                    # windows11-host. Agent 000 is excluded, see D.1
+# windows11-host. Agent 000 is excluded (D.1). The endpoint was re-enrolled on
+# 27 Sep and reports as 002 from then on (Part B #2); window_builder.HOST_ALIASES
+# folds 002 onto 001 so it stays one host entity. If it is ever re-enrolled
+# again, add the new id HERE and in HOST_ALIASES, or the gate reads STALE.
+AGENT="001,002"
 LABEL="${1:-adhoc}"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -23,6 +23,16 @@ import numpy as np
 # --- section 4.2.3 admission policy -----------------------------------------
 COMPLIANCE_GROUPS = {"sca", "rootcheck", "policy_monitoring", "ciscat"}
 
+# --- host identity across re-enrollment (COLLECTION_RECORD.md Part B #2) ----
+# Wazuh keys an agent by the id in client.keys, not by the machine. On
+# 2026-09-27 ~11:46 the Windows endpoint was re-enrolled and came back as
+# 002 "TestRun1"; agent ossec.conf (278DBA62...) and version (4.14.7) are
+# unchanged, so the generating process is the same and this is an identity
+# change only. Without this map one physical host becomes two entities and
+# every host window is split at the re-enrollment. Raw id is kept in
+# Alert.agent_id for filtering and audit.
+HOST_ALIASES = {"002": "001"}
+
 # --- section 4.2.6.1 tactic ordering ----------------------------------------
 TACTIC_ORDINAL = {
     "TA0043": 1,   # Reconnaissance
@@ -85,6 +95,7 @@ class Alert:
     techniques: tuple = ()
     tactics: tuple = ()
     entities: tuple = ()            # ((type, id), ...)
+    agent_id: str = ""              # raw Wazuh agent id, BEFORE HOST_ALIASES
     label: int = 0                  # evaluation only, never a feature
 
     @property
@@ -152,7 +163,8 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
     wed = (win.get("eventdata") or {})
     eid = str((win.get("system") or {}).get("eventID") or "")
 
-    ents = [("host", r["agent"]["id"])]
+    aid = str(r["agent"]["id"])
+    ents = [("host", HOST_ALIASES.get(aid, aid))]
 
     if eid in LOGON_EVENT_IDS:
         order = (wed.get("targetUserName"), wed.get("subjectUserName"))
@@ -179,6 +191,7 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
         techniques=tuple(rule.get("mitre_techniques", ()) or ()),
         tactics=tuple(rule.get("mitre_tactics", ()) or ()),
         entities=tuple(ents),
+        agent_id=aid,
     )
 
 

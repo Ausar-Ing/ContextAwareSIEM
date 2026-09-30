@@ -320,7 +320,8 @@ options and you must pick one explicitly:
 | # | Timestamp (+07) | What changed | Why | Segment effect | Snapshot taken |
 |---|---|---|---|---|---|
 | 1 | **2026-09-12 12:14 +07:00** | Audit policy enabled (Logon S+F, Logoff S, Special Logon S, Process Creation S); command-line capture confirmed off. **T0 — start of collection.** | Protocol §3.2. Without it `user`/`srcip` never resolve and the behavioural rate stays near zero. | **starts segment 1** | `T0_manager_20260912T131341.txt`, `T0_endpoint_20260912T121433.txt` |
-| 2 | | | | | |
+| 2 | **2026-09-27 ~11:46 +07:00** (last `001` alert 11:46:14; `002` begins the same day) | Windows endpoint **re-enrolled**: now agent `002` "TestRun1" instead of `001` "windows11-host". `001` shows Disconnected on the manager and is left registered as part of the record. | Not a planned change. Cause not yet recorded — fill in. | **Identity only, NOT a segment boundary.** Verified 2026-09-30: agent `ossec.conf` SHA-256 still `278DBA62…` (T0 value), agent version still v4.14.7, same OS. Daily counts show a clean handover (27 Sep: 322 from `001`, 2,659 from `002`; no overlap, no missing day). Handled at analysis time: `window_builder.HOST_ALIASES = {"002": "001"}` keeps one host entity; `weekly_check.sh` now keeps `--agent 001,002`. Found only because the wk3 corpus ended 3.2 days before the reading — the gate had been silently discarding `002` as "other agents". | none needed — config hashes unchanged |
+| 3 | | | | | |
 T0 = 12:14 GMT+7
 **Planned, and therefore not a surprise:** nothing. Phase 1 and Phase 2 are
 change-free by design. If you find yourself wanting to tune something, that is
