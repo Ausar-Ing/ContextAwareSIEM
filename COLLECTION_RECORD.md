@@ -338,6 +338,7 @@ routine overnight sleep. Log anything that is not that.
 
 | Timestamp (+07) | Duration | What | Cause | Action taken |
 |---|---|---|---|---|
+| 2026-09-27 11:46 → 15:23 | 3.6 h | No alerts from the endpoint during daytime hours; the gap starts at `001`'s last alert and ends at `002`'s first | Agent re-enrollment (Part B #2). The machine was on, so endpoint activity in this window is missing from the baseline | None possible after the fact. Tooling now flags a silent corpus agent within hours (gate STALE, `--status` CORPUS AGENT SILENT). Report as a 3.6 h collection gap |
 | | | | | |
 
 The weekly `baseline_check.py` run prints detected downtime intervals. Anything
@@ -593,8 +594,12 @@ reports using the machine every day through midterms, at least an hour or two a
 day. The 12 intervals this reading printed are consistent with that: none
 exceeds 24 h, each ends in a session, and the long ones (20.2 h on 13 Sep,
 22.5 h on 15 Sep, 21.2 h + 21.1 h across 21–22 Sep) are evenings-only days, not
-missing days. **The other 11 were truncated by the old output. Check them for
-any interval over 24 h before closing this entry.** The full interval list is now written
+missing days. Full list checked the same afternoon: **all 23 are under 24 h**,
+the longest is 22.5 h. One interval is not routine: **27 Sep 11:46 → 15:23 (3.6 h)**
+sits exactly between the last `001` alert and the first `002` alert, so it is
+the re-enrollment itself, during daytime use. It is logged in C.1. From about
+25 Sep the nightly gaps start between 00:00 and 04:00 rather than around 23:00,
+so late-night hours are now partly covered without deliberate awake nights. The full interval list is now written
 to the gate JSON (`downtime_list`, `downtime_over_24h`) so this can be audited
 without re-running.
 
