@@ -1,0 +1,68 @@
+{
+  "admitted_alerts": 24289,
+  "admitted_per_awake_hour": 469.82,
+  "admitted_per_calendar_day": 3918.1,
+  "agents_kept": [
+    "001"
+  ],
+  "alerts_discarded_outside_window": 7649,
+  "alerts_dropped_other_agents": 932,
+  "awake_h": 51.7,
+  "checked_at": "2026-09-18T17:01:18+07:00",
+  "corpus_path": "/home/user/baseline_corpus.json",
+  "corpus_sha256": "689691cfe80fa85d1a9e6c281222a4762dc59aeebb891eda95159e6089e8de76",
+  "days_elapsed": 6.2,
+  "days_to_floor": 4.0,
+  "days_to_target": 14.2,
+  "dead_features": [
+    "distinct_technique_count",
+    "distinct_tactic_count",
+    "tactic_progression"
+  ],
+  "distinct_rule_ids": 55,
+  "downtime_gap_threshold_s": 1800,
+  "downtime_h": 97.08,
+  "downtime_intervals": 7,
+  "entity_resolution_pct": {
+    "host": 100.0,
+    "srcip": 0.0,
+    "user": 45.68
+  },
+  "excluded_compliance": 9,
+  "feature_distinct_values": {
+    "burst_ratio": 24,
+    "distinct_rule_count": 12,
+    "distinct_tactic_count": 1,
+    "distinct_technique_count": 1,
+    "inter_arrival_mean_s": 24566,
+    "inter_arrival_min_s": 48,
+    "night_fraction": 25,
+    "novel_rule_flag": 2,
+    "repeat_ratio": 38,
+    "rule_level_max": 9,
+    "rule_level_mean": 98,
+    "rule_level_trend": 664,
+    "tactic_progression": 1,
+    "window_duration_s": 24440,
+    "window_size": 18
+  },
+  "first_alert": "2026-09-12T12:14:04+07:00",
+  "floor_windows": 4000,
+  "host_windows": 24287,
+  "label": "wk1",
+  "last_alert": "2026-09-18T17:00:58+07:00",
+  "projected_total_days": 20.4,
+  "since": "2026-09-12T12:14",
+  "site_utc_offset_h": 7.0,
+  "stride": 10,
+  "target_windows": 8000,
+  "total_alerts": 24298,
+  "training_pool_at_stride": 2428,
+  "until": null,
+  "verdict": "GO",
+  "wall_clock_span_h": 148.78,
+  "windows_by_entity_type": {
+    "host": 24287,
+    "user": 11072
+  }
+}
