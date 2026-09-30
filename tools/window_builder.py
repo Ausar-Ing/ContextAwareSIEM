@@ -23,6 +23,28 @@ import numpy as np
 # --- section 4.2.3 admission policy -----------------------------------------
 COMPLIANCE_GROUPS = {"sca", "rootcheck", "policy_monitoring", "ciscat"}
 
+# --- scan-timed integrity monitoring (admission, section 4.2.3) -------------
+# A FIM alert from a SCHEDULED syscheck scan carries the time the scan ran, not
+# the time the change happened. Measured 2026-09-30 on the wk3 corpus: registry
+# rules 750/752/594 put 1,190 alerts into 4 distinct minutes (up to 392 in one),
+# which the timing features would read as a burst. Same objection as SCA. The
+# criterion is syscheck.mode, which states the reason directly; realtime and
+# whodata FIM alerts keep near-change timestamps and stay admitted. Windows
+# registry monitoring is scan-only, so registry rules are treated as scheduled
+# if an alert ever lacks the mode field.
+REGISTRY_FIM_RULES = {"594", "597", "598", "750", "751", "752"}
+
+
+def _scan_timed(r: dict) -> bool:
+    groups = set((r.get("rule") or {}).get("groups") or ())
+    if "syscheck" not in groups:
+        return False
+    mode = str(((r.get("syscheck") or {}).get("mode")) or "").casefold()
+    if mode:
+        return mode == "scheduled"
+    return str((r.get("rule") or {}).get("id")) in REGISTRY_FIM_RULES
+
+
 # --- host identity across re-enrollment (COLLECTION_RECORD.md Part B #2) ----
 # Wazuh keys an agent by the id in client.keys, not by the machine. On
 # 2026-09-27 ~11:46 the Windows endpoint was re-enrolled and came back as
@@ -141,9 +163,11 @@ class Alert:
     agent_id: str = ""              # raw Wazuh agent id, BEFORE HOST_ALIASES
     label: int = 0                  # evaluation only, never a feature
 
+    scan_timed: bool = False         # FIM result from a scheduled scan
+
     @property
     def admissible(self) -> bool:
-        return not (set(self.rule_groups) & COMPLIANCE_GROUPS)
+        return not (set(self.rule_groups) & COMPLIANCE_GROUPS) and not self.scan_timed
 
 
 # --- section 4.1.3 entity resolution ----------------------------------------
@@ -235,6 +259,7 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
         tactics=_mitre(rule)[1],
         entities=tuple(ents),
         agent_id=aid,
+        scan_timed=_scan_timed(r),
     )
 
 

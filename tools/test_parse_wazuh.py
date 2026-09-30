@@ -44,5 +44,20 @@ e = alert({}, agent="002")
 check("re-enrolled agent 002 resolves to host 001, raw id kept",
       ("host", "001") in e.entities and e.agent_id == "002")
 
+def fim(mode, rid="550"):
+    r = {"timestamp": "2026-09-12T12:14:04.000+0700", "id": "1",
+         "rule": {"id": rid, "level": 5, "groups": ["ossec", "syscheck"]},
+         "agent": {"id": "001"}, "data": {}}
+    if mode is not None:
+        r["syscheck"] = {"mode": mode}
+    return W.parse_wazuh(r, 0)
+
+
+check("scheduled FIM is not admitted (scan time, not change time)", not fim("scheduled").admissible)
+check("realtime and whodata FIM are admitted", fim("realtime").admissible and fim("whodata").admissible)
+check("registry FIM with no mode field is treated as scheduled", not fim(None, "750").admissible)
+check("file FIM with no mode field is admitted", fim(None, "550").admissible)
+check("non-FIM alerts are unaffected", alert({}).admissible)
+
 print(f"\n{'ALL PASS' if not FAILED else str(len(FAILED)) + ' FAILED: ' + ', '.join(FAILED)}")
 sys.exit(1 if FAILED else 0)
