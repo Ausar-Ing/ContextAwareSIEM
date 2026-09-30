@@ -1,0 +1,4 @@
+# Keep shell and Python scripts LF so they run in WSL regardless of the
+# Windows-side core.autocrlf setting.
+*.sh text eol=lf
+*.py text eol=lf

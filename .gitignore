@@ -26,3 +26,22 @@ wazuh-install-files/
 
 # Sample Wazuh alert export used for log analysis, not a project artifact
 wazuh_dataset.json
+
+# python
+__pycache__/
+*.pyc
+
+# Baseline corpus and rotated alert logs - PERSONAL DATA from a daily-driver
+# machine. Never commit: the repository is submitted, the corpus is not.
+# See baseline_collection_protocol.md section 5.
+baseline_corpus*.json
+baseline_corpus*.json.gz
+*.json.gz
+alerts*.json
+
+# Environment provenance snapshots may contain hostnames / usernames.
+# Commit the REDACTED copy only (provenance/redacted/).
+provenance/raw/
+
+# editor/script backups
+*.bak
