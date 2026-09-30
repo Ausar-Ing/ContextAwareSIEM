@@ -238,12 +238,22 @@ def main():
     print(f"  agents                  {len(set(e[1] for a in alerts for e in a.entities if e[0]=='host'))}")
 
     if down:
-        print("\n  downtime intervals (gap threshold %s):" % fmt_dur(thresh))
-        for a, b in down[:12]:
-            la = dt.datetime.fromtimestamp(a, dt.timezone(dt.timedelta(hours=SITE_UTC_OFFSET_H)))
-            print(f"    {la:%a %d %b %H:%M}  for {fmt_dur(b-a)}")
-        if len(down) > 12:
-            print(f"    ... and {len(down)-12} more")
+        # All intervals, not the first 12: the ones that matter are the long
+        # ones, and they can be anywhere in the list. Also written to the JSON
+        # so C.1 can be checked later without re-running.
+        _z = dt.timezone(dt.timedelta(hours=SITE_UTC_OFFSET_H))
+        print("\n  downtime intervals (gap threshold %s; * = over 24 h, check C.1):"
+              % fmt_dur(thresh))
+        rep["downtime_list"] = []
+        for a, b in down:
+            la = dt.datetime.fromtimestamp(a, _z)
+            lb = dt.datetime.fromtimestamp(b, _z)
+            flag = "  *" if b - a > 24 * 3600 else ""
+            print(f"    {la:%a %d %b %H:%M} -> {lb:%a %d %b %H:%M}  "
+                  f"{fmt_dur(b-a):>7s}{flag}")
+            rep["downtime_list"].append([la.isoformat(timespec="minutes"),
+                                         round((b - a) / 3600, 2)])
+        rep["downtime_over_24h"] = sum(1 for a, b in down if b - a > 24 * 3600)
 
     # --- staleness: are the KEPT agents still reporting? ---------------------
     # 2026-09-30: agent 001 went silent on 27 Sep when the endpoint was

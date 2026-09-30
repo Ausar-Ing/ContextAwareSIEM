@@ -548,6 +548,62 @@ than row count.
 recovered to 48 distinct values, no longer pinned at the tie floor; the MITRE
 trio is still *exactly* constant.
 
+### Week 3 reading — 30 Sep 2026, 16:16. **VERDICT: GO.**
+
+**A first run at 16:05 was invalid and is not a gate reading.** It kept only
+agent `001`, which had stopped reporting on 27 Sep 11:46 when the endpoint was
+re-enrolled as `002` (Part B #2). The corpus therefore ended 3.2 days before the
+reading, and the gate still printed GO. The tools now catch this: the gate reads
+STALE when kept agents lag the newest alert by more than 6 h, and `--status`
+reports CORPUS AGENT SILENT. This reading keeps `--agent 001,002`, with `002`
+folded onto `001` as one host.
+
+Sanity check passed: first alert **2026-09-12 12:14**, matching T0; last alert
+**2026-09-30 16:15**, minutes before the reading; span 18.2 d; 7,649 discarded
+as pre-T0; only 1,073 dropped as agent 000. Corpus SHA-256 `1dac5bbb…`.
+
+| | 14 Sep | 18 Sep | 30 Sep |
+|---|---|---|---|
+| Span | 2.3 d | 6.2 d | 18.2 d |
+| Awake / wall-clock | 23.7 h / 55.2 h | 51.7 h / 148.8 h | 159.2 h / 436.0 h |
+| Awake per calendar day | 10.3 h | 8.3 h | **8.8 h** |
+| Downtime intervals | 2 | 7 | 23 |
+| Admitted alerts | 9,092 | 24,289 | 61,970 |
+| Excluded (compliance) | — | 9 | 511 |
+| Distinct rule ids | 49 | 55 | 68 |
+| Admitted / awake hour | 383.4 | 469.8 | 389.2 |
+| **Admitted / calendar day** | **4,033** | **3,918** | **3,411** |
+| Training pool @ stride 10 | 909 | 2,428 | **6,196** |
+| `user` resolution | 51.1% | 45.7% | 50.9% |
+| Days to target | 17.6 | 14.2 | **5.3 (≈ 6 Oct)** |
+
+**Floor passed, target around 6 October**, 11 days inside the 17 October
+freeze. The rate per calendar day fell 13% from 18 Sep. Per awake hour stayed in
+the same 380–470 band, so the drop is lower machine use through midterms, not a
+changed alert process.
+
+**Compliance exclusions jumped from 9 to 511.** Most likely the re-enrolled
+agent re-ran SCA and rootcheck from scratch, since the manager holds no stored
+scan state for a new agent id. The Component 1 admission filter removed all of
+it, which is exactly the case it was built for. Without it, a re-enrollment
+would have injected a burst of MITRE-tagged compliance alerts into the baseline.
+
+**Downtime: 11.5 d in 23 intervals — routine, no C.1 entry.** The researcher
+reports using the machine every day through midterms, at least an hour or two a
+day. The 12 intervals this reading printed are consistent with that: none
+exceeds 24 h, each ends in a session, and the long ones (20.2 h on 13 Sep,
+22.5 h on 15 Sep, 21.2 h + 21.1 h across 21–22 Sep) are evenings-only days, not
+missing days. **The other 11 were truncated by the old output. Check them for
+any interval over 24 h before closing this entry.** The full interval list is now written
+to the gate JSON (`downtime_list`, `downtime_over_24h`) so this can be audited
+without re-running.
+
+**Features over 61,970 alerts and 68 rule ids:** the MITRE trio is still
+exactly constant (drop confirmed, D.1). `night_fraction` has 31 distinct values
+(see D.0 item 1). `window_duration_s` reaches **82,652 s (23.0 h)**. The overnight-gap
+artifact is still in every timing feature because the active-time correction is
+**still not ported** (D.0 item 3). That remains the blocker before any modelling.
+
 ## D.1 Decisions the gate forces (record the answer and the date)
 
 | Decision | Driven by | Answer | Date |
