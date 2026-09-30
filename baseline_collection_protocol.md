@@ -74,6 +74,11 @@ window_duration_s      := (t_last − t_first) − downtime_within_window
 inter_arrival_mean_s   := mean over gaps, each gap minus any downtime inside it
 ```
 
+A gap that lies *entirely* inside downtime has no active length and is excluded
+from the inter-arrival mean and minimum, rather than entering as a 0 s gap that
+would read as a simultaneous pair. Implemented online in
+`tools/window_builder.py` (2026-09-30), `G = 1800 s` per COLLECTION_RECORD D.1.
+
 Downtime intervals are derivable without any rule-ID assumptions: take the global
 stream for that agent, and treat any gap longer than `G` as downtime, where `G`
 is chosen from the observed awake-state gap distribution (§6 reports it). Agent

@@ -126,7 +126,10 @@ def gen_stream(rng, days: float, n_hosts: int = 3, n_users: int = 4,
 
 def build_windows(stream, baseline_rules=None, learn=False, N=20, T_hours=24.0):
     """Run the real window builder over a stream. Returns (X, y, meta)."""
-    wb = WindowBuilder(N=N, T_hours=T_hours, baseline_rules=baseline_rules,
+    # downtime_gap_s=None: this study ran on wall-clock timing and its recorded
+    # results (component6_isolation_forest.md) must stay reproducible.
+    wb = WindowBuilder(N=N, T_hours=T_hours, downtime_gap_s=None,
+                       baseline_rules=baseline_rules,
                        learn_rules=learn)
     X, y, ent_type, aid = [], [], [], []
     for a in stream:

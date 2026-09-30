@@ -98,7 +98,11 @@ class ActiveWindowBuilder(WindowBuilder):
 
 
 def build(stream, downtime, baseline_rules=None, learn=False):
-    wb = ActiveWindowBuilder(baseline_rules=baseline_rules, learn_rules=learn)
+    # downtime_gap_s=None: this class applies its OWN batch correction from the
+    # generator's true off intervals. Leaving the online correction on as well
+    # would correct twice and change the recorded results (night_coverage_note).
+    wb = ActiveWindowBuilder(baseline_rules=baseline_rules, learn_rules=learn,
+                             downtime_gap_s=None)
     wb.set_downtime(downtime)
     X, y, et = [], [], []
     for a in stream:

@@ -74,6 +74,17 @@ LOG_FEATURES = ["window_duration_s", "inter_arrival_mean_s", "inter_arrival_min_
 LOG_IDX = [FEATURE_NAMES.index(f) for f in LOG_FEATURES]
 
 MIN_WINDOW_FOR_SCORING = 3          # section 4.2.5 cold start
+
+# Active-time correction (baseline_collection_protocol.md 2.1). A gap longer
+# than G in a host's GLOBAL alert stream -- every alert from that host, of any
+# entity and including compliance alerts the admission filter later drops --
+# is taken as the host being off. Timing features subtract it: the host being
+# off is not the entity being quiet, and only the second is evidence.
+# G = 1800 s is the value the gate's derived threshold (20x median gap, floor
+# 1800 s) resolved to on the live corpus and was frozen at in
+# COLLECTION_RECORD.md D.1 (2026-09-18). It is a fixed parameter here, not
+# re-derived online, so the feature map does not drift with the data.
+DOWNTIME_GAP_S = 1800.0
 INTER_ARRIVAL_FLOOR_S = 0.001       # section 4.2.2
 WORK_START, WORK_END = 9, 18        # night_fraction definition, LOCAL hours
 # night_fraction is a local-time concept. Wazuh timestamps are converted to UTC
@@ -206,17 +217,64 @@ class WindowBuilder:
 
     def __init__(self, N: int = 20, T_hours: float = 24.0,
                  baseline_rules: set | None = None, learn_rules: bool = False,
-                 site_utc_offset_h: float = SITE_UTC_OFFSET_H):
+                 site_utc_offset_h: float = SITE_UTC_OFFSET_H,
+                 downtime_gap_s: float | None = DOWNTIME_GAP_S):
         self.N = N
         self.T = T_hours * 3600.0
         self.tz = site_utc_offset_h * 3600.0
         self.win: dict = collections.defaultdict(collections.deque)
         self.baseline_rules = set() if baseline_rules is None else set(baseline_rules)
         self.learn_rules = learn_rules or baseline_rules is None
+        # Active-time correction state. None disables it (wall-clock timing),
+        # which is what the frozen simulation studies were run with.
+        self.G = downtime_gap_s
+        self._last_seen: dict = {}                       # host -> newest ts
+        self._down: dict = collections.defaultdict(list)  # host -> [(st, en)]
+        self.downtime_log: list = []   # every interval detected, for audit
+
+    @staticmethod
+    def _host_of(a: Alert):
+        for t, v in a.entities:
+            if t == "host":
+                return v
+        return None
+
+    def observe(self, a: Alert):
+        """Update host liveness from ANY alert, admissible or not. Causal: a
+        downtime interval is only known once the first alert after it arrives,
+        and it can only ever affect windows built from that alert onwards."""
+        if self.G is None:
+            return
+        h = self._host_of(a)
+        if h is None:
+            return
+        last = self._last_seen.get(h)
+        if last is not None and a.ts - last > self.G:
+            self._down[h].append((last, a.ts))
+            self.downtime_log.append((h, last, a.ts))
+        if last is None or a.ts > last:
+            self._last_seen[h] = a.ts
+        # Windows never hold an alert older than T (wall clock), so no interval
+        # ending before that can overlap one. Keeps state bounded.
+        iv = self._down[h]
+        while iv and iv[0][1] < a.ts - self.T:
+            iv.pop(0)
+
+    def _downtime_in(self, host, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+        """Seconds of detected host downtime inside each [a_i, b_i]."""
+        out = np.zeros_like(a, dtype=float)
+        for st, en in self._down.get(host, ()):
+            out += np.clip(np.minimum(b, en) - np.maximum(a, st), 0.0, None)
+        return out
 
     def push(self, a: Alert):
         """Admit an alert into every window it belongs to. Returns
-        [(entity, features, scoreable), ...] -- one entry per resolved entity."""
+        [(entity, features, scoreable), ...] -- one entry per resolved entity.
+
+        Feed EVERY alert, not only admissible ones: inadmissible alerts still
+        prove the host was on, and dropping them before this call would
+        manufacture downtime out of a compliance scan's quiet neighbours."""
+        self.observe(a)
         if not a.admissible:
             return []
         out = []
@@ -240,7 +298,28 @@ class WindowBuilder:
         ts = np.array([x.ts for x in w])
         lv = np.array([x.rule_level for x in w], dtype=float)
 
-        duration = float(ts[-1] - ts[0])
+        # Active-time correction (protocol 2.1): subtract detected host
+        # downtime from every gap. Downtime is taken from the host of the
+        # CURRENT alert. Exact on a single-host testbed; a user entity whose
+        # window spans several hosts would need the union of their uptime,
+        # which is out of scope while there is one monitored host.
+        #
+        # A gap that is ENTIRELY downtime (for the host entity, the overnight
+        # gap is exactly the detected interval) has zero active length. It is
+        # not an observation of the entity at all, so it is dropped from the
+        # inter-arrival statistics rather than counted as a 0 s gap -- counted,
+        # it would hit INTER_ARRIVAL_FLOOR_S and make every morning window look
+        # like it holds two simultaneous alerts, the burst signature. It still
+        # contributes nothing to duration, which is correct either way.
+        raw_gaps = np.diff(ts) if n >= 2 else np.zeros(0)
+        if n >= 2 and self.G is not None:
+            host = self._host_of(cur)
+            down = self._downtime_in(host, ts[:-1], ts[1:])
+            act_gaps = np.maximum(raw_gaps - down, 0.0)
+            obs_gaps = act_gaps[~((down > 0) & (act_gaps <= 0.0))]
+        else:
+            act_gaps = obs_gaps = raw_gaps
+        duration = float(act_gaps.sum())
         rules = [x.rule_id for x in w]
         cnt = collections.Counter(rules)
         distinct_rules = len(cnt)
@@ -251,9 +330,11 @@ class WindowBuilder:
             xm = (n - 1) / 2.0
             sxx = n * (n * n - 1) / 12.0
             trend = float(((np.arange(n) - xm) * lv).sum() / sxx)
-            gaps = np.diff(ts)
-            gaps = np.maximum(gaps, INTER_ARRIVAL_FLOOR_S)
-            ia_mean, ia_min = float(gaps.mean()), float(gaps.min())
+            if len(obs_gaps):
+                gaps = np.maximum(obs_gaps, INTER_ARRIVAL_FLOOR_S)
+                ia_mean, ia_min = float(gaps.mean()), float(gaps.min())
+            else:                       # only gap was the host being off
+                ia_mean, ia_min = 0.0, 0.0
         else:
             trend, ia_mean, ia_min = 0.0, 0.0, 0.0
 

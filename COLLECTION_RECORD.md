@@ -504,6 +504,20 @@ the artifact protocol §2.2 exists to remove. A working implementation exists as
 into the reference feature map. **This must be ported before any modelling**, or
 every timing feature carries the gap artifact.
 
+   **DONE 2026-09-30.** Ported into `tools/window_builder.py` as an **online,
+   causal** correction, where `ActiveWindowBuilder` was batch-only: a gap over
+   `G = 1800 s` in the host's global stream is recorded as downtime when the next
+   alert arrives, and subtracted from every window gap. Liveness is taken from
+   every alert, compliance included, so a compliance scan cannot manufacture
+   downtime. One refinement over the protocol's literal formula: a gap that is
+   *entirely* downtime is dropped from the inter-arrival statistics, not counted
+   as 0 s. Counted, it hit the 0.001 s floor and made every morning host window
+   look like it held a simultaneous pair. Tests: `tools/test_active_time.py`, which
+   covers matching the gate's batch intervals, causality, bit-identical wall-clock
+   behaviour when disabled, and only timing features changing. The two frozen
+   simulation studies are pinned to `downtime_gap_s=None` so their recorded results
+   still reproduce.
+
 **4. C: free fell 63.9 → 40.2 GB in two days.** Collection is not the cause —
 the whole corpus is 48 MB and the indexer is a few hundred MB at most. Something
 else consumed roughly 23 GB. Not urgent at 40 GB, but at that rate the 25 GB

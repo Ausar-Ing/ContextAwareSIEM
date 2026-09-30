@@ -291,9 +291,12 @@ def main():
         rep.setdefault("entity_resolution_pct", {})[t] = round(pct, 2)
 
     # --- windows and features ----------------------------------------------
+    # Every alert goes in, not only admitted ones: the builder's active-time
+    # correction needs to see compliance alerts too, as proof the host was on.
+    # push() drops inadmissible alerts from the windows itself.
     wb = WindowBuilder(learn_rules=True)
     X, types = [], []
-    for a in admitted:
+    for a in alerts:
         for e, f, scoreable in wb.push(a):
             if scoreable:
                 X.append(f)
@@ -304,6 +307,14 @@ def main():
     print("\n" + "=" * 72)
     print("WINDOW FEATURES  (constant = consumes split budget, contributes nothing)")
     print("=" * 72)
+    if wb.G is not None:
+        print(f"  active-time correction ON: G = {wb.G:.0f} s, "
+              f"{len(wb.downtime_log)} host-off interval(s) subtracted "
+              f"(uptime block above found {len(down)} at {thresh:.0f} s)")
+        rep["active_time_G_s"] = wb.G
+        rep["active_time_intervals"] = len(wb.downtime_log)
+    else:
+        print("  active-time correction OFF: timing features are wall-clock")
     if len(X) == 0:
         print("  no scoreable windows yet")
     else:
