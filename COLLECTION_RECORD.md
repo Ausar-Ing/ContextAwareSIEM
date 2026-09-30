@@ -488,7 +488,17 @@ measurable. So the honest statement is "it contributes nothing even when
 populated", not "it is constant and wastes budget". **Re-test both ways on the
 frozen corpus at T1**; it is an analysis-time choice and costs one extra fit.
 
-**2. The MITRE trio is confirmed dead on real data.** `distinct_technique_count`,
+**2. ⚠️ WITHDRAWN 2026-09-30 — this finding was a parser bug, not a property of
+the data.** `parse_wazuh()` read only `rule.mitre_techniques` / `rule.mitre_tactics`,
+which is the shape SCA checks use. Detection rules, which are everything the admission
+filter admits, write `rule.mitre = {id, tactic, technique}` with tactic *names*.
+So no admitted alert ever carried a tag as far as the pipeline could see. The
+lab's own A.4 table records rule 67028 with MITRE T1484, firing on every sign-in,
+which is what exposed the contradiction. Fixed and tested (`tools/test_parse_wazuh.py`).
+On the September sample, 4 of 19 admitted alerts carry tags. The original text
+follows for the record.
+
+~~**2. The MITRE trio is confirmed dead on real data.**~~ `distinct_technique_count`,
 `distinct_tactic_count` and `tactic_progression` are identically zero across
 9,092 alerts, 49 distinct rule ids and 2.3 days. On the September sample this
 could be dismissed as a small-sample artifact; it cannot now. Rule 67027
@@ -629,7 +639,7 @@ artifact is still in every timing feature because the active-time correction is
 |---|---|---|---|
 | **Which agents belong in the corpus** | Agent 000 is the WSL manager; its stream is PAM 5501 "Login session opened" from the researcher's own `sudo`, plus an unrelated second project's build activity (rust, circom, liboqs, openfhe) on the same WSL instance. That volume tracks how much lab work is happening — heavy during Phase 2 implementation, light during Phase 3 — a systematic difference between baseline and evaluation, which `system_model.md` §6.2 forbids. Counting it **inflates the gate in the project's favour**. | **Windows agent only, id=001.** Agent 000 excluded. Pass `--agent 001` to every `baseline_check.py` run. | 2026-09-12 |
 | ~~Keep or drop~~ **DROP `night_fraction`** | **Decided 2026-09-11** on measurement (`night_coverage_note.md` §4.1): −0.019 AUC on a duty-cycled baseline, +0.002 at full night coverage. Earns its place in neither regime. Feature set becomes 14. | dropped | 2026-09-11 |
-| Keep or drop features 8–10 (MITRE) | **DROP.** Identically zero across 24,289 alerts and 55 distinct rule ids over 6.2 days — no longer dismissible as a small-sample artifact. Rule 67027 dominates and carries no MITRE tags. Report that the admission filter plus this rule set leave no MITRE signal on this testbed. | 2026-09-18 |
+| Keep or drop features 8–10 (MITRE) | **REOPENED 2026-09-30.** The 18 Sep DROP rested on a parser bug (D.0 item 2): nested `rule.mitre` was never read. Re-measure on the real corpus with the fixed parser before deciding. Original entry follows. ~~**DROP.** Identically zero across 24,289 alerts and 55 distinct rule ids over 6.2 days — no longer dismissible as a small-sample artifact. Rule 67027 dominates and carries no MITRE tags. Report that the admission filter plus this rule set leave no MITRE signal on this testbed. | 2026-09-18 |
 | Target 8,000 windows or floor 4,000 | Phase 1 gate | **Target 8,000.** Projection reaches it ~2 Oct, a fortnight inside the freeze. No need to settle for the floor or report variance bands. | 2026-09-18 |
 | Per-entity-type models, or host only | Was `user` 47%, `srcip` 0% on the agent-000 sample. On the live endpoint stream `user` initially read **0%** — `parse_wazuh` only knew the Linux/PAM field names (`data.srcuser`/`dstuser`) and Windows eventchannel puts identity in `data.win.eventdata.*`. Fixed 2026-09-12; `user` now resolves at **79.8%**. `srcip` stays at 0% and that is not a bug — only 2 `ipAddress` fields in 3,000 alerts, because a standalone desktop has no network logons. | **Host + user. `srcip` declared unavailable on this deployment and reported as a stated limitation.** | 2026-09-12 |
 | Downtime threshold `G` | Detector's derived threshold (20× median awake gap, floor 1800 s) resolved to 0.5 h and cleanly separated 7 routine nightly gaps from awake activity across 6.2 days. **Keep as specified.** | 2026-09-18 |

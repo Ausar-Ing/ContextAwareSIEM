@@ -51,6 +51,38 @@ TACTIC_ORDINAL = {
     "TA0040": 14,  # Impact
 }
 
+# Wazuh writes MITRE in TWO shapes, and a parser must read both:
+#   detection rules (everything the admission filter lets through):
+#       rule.mitre = {"id": ["T1078"], "tactic": ["Defense Evasion", ...],
+#                     "technique": ["Valid Accounts"]}        <- tactic NAMES
+#   SCA / compliance checks:
+#       rule.mitre_techniques = ["T1005"], rule.mitre_tactics = ["TA0005"]  <- IDs
+# Until 2026-09-30 only the second shape was read, so no admitted alert ever
+# carried a technique or tactic and features 8-10 were identically zero for a
+# reason that had nothing to do with the data. Tactics are normalised to TA ids
+# so the two shapes count alike and TACTIC_ORDINAL applies to both.
+TACTIC_NAME_TO_ID = {
+    "reconnaissance": "TA0043", "resource development": "TA0042",
+    "initial access": "TA0001", "execution": "TA0002", "persistence": "TA0003",
+    "privilege escalation": "TA0004", "defense evasion": "TA0005",
+    "credential access": "TA0006", "discovery": "TA0007",
+    "lateral movement": "TA0008", "collection": "TA0009",
+    "command and control": "TA0011", "exfiltration": "TA0010", "impact": "TA0040",
+}
+
+
+def _mitre(rule: dict):
+    """(techniques, tactics) from either Wazuh shape; tactics as TA ids."""
+    m = rule.get("mitre") or {}
+    tech = list(m.get("id") or ()) + list(rule.get("mitre_techniques") or ())
+    tac = []
+    for t in list(m.get("tactic") or ()) + list(rule.get("mitre_tactics") or ()):
+        t = str(t).strip()
+        tac.append(t if t.upper().startswith("TA") else TACTIC_NAME_TO_ID.get(t.casefold(), t))
+    # de-duplicate, keep order: one alert's tags are one piece of evidence
+    return tuple(dict.fromkeys(tech)), tuple(dict.fromkeys(tac))
+
+
 FEATURE_NAMES = [
     "window_size",
     "window_duration_s",
@@ -199,8 +231,8 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
         rule_id=str(rule["id"]),
         rule_level=int(rule["level"]),
         rule_groups=tuple(rule.get("groups", ())),
-        techniques=tuple(rule.get("mitre_techniques", ()) or ()),
-        tactics=tuple(rule.get("mitre_tactics", ()) or ()),
+        techniques=_mitre(rule)[0],
+        tactics=_mitre(rule)[1],
         entities=tuple(ents),
         agent_id=aid,
     )
