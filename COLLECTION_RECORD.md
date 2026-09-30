@@ -633,13 +633,66 @@ exactly constant (drop confirmed, D.1). `night_fraction` has 31 distinct values
 artifact is still in every timing feature because the active-time correction is
 **still not ported** (D.0 item 3). That remains the blocker before any modelling.
 
+### MITRE re-measurement with the fixed parser — 30 Sep 2026, 16:48
+
+Same wk3 corpus (SHA-256 `1dac5bbb…`), `parse_wazuh` fixed (D.0 item 2).
+
+**5,847 of 61,970 admitted alerts (9.4%) carry MITRE tags.** Features 8–10 are
+alive: `distinct_technique_count` 0–9 (10 values), `distinct_tactic_count` 0–8
+(9 values), `tactic_progression` −1…+1 (1,380 values). No feature is constant.
+
+The top tagged rules on this **benign** baseline, with their counts:
+
+| Count | Rule | Technique | Tactics |
+|---|---|---|---|
+| 1,039 | 92217 | T1570 Lateral Tool Transfer | Lateral Movement |
+| 577 | 92307 | T1543.003 | Persistence, Privilege Escalation |
+| 485 | 750 | T1565.001, T1112 | Impact, Defense Evasion |
+| 471 | 752 | T1112 | Defense Evasion |
+| 400 | 92213 | T1105 Ingress Tool Transfer | Command and Control |
+| 324 | 92052 | T1059.003 | Execution |
+| 320 | 92205 | T1105 | Command and Control |
+| 317 | 92219 | T1574.001/.002 | Persistence, Privilege Escalation, Defense Evasion |
+| 252 | 92021 | T1070.004 | Defense Evasion |
+| 252 | 92066 | T1059.001 | Execution |
+| 234 | 594 | T1565.001, T1112 | Impact, Defense Evasion |
+| 232 | 67028 | T1484 | Defense Evasion, Privilege Escalation |
+| 214 | 92031 | T1087 | Discovery |
+| 212 | 92200 | T1059, T1105 | Execution, Command and Control |
+| 147 | 92058 | T1546.011 | Privilege Escalation, Persistence |
+
+**What this establishes:**
+
+1. **On a developer workstation, MITRE tags are common in benign activity and
+   span most of the kill chain.** Lateral Movement is the single most frequent
+   tag, on a standalone desktop that has no lateral anything. The presence of a
+   tag, or of several tactics, does not separate attack from normal. That is an
+   argument *for* this project's premise: learned context over tag-based rules.
+   It is worth a paragraph in the report.
+2. **Features 8–10 go back into the model input.** They vary on benign data, so
+   the forest can learn what normal tag diversity looks like. Whether they
+   contribute is for the attribution and the Session A analysis to show, not to be
+   assumed.
+3. **Withdrawn: the idea (30 Sep, this session) of treating MITRE presence as
+   strong evidence in Component 7.** It rested on the parser bug. Benign alerts
+   carry tags 9.4% of the time.
+4. **The escalation gate's condition 2 (≥ 2 tactics, system_model §4.4.3) is
+   weak on this testbed.** Rules 92307, 92219, 67028 and 92058 each carry 2–3
+   tactics, so one benign alert satisfies it. Measure how often benign entities
+   pass conditions 2 and 3 on the frozen corpus before relying on the gate.
+5. **Registry FIM rules 750, 752 and 594 (1,190 alerts, ~2%) need a look.**
+   Wazuh checks the Windows registry on the scheduled syscheck scan, not in real
+   time. If that holds here, these alerts carry *scan* time, not change time, and
+   arrive in bursts at boot. That is the same timing objection that applied to SCA.
+   Check the burst structure before deciding on admission.
+
 ## D.1 Decisions the gate forces (record the answer and the date)
 
 | Decision | Driven by | Answer | Date |
 |---|---|---|---|
 | **Which agents belong in the corpus** | Agent 000 is the WSL manager; its stream is PAM 5501 "Login session opened" from the researcher's own `sudo`, plus an unrelated second project's build activity (rust, circom, liboqs, openfhe) on the same WSL instance. That volume tracks how much lab work is happening — heavy during Phase 2 implementation, light during Phase 3 — a systematic difference between baseline and evaluation, which `system_model.md` §6.2 forbids. Counting it **inflates the gate in the project's favour**. | **Windows agent only, id=001.** Agent 000 excluded. Pass `--agent 001` to every `baseline_check.py` run. | 2026-09-12 |
 | ~~Keep or drop~~ **DROP `night_fraction`** | **Decided 2026-09-11** on measurement (`night_coverage_note.md` §4.1): −0.019 AUC on a duty-cycled baseline, +0.002 at full night coverage. Earns its place in neither regime. Feature set becomes 14. | dropped | 2026-09-11 |
-| Keep or drop features 8–10 (MITRE) | **REOPENED 2026-09-30.** The 18 Sep DROP rested on a parser bug (D.0 item 2): nested `rule.mitre` was never read. Re-measure on the real corpus with the fixed parser before deciding. Original entry follows. ~~**DROP.** Identically zero across 24,289 alerts and 55 distinct rule ids over 6.2 days — no longer dismissible as a small-sample artifact. Rule 67027 dominates and carries no MITRE tags. Report that the admission filter plus this rule set leave no MITRE signal on this testbed. | 2026-09-18 |
+| Keep or drop features 8–10 (MITRE) | **KEEP (2026-09-30, measured).** 9.4% of admitted alerts carry tags; all three features vary (see the MITRE re-measurement above). **Superseded:** REOPENED 2026-09-30. The 18 Sep DROP rested on a parser bug (D.0 item 2): nested `rule.mitre` was never read. Re-measure on the real corpus with the fixed parser before deciding. Original entry follows. ~~**DROP.** Identically zero across 24,289 alerts and 55 distinct rule ids over 6.2 days — no longer dismissible as a small-sample artifact. Rule 67027 dominates and carries no MITRE tags. Report that the admission filter plus this rule set leave no MITRE signal on this testbed. | 2026-09-18 |
 | Target 8,000 windows or floor 4,000 | Phase 1 gate | **Target 8,000.** Projection reaches it ~2 Oct, a fortnight inside the freeze. No need to settle for the floor or report variance bands. | 2026-09-18 |
 | Per-entity-type models, or host only | Was `user` 47%, `srcip` 0% on the agent-000 sample. On the live endpoint stream `user` initially read **0%** — `parse_wazuh` only knew the Linux/PAM field names (`data.srcuser`/`dstuser`) and Windows eventchannel puts identity in `data.win.eventdata.*`. Fixed 2026-09-12; `user` now resolves at **79.8%**. `srcip` stays at 0% and that is not a bug — only 2 `ipAddress` fields in 3,000 alerts, because a standalone desktop has no network logons. | **Host + user. `srcip` declared unavailable on this deployment and reported as a stated limitation.** | 2026-09-12 |
 | Downtime threshold `G` | Detector's derived threshold (20× median awake gap, floor 1800 s) resolved to 0.5 h and cleanly separated 7 routine nightly gaps from awake activity across 6.2 days. **Keep as specified.** | 2026-09-18 |
