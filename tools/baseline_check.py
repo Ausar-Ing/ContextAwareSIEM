@@ -223,7 +223,9 @@ def main():
     print(f"  total alerts            {len(alerts)}")
     print(f"  admitted (behavioural)  {len(admitted)}  "
           f"({100*len(admitted)/len(alerts):.1f}%)")
-    print(f"  excluded (compliance)   {len(alerts)-len(admitted)}")
+    n_scan = sum(1 for a in alerts if a.scan_timed)
+    print(f"  excluded at admission   {len(alerts)-len(admitted)}  "
+          f"(compliance {len(alerts)-len(admitted)-n_scan}, scheduled-scan FIM {n_scan})")
     print(f"  distinct rule ids       {len(set(a.rule_id for a in admitted))}")
     rep.update(first_alert=t0.isoformat(timespec="seconds"),
                last_alert=t1.isoformat(timespec="seconds"),
@@ -233,7 +235,8 @@ def main():
                downtime_intervals=len(down),
                downtime_gap_threshold_s=round(thresh, 1),
                total_alerts=len(alerts), admitted_alerts=len(admitted),
-               excluded_compliance=len(alerts) - len(admitted),
+               excluded_at_admission=len(alerts) - len(admitted),
+               excluded_scan_timed_fim=sum(1 for a in alerts if a.scan_timed),
                distinct_rule_ids=len(set(a.rule_id for a in admitted)))
     print(f"  agents                  {len(set(e[1] for a in alerts for e in a.entities if e[0]=='host'))}")
 
@@ -352,6 +355,14 @@ def main():
     print(f"  host windows so far              {host_windows:8d}")
     print(f"  training pool at stride {STRIDE}        {pool:8d}   "
           f"(target {TARGET_WINDOWS}, floor {FLOOR_WINDOWS})")
+    # One model per entity type (system_model 4.3.2): every type needs its own
+    # pool, and the verdict below only tracks host. Print the others so a thin
+    # type is visible instead of hidden behind a healthy host number.
+    for et in sorted(set(types.tolist()) - {"host"}) if len(X) else []:
+        p_et = int((types == et).sum()) // STRIDE
+        flag = "" if p_et >= FLOOR_WINDOWS else "   <- BELOW FLOOR for its own model"
+        print(f"  {et} pool at stride {STRIDE}{'':>{max(0,8-len(et))}}{p_et:8d}{flag}")
+        rep.setdefault("training_pool_by_type", {})[et] = p_et
 
     rep.update(admitted_per_awake_hour=round(per_awake_h, 2),
                admitted_per_calendar_day=round(len(admitted) / days_elapsed, 1),
