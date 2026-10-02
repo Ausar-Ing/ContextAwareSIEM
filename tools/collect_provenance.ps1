@@ -7,18 +7,24 @@
 #
 # Everything captured here is something you cannot reconstruct in November.
 
-param([string]$Label = "adhoc")
+# Inside the baseline VM (Part G), run it from the media CD with:
+#     .\tools\collect_provenance.ps1 -Label VM_T0 -SysmonDir C:\Tools\Sysmon -OutDir C:\Tools\vm_out
+# (defaults are unchanged for the host)
+
+param([string]$Label = "adhoc",
+      [string]$SysmonDir = "C:\Personal\UniStuff\Project\ContextAwareSIEM\tools\sysmon",
+      [string]$OutDir = "")
 
 $ErrorActionPreference = "Continue"
 $root = Split-Path -Parent $PSScriptRoot
-$dir  = Join-Path $root "provenance\raw"
+$dir  = if ($OutDir) { $OutDir } else { Join-Path $root "provenance\raw" }
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
 $out  = Join-Path $dir ("{0}_endpoint_{1}.txt" -f $Label, (Get-Date -Format "yyyyMMddTHHmmss"))
 
 function S($t) { "`n==================== $t ====================" }
 
 $agentDir = "C:\Program Files (x86)\ossec-agent"
-$sysmonDir = "C:\Personal\UniStuff\Project\ContextAwareSIEM\tools\sysmon"
+$sysmonDir = $SysmonDir
 
 $(
 S "SNAPSHOT"

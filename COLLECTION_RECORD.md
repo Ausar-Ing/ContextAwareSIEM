@@ -216,9 +216,32 @@ Paste the `auditpol /get` output verbatim from the endpoint snapshot. Subcategor
 enabled per protocol: Logon (S/F), Logoff (S), Special Logon (S), Process
 Creation (S).
 
+Transcribed 2026-09-30 from `provenance/raw/T0_endpoint_20260912T121433.txt`
+(the T0 snapshot captured Logon/Logoff and Process Creation only):
+
 ```
-(paste)
+Logon/Logoff
+  Logon                                   Success and Failure
+  Logoff                                  Success
+  Account Lockout                         Success
+  IPsec Main Mode                         No Auditing
+  IPsec Quick Mode                        No Auditing
+  IPsec Extended Mode                     No Auditing
+  Special Logon                           Success
+  Other Logon/Logoff Events               No Auditing
+  Network Policy Server                   Success and Failure
+  User / Device Claims                    No Auditing
+  Group Membership                        No Auditing
+  Access Rights                           No Auditing
+Detailed Tracking
+  Process Creation                        Success
+ProcessCreationIncludeCmdLine_Enabled  = (not set -> disabled)
 ```
+
+Full `auditpol /get /category:*` for every category, taken 2026-09-30:
+`provenance/raw/host_auditpol_full.txt`. It is identical to the above where they
+overlap, with Windows defaults elsewhere. It is the reference the VM is checked
+against (G.1).
 
 ## A.6 Admission policy in force
 
@@ -322,6 +345,8 @@ options and you must pick one explicitly:
 | 1 | **2026-09-12 12:14 +07:00** | Audit policy enabled (Logon S+F, Logoff S, Special Logon S, Process Creation S); command-line capture confirmed off. **T0 — start of collection.** | Protocol §3.2. Without it `user`/`srcip` never resolve and the behavioural rate stays near zero. | **starts segment 1** | `T0_manager_20260912T131341.txt`, `T0_endpoint_20260912T121433.txt` |
 | 2 | **2026-09-27 ~11:46 +07:00** (last `001` alert 11:46:14; `002` begins the same day) | Windows endpoint **re-enrolled**: now agent `002` "TestRun1" instead of `001` "windows11-host". `001` shows Disconnected on the manager and is left registered as part of the record. | Not a planned change. Cause not yet recorded — fill in. | **Identity only, NOT a segment boundary.** Verified 2026-09-30: agent `ossec.conf` SHA-256 still `278DBA62…` (T0 value), agent version still v4.14.7, same OS. Daily counts show a clean handover (27 Sep: 322 from `001`, 2,659 from `002`; no overlap, no missing day). Handled at analysis time: `window_builder.HOST_ALIASES = {"002": "001"}` keeps one host entity; `weekly_check.sh` now keeps `--agent 001,002`. Found only because the wk3 corpus ended 3.2 days before the reading — the gate had been silently discarding `002` as "other agents". | none needed — config hashes unchanged |
 | 3 | | | | | |
+
+> **2026-10-02, probable cause for B #2 (found while preparing the VM's agent config):** the host agent's `ossec.conf` (SHA-256 `278DBA62…`, unchanged since T0) contains `<enrollment><enabled>yes</enabled><agent_name>TestRun1</agent_name></enrollment>`. Its mtime is 17 Aug, which predates T0. The agent auto-enrolls with that name whenever it finds no valid key. So the 27 Sep re-enrollment is consistent with the agent losing or rejecting its `client.keys` and re-enrolling under the name in its config, not with a config change. The config hash therefore stayed at its T0 value, which matches what B #2 records. Not verified further: the agent's `ossec.log` around 27 Sep 11:46 would confirm it.
 T0 = 12:14 GMT+7
 **Planned, and therefore not a surprise:** nothing. Phase 1 and Phase 2 are
 change-free by design. If you find yourself wanting to tune something, that is
@@ -357,7 +382,11 @@ sideloaded software, remote-access sessions.
 
 | Date | What | Rough duration | Notes |
 |---|---|---|---|
-| | | | |
+| 2026-09-30 18:14:24 +07 | **Host: enabled the Windows optional feature `HypervisorPlatform`** (`Enable-WindowsOptionalFeature -NoRestart`; `RestartNeeded: True`). Needed for VirtualBox 7.2 to run beside WSL2 (VM baseline, Part G). | completes at the next boot (routine nightly shutdown, 30 Sep → 1 Oct) | OS feature install, not a Part B item: no change to the audit policy, Sysmon, agent/manager config, ruleset or collected channels. Expect a one-off burst at the next boot (servicing, driver/service activity in Sysmon). After that boot, confirm `002` Active with `agent_control -l`. |
+| 2026-10-01 13:59 +07 | Check after the boot: `HypervisorPlatform` **Enabled**; agent `002` **Active** (`001` Disconnected as before). | — | Feature install completed on the routine 30 Sep → 1 Oct shutdown/boot; no deliberate outage. |
+| 2026-10-01 14:01:42 +07 | **Host: Oracle VirtualBox upgraded in place, 7.2.6r172322 → 7.2.20r175154** (default path `C:\Program Files\Oracle\VirtualBox`; no extension pack). Done before the VM was created. | ~3 min (done by 14:05) | Reinstalls VirtualBox host drivers and services (expect Sysmon driver/service activity around 14:02). Software install, not a Part B item. **This version is frozen from VM T0 to the end of Session B** (Part G row 2). |
+| 2026-10-01 ~14:20 +07 | **Host starts running a VirtualBox VM** (first boot of the VM build). From here on the host's own stream contains VirtualBox process activity (`VirtualBoxVM.exe`, `VBoxSVC`, …) whenever the VM runs. Build attempt 1 (14:20–18:20) used VirtualBox's unattended install by mistake, hung on a black screen and was **deleted 18:24**. Rebuilt from scratch with unattended install skipped. | build work, pre-VM-T0 | Benign software use, not contamination; recorded so the host's before/after can be compared. Nothing from attempt 1 counts toward the VM baseline: all of it is before VM T0. |
+| 2026-10-02 21:04:58 +07 | **Host: scheduled task `Start CASIEM VM` registered**: at logon of the host user, +1 min delay, runs `VBoxManage startvm vm-win11-target --type headless`; principal = the host user, LogonType Interactive, **RunLevel Limited** (non-elevated, same as every other VirtualBox command used); 5 min execution limit. | permanent through Session B | Starts the baseline VM on every host boot (auto-sign-in → logon trigger). Host software configuration, not a Part B item. Paired with `tools/vm_safe_shutdown.ps1` at shutdown (G.1 row 11). |
 
 ## C.3 Uptime continuity
 
@@ -815,6 +844,135 @@ number behind it.
 | Frozen corpus SHA-256 (corpus itself withheld) | E |
 | Seeds, splits, toolchain versions | E, A.3 |
 | `git tag baseline-frozen` | repo |
+
+---
+
+# PART G — VM baseline
+
+Opened 2026-09-30. Scope and reasoning: `VM_BASELINE_HANDOFF.md` (project doc).
+The VM is a second machine with its own generating process. Its alerts never
+enter the host corpus (`weekly_check.sh` keeps `--agent 001,002`;
+`window_builder.HOST_ALIASES` is not extended). **Every choice in G.1 holds
+unchanged from VM T0 through Sessions A and B.** A difference between the
+baseline and the sessions is a confound, not a detail.
+
+## G.1 Decisions (handoff §4)
+
+| # | Decision | Answer | Reason | Date |
+|---|---|---|---|---|
+| 1 | Guest OS | **Windows 11 Enterprise 90-day evaluation, version 26H2 (build 26300), x64, English (US).** Time zone set to SE Asia Standard Time (UTC+7) to match the host and `SITE_UTC_OFFSET_H`. | Shares the host's Windows rules and decoders, so VM windows are comparable. **Known host/VM difference:** the host is 25H2 (26200). The Evaluation Center now offers only 26H2 (plus LTSC 2024, rejected: 24H2 base, no Store or inbox-app update activity). Microsoft describes 26H2 as an enablement package on the same source as 25H2 with extra features switched on, and both receive the same monthly cumulative update. Evaluation expires about 90 days after install (≈ end of December), after the November deadline. | 2026-09-30 |
+| 2 | Hypervisor | **Oracle VirtualBox 7.2.x**, already installed on the host (version to be recorded in G.2; latest is 7.2.20). Runs through the Windows Hypervisor Platform alongside WSL2. | Its NAT can reach the host's loopback (row 5), which avoids every host and manager network change. VMware's NAT cannot. **The VirtualBox version is frozen from VM T0 to the end of Session B;** any upgrade is a G.4 boundary. | 2026-09-30 |
+| 3 | VM disk location | **D: (SSD; 931.5 GB, 158.6 GB free on 30 Sep), 64 GB dynamically allocated VDI.** | Keeps VM failure off C:, which holds the WSL disk and the indexer (C: 56.2 GB free on 30 Sep, act-now threshold 25 GB). A full D: stops only the VM. 64 GB, not the handoff's 40 GB: Windows 11 setup requires 64 GB. Run guest component cleanup before the snapshot; the snapshot's differencing disk grows on top of the base. | 2026-09-30 |
+| 4 | Network | **VirtualBox NAT** (internet, so Windows Update and Defender updates run). VM-side Windows Firewall outbound: allow `10.0.2.2` TCP 1514/1515 (manager), `10.0.2.3` port 53 (NAT DNS), DHCP; block the rest of 10/8, 172.16/12, 192.168/16, 169.254/16. | Windows Update is a required behavioural mode. **Do not block all of 10/8:** that kills NAT DNS and silently removes the update mode. | 2026-09-30 |
+| 5 | How the VM reaches the manager | **VirtualBox NAT loopback:** VM → `10.0.2.2:1514/1515` → host `127.0.0.1` → WSL localhost forwarding → manager. Needs `VBoxManage modifyvm <vm> --nat-localhostreachable1 on` (off by default since VirtualBox 7.0). | No `wsl --shutdown`, no portproxy boot task, no host firewall rules, no manager config edit, so nothing touches the host corpus. **Precondition verified 2026-09-30** (read-only): manager `<auth>` has `use_source_ip no`, `use_password no`, no `<force>` override; agents `001`/`002` are registered with IP `any`. The VM's connections share the host agent's source address, but with `use_source_ip no` that cannot collide. **Accepted risk (2026-09-30):** isolation is enforced only inside the VM. Windows Firewall does not filter loopback, so anything run in the VM can reach every host-loopback service (dashboard 443, indexer 9200, API 55000, 1514/1515, anything else on the host's localhost), and `use_password no` lets it enroll agents. Attacks are researcher-run, so accepted. | 2026-09-30 |
+| 6 | Windows Defender | **On (default real-time and cloud protection) plus a folder exclusion for `C:\AtomicRedTeam`, set before VM T0.** Held through both sessions. | Realistic, and it keeps Defender's own scan and update activity in the baseline. Defender's detections go to the Windows Defender/Operational channel, which is **not collected** (same four channels as the host), so quarantines do not create alerts directly. **Open for the manifest:** atomics that tamper with Defender (T1562.001) change state that carries into Session B. Exclude them or run them last, and decide when the manifest is written. | 2026-09-30 |
+| 7 | Emulation tooling install | **After the VM baseline ends and before Session A;** the install is treated as burn-in. No atomic runs before the baseline freezes. | Installing it produces alerts; executing any atomic earlier contaminates the baseline. | 2026-09-30 |
+| 8 | Agent name | **`vm-win11-target`** | Unambiguous. Cannot collide with `windows11-host` (`001`) or `TestRun1` (`002`) under name-based force-replacement. | 2026-09-30 |
+| 9 | VM resources | **4 GB RAM, 2 vCPU** (provisional until the WSL memory reading). | Host has 15.9 GB. No `.wslconfig`, so WSL may take up to ~50%. 4 GB is the Windows 11 minimum; 6 GB would starve the host. | 2026-09-30 |
+| 10 | Snapshot use | **Disaster recovery only, never a between-session reset.** | Reverting an enrolled agent rolls back its message counters, and the manager rejects it (`Duplicate error`). Recovering from that needs a manager-side change, which is a Part B entry. | 2026-09-30 |
+| 11 | VM at host shutdown | **Pending test:** leave the VM running through a normal host shutdown, then check the guest System log for 41/6008. | A headless VM killed at host shutdown is a nightly hard power-off: every boot looks like crash recovery, with corruption risk during updates. Whatever behaviour results must be identical in the sessions. | pending |
+
+**G.1 notes, 2026-09-30 18:15 (host readings, read-only):**
+- **Row 2:** VirtualBox **7.2.6r172322** is installed (released 20 Jan 2026, so it predates T0), with no extension packs. Upgrade to 7.2.20 **before** the VM is created and log it in C.2. That version is then frozen. The `HypervisorPlatform` optional feature is **Disabled**; VirtualBox cannot run beside WSL2 until it is enabled. Enabling it takes effect at the next boot, so a routine nightly shutdown carries it at no extra outage. Log it in C.2.
+- **Row 9:** WSL sees 7.7 GiB total (the default 50% cap, no `.wslconfig`): 4.1 GiB used, 3.6 GiB available, swap unused. Host 15.9 GB − WSL up to 7.7 − VM 4 leaves ≈ 4 GB for Windows itself. That is workable but tight. Measure host available memory with the VM running before T0. If a WSL cap is ever needed, a `.wslconfig` edit takes effect at the next nightly shutdown, so it needs no deliberate outage (still log it).
+- **Row 11 / schedule:** the build moved from 30 Sep to 1 Oct at the researcher's request. The shutdown test runs on the night of 1 Oct. VM T0 target is 2–3 Oct; the hard latest is ~8 Oct (Patch Tuesday 13 Oct must fall inside the VM baseline, after the 48 h reading).
+
+**G.1 notes, 2026-10-01 19:50 (build findings):**
+- **Row 9 changed: 1 vCPU, not 2.** With 2 vCPUs, every restart started by the guest hung the VM in firmware. It stopped at the step where the second CPU is started, the disk went idle and the screen stayed blank. This happened on both build attempts, after Windows Setup's first restart. A cold power-on boots normally. With `--cpus 1` the install continued from disk and a Start-menu **Restart reached the sign-in screen**. Cause: assumed to be a VirtualBox 7.2.20 problem with restarts on the Windows Hypervisor Platform when the VM has several CPUs; not investigated further. This matters for the baseline: Windows Update and the workload restart the guest, so a hang on restart would remove the reboot behaviour and stop the VM. 1 vCPU is below Windows 11's stated 2-core minimum. Setup's check had already passed and Windows runs; recorded as a known deviation. Later in-guest restarts (Guest Additions, updates) count as further confirmation; log any hang in G.4.
+- **Unattended install must stay off.** In VirtualBox 7.2 the wizard's checkbox reads "Proceed with Unattended Installation" (older versions said "Skip…"). Attempt 1 had it on by mistake: a scripted install with its own account, and the setup screens were skipped. Attempt 2 (the VM in use) had it off. Choices made in Windows setup: local account via "Domain join instead"; all optional privacy settings off, diagnostic data "Required".
+- ISO: `26300.9457.260913-1737.26h2_ge_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso` (hash to G.2).
+
+**G.1 notes, 2026-10-02 16:45 (row 11, shutdown test: FAIL):** the VM was started headless at 20:22 on 1 Oct and the host was shut down from the Start menu at about 23:45. The guest System log on the next boot shows **41 (Kernel-Power, 16:39:20)** and **6008 ("previous system shutdown at 11:45:42 PM on 10/1/2026 was unexpected")**. Host-side `VBox.log.1`: `VBoxHeadless` received `WM_QUERYENDSESSION`/`WM_ENDSESSION`, began a **save-state** (`RUNNING → SUSPENDED → SAVING`), and the log ends there, so Windows terminated the process mid-save. No usable saved state was left; the next start was a cold boot of a guest that had been killed. **Consequence: with no mitigation, every routine host shutdown is a hard power-off of the guest.** VirtualBox's own Windows autostart service is ruled out as it stands: its documentation says it "cannot be installed for users with empty passwords", and the host account has no password, which A.7's auto-sign-in depends on. Mitigation: decision pending.
+
+**Row 11 decision, 2026-10-02 16:48: option A, a safe-shutdown script.** The researcher shuts the host down with `tools/vm_safe_shutdown.ps1` (taskbar shortcut) instead of Start → Shut down. The script presses the VM's ACPI power button, waits up to 300 s for `poweroff`, falls back to **save-state** (never a hard power-off) on timeout, appends a line to `provenance/raw/vm_shutdown_log.csv`, then runs `shutdown.exe /s /t 0`. No host configuration changes. Known ways it can fail: a forgotten Start-menu shutdown, a forced power-off after a freeze, or an unattended host restart. Each one shows up as a 41/6008 on the guest's next boot, so the clean/dirty ratio is **measured and reported** (count the guest's 6008 events against `acpi_clean` lines in the CSV), not assumed. Rejected: B (accept nightly hard power-offs: corruption risk, every boot looks like a crash) and C (host password plus Autologon, so VirtualBox's own autostart service could be used: changes the A.7 sign-in dependency mid-baseline). The script's SHA-256 goes in G.2; changing it after VM T0 is a G.4 entry.
+
+**Row 11 test, 2026-10-02 16:57: PASS.** `vm_safe_shutdown.ps1 -NoHostShutdown` (non-elevated) → `acpi_clean` after 15 s (first line of `vm_shutdown_log.csv`). The next boot of the guest showed no new 41/6008. Script SHA-256 `0f124718f60a944e72c9e8c56fc82e7531a66976202a3f21d51ed12697eaa993`.
+- 2026-10-02 17:15: confirmation prompt added (type Y; `-Yes` skips it) after the researcher flagged that a one-click taskbar shortcut is easy to hit by accident. Pre-VM-T0, so not a G.4 entry. New SHA-256 `0828f5eb5703a36e1f815286d8b1ab50a20957e6d6602a6098e249af4a6f2588`; this is the version for G.2.
+
+**G.1 notes, 2026-10-02 17:45 (row 4 refinement: DNS):** the first run of `tools/vm_configure.ps1` (17:31) confirmed that the audit policy is identical to the host in every category, command-line capture is off, Sysmon 15.21 is running with the host's binary and config hashes, Defender is on with tamper protection and the `C:\AtomicRedTeam` exclusion, and 1514/1515 are open while 443/9200/55000 are blocked. **DNS and internet failed.** VirtualBox NAT had handed the guest the host's router as its DNS server (`192.168.1.1`; the host also uses `192.168.0.254` on Wi-Fi), which the 192.168/16 rule blocks, plus the NAT's IPv6 relay `fd17:625c:f037:2::3`, which the fc00::/7 rule blocked. **Fix:** `modifyvm --natdnsproxy1 on`, so the guest always uses `10.0.2.3` whichever network the host is on, and the IPv6 ULA block now leaves out `fd17:625c:f037:2::3`. Both hold through the sessions. This is the silent loss of the update mode that row 4 warned about, caught before T0.
+**Correction, 18:08:** `--natdnsproxy1 on` was confirmed active (`.vbox` has `<DNS use-proxy="true"/>`; `VBox.log` has `DNSProxy = 1`), yet VirtualBox 7.2.20's DHCP **still** hands out the host's router (log: "Stored … as nameserver #0" = 192.168.1.1), even after `ipconfig /release /renew`. **Actual fix:** the guest's IPv4 DNS is pinned to the NAT relay with `Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses 10.0.2.3`. Verified: `Resolve-DnsName www.microsoft.com` works and TCP 443 to it is `True`, with the isolation rules unchanged. The DNS proxy stays on (harmless; recorded). The pinning is now part of `tools/vm_configure.ps1` (SHA-256 `5b7cdf4e…`), and the script's final hash goes in G.2.
+
+**G.1 notes, 2026-10-02 19:00 (handoff section 6, the benign workload, decided):** `tools/vm_benign_workload.ps1` v1.0 (SHA-256 `049dc835…09a67`, pre-T0). It runs as one loop started at VM boot by a scheduled task, as the VM admin account, rather than as a process launched every few minutes (that would add an artificial heartbeat to the alert stream). Shape: one `wluser` session 1–3 min after the loop starts (like a person sitting down after power-on), then every **20–40 min (uniform random)** one action drawn by weight:
+- `wluser` shell (PowerShell or cmd: listing, processes, ipconfig, copy and delete a temp file), 30%;
+- admin checks (`whoami /groups`, `net user`, local groups, services), 15%;
+- open and close a classic app (Notepad, Explorer, msinfo32, charmap), 14%;
+- web fetch (headless Edge or `Invoke-WebRequest` to example.com, wikipedia.org or learn.microsoft.com), 14%;
+- failed logon for `wluser` (wrong password), 3%;
+- `winget` install, then uninstall, of 7-Zip, at most once a day, 6%;
+- idle, 18%.
+
+Every action goes to `C:\ProgramData\CASIEM\workload\workload_log.csv` in the VM. **Why this mix:** it reproduces the *kinds* of benign but alert-looking activity measured on the host's own benign baseline (D, 30 Sep: 92031 account discovery, 92066 PowerShell, 92052 cmd from an unusual parent, 92213/92205 downloads, 92307 service creation, 92021 file deletion, 67028 special logon, logon/logoff, the odd failed logon). This makes VM-origin alerts of those kinds non-diagnostic of attack. **Literature:** scripted or performed benign activity alongside emulation is standard in our references: [1] Roy & Balde ("valid authentications, administrative executions, software updates, and directory browsing"), [11] Pomsathit (office apps, browsing, system utilities), [13] Chamkar et al. ("legitimate user activities … simultaneously conducted"), [17] Alboushy et al. (Selenium-driven benign traffic). **None of them reports a rate or schedule**, so the 20–40 min pace is this project's own choice, to be re-planned from the 48 h reading. **Accepted 2026-10-02:** `wluser` has a random password stored DPAPI-encrypted inside the VM only. The user-context mechanism (interactive `Start-Process -Credential`, or a batch-logon task as fallback) is fixed after the background test and recorded in G.2.
+
+**G.1 notes, 2026-10-02 20:15 (the workload's user-context mechanism, measured):**
+- Renamed before T0 at the researcher's request: VM admin account `Testin` → **`TestUser1`**; computer name `DESKTOP-IPCT3CV` → **`VM-WIN11-TARGET`** (matches the agent name; agent `003` id and name unchanged).
+- `credential` mode (`Start-Process -Credential` → interactive logon, type 2) **fails from the background task**. The type-2 logon happens (4624 seen), but every program started this way dies at start-up with `0xC0000142` because it gets no usable desktop. Measured for `powershell.exe` (v1.1, 19:23) and `cmd.exe` (v1.2, 19:44). It also leaves application-error events behind. It worked only when run interactively from the admin's own desktop. **Abandoned.**
+- `task` mode (fixed scheduled tasks that run as `wluser` → batch logon, **type 4**) first failed silently: Task Scheduler event 101/104, error `0x80070569` "logon type not granted". `wluser` lacked **"Log on as a batch job"** (`SeBatchLogonRight` = Administrators, Backup Operators, Performance Log Users only). **No 4625 is written for this failure**: Task Scheduler checks the right before attempting the logon. Fix: `-Setup` (v1.5) grants `SeBatchLogonRight` to `wluser` through `secedit`, a local security policy change inside the VM only, before T0.
+- **Consequence to report:** the workload user's logons are **type 4 (batch)**, not type 2 (interactive) as on the host. The VM's user-logon alerts therefore look like scheduled jobs, not a person at the keyboard. This is a known host/VM difference, absorbed by the per-host calibration.
+- PowerShell activity now comes from the admin (child processes of the loop); `wluser`'s activity is cmd and console tools only.
+- The Task Scheduler Operational log was enabled for this diagnosis (`wevtutil sl … /e:true`). It is not collected by the agent. It is returned to the Windows default (disabled) before T0, matching the host.
+
+**G.1 notes, 2026-10-02 21:03 (pre-T0 checks):** provenance snapshot `provenance/raw/VM_T0_endpoint_20261002T205905.txt` (clipboard copy; it ends inside the Sysmon section because of NUL characters in `Sysmon64.exe -c` output). It confirms utc_offset 7, build 26300/26H2, the audit policy, command-line capture off, agent v4.14.7 with `ossec.conf` `171A1265…`, the four eventchannels, and Sysmon 15.21 running. **VM Security log raised from the 20 MB default to 1 GB** (`wevtutil sl Security /ms:1073741824`) to match the host's A.8 #2 retention setting. This is retention, not generation. Manager side: `alerts.json` already holds **2,323** alerts from agent `003` (all pre-T0 build activity).
+
+**Audit-policy reference for the VM:** the host's full `auditpol /get
+/category:*` taken 2026-09-30 (`provenance/raw/host_auditpol_full.txt`). The VM
+must match it in **every** category, not only Logon/Logoff and Detailed
+Tracking. The host also has Windows defaults on: System Integrity S+F, Other
+System Events S+F, Security State Change S, Audit Policy Change S,
+Authentication Policy Change S, Security Group Management S, User Account
+Management S. The last two fire on the workload's local-account setup, which is
+another reason to create the account before VM T0.
+
+**Host-side rule arising from row 1:** the host must **not** take the optional
+26H2 feature update before the end of Session B. That is an OS change on the host
+mid-corpus. Keep "Get the latest updates as soon as they're available" off.
+
+## G.2 Environment fingerprint (fill at VM T0)
+
+| Component | Value |
+|---|---|
+| Guest OS edition / build | Windows 11 Enterprise Evaluation, 26H2, **26300.9457** (checked 2026-10-01 20:17 after Windows Update reported up to date; the optional preview update was deliberately not installed) |
+| ISO filename + SHA-256 | `26300.9457.260913-1737.26h2_ge_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso`, SHA-256 `BC3F24086EBADC94489066B5AD78089E2CF5C3491E90E790BB81A2B199C10E38` |
+| VirtualBox version | 7.2.20r175154, no extension pack; Guest Additions 7.2.20 installed in the guest |
+| VM name, RAM, vCPU, disk path + max size | `vm-win11-target`; 4096 MB; **1 vCPU** (G.1 notes 2026-10-01); `D:\VMs\vm-win11-target\vm-win11-target.vdi`, 64 GB dynamic; EFI + Secure Boot + TPM 2.0 (guest `tpmtool getdeviceinformation`: TPM present, 2026-10-01; `Get-Tpm` returned blank fields); graphics VBoxSVGA |
+| Agent id / name / version | **`003`** / `vm-win11-target` / v4.14.7. MSI `wazuh-agent-4.14.7-1.msi` (from packages.wazuh.com, SHA-256 `E967F36B75589D6210244FD58239C7021FA53A77C38D92315C3B3BD115002EDE`). Enrolled 2026-10-02 18:13:19 (`Valid key received`), connected to `10.0.2.2:1514` 18:13:39. Manager `agent_control -l` afterwards: `002` **still Active**, `003` Active, `001` Disconnected as before. Enrollment with no password (`use_password no`). |
+| Sysmon version / config SHA-256 | 15.21, service Running/Automatic; `Sysmon64.exe` `A60AA845…DF2528`, config `055FEBC6…87162`: **both identical to the host** (`vm_configure` 2026-10-02 17:31) |
+| Agent `ossec.conf` SHA-256 + diff vs host `278DBA62…` | `171A12657AC864BCDBBAE1992675B59F7E2D2D81A1969196DEF9915BCB564EA0` (copy at `provenance/raw/vm_agent_ossec.conf`). Diff vs host, exactly two lines: `<address>127.0.0.1` → `10.0.2.2`; `<agent_name>TestRun1` → `vm-win11-target`. Same four eventchannels (Application, Security with the same query, System, Sysmon/Operational). Note: the agent's SCA picks `cis_win11_enterprise.yml` (an edition-dependent policy); SCA is excluded at Component 1 anyway. |
+| `auditpol /get /category:*` diff vs host reference | **None.** Host policy exported with `auditpol /backup` (`host_auditpol_backup.csv`, SHA-256 `6B1589C9…9215C`) and applied in the guest with `auditpol /restore`; compared line by line against `host_auditpol_full.txt`: identical in all categories |
+| Command-line capture | `ProcessCreationIncludeCmdLine_Enabled` not set → off |
+| Defender state (`Get-MpComputerStatus`) + exclusions | AMRunningMode Normal; antivirus, real-time and behaviour monitoring on; **tamper protection on**; platform 4.18.26080.4, signatures 1.459.514.0; MAPS = Advanced (2), sample submission = send safe samples (1) (Windows defaults); ExclusionPath `C:\AtomicRedTeam` |
+| Network mode + firewall rule set | NAT, `localhost-reachable=true`. `Test-NetConnection 10.0.2.2` → 1514 **True**, 1515 **True** (2026-10-01 20:17, guest source 10.0.2.15). **`--natdnsproxy1 on`** (has no effect on the DHCP-offered DNS in 7.2.20, see G.1 notes); guest IPv4 DNS pinned to `10.0.2.3`. Firewall group `CASIEM-VM-Isolation`, outbound blocks: 10/8 except 10.0.2.2–.3; 10.0.2.2 TCP except 1514–1515; 10.0.2.2 UDP except 67; 172.16/12; 192.168/16; 169.254/16; 100.64/10; fc00::/7 except `fd17:625c:f037:2::3`. Verified: 1514/1515 True; 443/9200/55000 False; DNS OK; internet 443 True |
+| Snapshot name | **`vm-T0-clean`**, UUID `e7a8fc8f-70ec-4303-a8bc-998e3b049b46`, taken 2026-10-02 21:08 of the **powered-off** VM. It followed a clean ACPI shutdown at 21:04:30 (`vm_shutdown_log.csv`: `acpi_clean`, 20 s), and the media CD was ejected first, so the guest has no host channel except the manager ports. **Disaster recovery only** (G.1 row 10: reverting rolls back the agent's message counters). |
+| Workload script path + SHA-256 | `tools/vm_benign_workload.ps1` **v1.5**, SHA-256 `b3fd5acb497c0c44bead55194d0f64b8f13733332ff02d5c7818c713232455f0`. Installed copy `C:\ProgramData\CASIEM\workload\vm_benign_workload.ps1` (same hash). Startup task `CASIEM Benign Workload` (at startup + 3 min, as `TestUser1`, highest privileges), `-UserMode task`. Three on-demand tasks `CASIEM wluser shell 0/1/2` run as `wluser` (batch logon). `wluser` holds `SeBatchLogonRight`. Verified in the background 2026-10-02 20:17–20:20: `loop_start` v1.5, then `user_shell` `task_result=0`; 4624 for `wluser` with LogonType **4** |
+| Autostart mechanism | Host task `Start CASIEM VM` (C.2, 2026-10-02 21:04:58): at the host user's logon + 1 min, `VBoxManage startvm vm-win11-target --type headless`, non-elevated. Shutdown: `tools/vm_safe_shutdown.ps1` (G.1 row 11). In the guest: the workload loop starts at boot + 3 min. |
+
+## G.3 VM T0
+
+| | |
+|---|---|
+| VM T0 (+07:00) | **2026-10-02 21:09:31 +07:00**: `Start-ScheduledTask "Start CASIEM VM"` (the same path every later boot uses), starting the VM from the clean state just captured in `vm-T0-clean`. `list runningvms` confirmed it running. |
+| VM T0, UTC | **2026-10-02 14:09:31 Z** |
+| Gate flag | `--since 2026-10-02T21:09 --agent 003`. The VM was powered off from 21:04:30, so no `003` alert falls between 21:09:00 and T0. |
+| First reading due | **vm-48h: Sun 4 Oct, after 21:10 +07** (handoff §7). Then weekly. Session A must not begin before the VM baseline end (G.6). |
+
+## G.4 Change log (VM segment boundaries)
+
+| # | Timestamp (+07) | What changed | Why | Segment effect |
+|---|---|---|---|---|
+| | | | | |
+
+## G.5 Gate readings
+
+| Label | Taken | Span | Awake h | Admitted | Admitted / awake h | Pool @ stride 10 | `user` res. | Projected ~10,000 | Modes seen |
+|---|---|---|---|---|---|---|---|---|---|
+| vm-48h | | | | | | | | | |
+
+## G.6 VM baseline end
+
+| | |
+|---|---|
+| End timestamp | |
+| Windows at stride 10 (≥ 1,000) | |
+| Corpus SHA-256 | |
 
 ---
 
