@@ -416,7 +416,7 @@ fraction anyway — it is a reported dataset statistic, not a pass/fail gate.
 |---|---|---|---|
 | First full 24 h with zero reported downtime | after 14 Sep reading | ☐ | proves the arrangement holds |
 | **Awake night 1 — a weekday** | | ☐ | 3 nights is the measured sufficient number |
-| **Awake night 2 — a weekend** | | ☐ | |
+| **Awake night 2 — a weekend** | **Sat 3 → Sun 4 Oct 2026** | ☑ | Done first in calendar order (the weekday night is still to come). Host left on overnight; the researcher ran the morning checks on 4 Oct and all passed. Host agent `002`: **606 alerts between 01:00 and 05:59 +07** (manager `alerts.json`, ≈121/h at night against ≈389/h awake). The VM ran through the night too (VM T0 2026-10-03 14:56, G.3), its first night after the sleep fix (G.4 #2). |
 | **Awake night 3 — 13/14 Oct** | 13 Oct 2026 | ☐ | Patch Tuesday; the only fixed date |
 | Dirty shutdowns (6008) stopped after `powercfg /h off` | week 1 | ☐ | 6 in the 4 weeks to 11 Sep; indexer + WSL vhdx corruption risk |
 | Unattended-reboot test passed (WSL starts with nobody logged in) | 2026-09-12 | ☑ | **PASS** — see A.7 |
