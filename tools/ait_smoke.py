@@ -7,7 +7,7 @@ transfers before writing the specification.
 
 usage: ait_smoke.py <ait_ads.zip> <labels.csv> <alerts_csv_dir> <window_builder_dir> <scenario> [...]
 """
-import sys, json, zipfile, csv, collections, math, time
+import sys, os, json, zipfile, csv, collections, math, time
 import numpy as np
 
 zip_path, labels_path, csv_dir, wb_dir = sys.argv[1:5]
@@ -75,6 +75,16 @@ for sc in scenarios:
     order = sorted(range(len(A)), key=lambda j: (A[j].ts, A[j].ingest_seq))
     A = [A[j] for j in order]; labels = [labels[j] for j in order]
     t_atk = min(s for _, s, _ in phases[sc])
+    # CLEAN=1: oracle-cleaned baseline. Drop event-labelled attack alerts that occur
+    # before the first attack step (AIT-ADS runs its exfiltration from the start of
+    # every simulation by design), so the forest, the calibration table and the
+    # novelty set all learn from a clean baseline. The evaluation period is untouched.
+    n_removed = 0
+    if os.environ.get("CLEAN") == "1":
+        keep = [j for j in range(len(A)) if not (A[j].ts < t_atk and labels[j] not in ("-", "unmatched"))]
+        n_removed = len(A) - len(keep)
+        A = [A[j] for j in keep]; labels = [labels[j] for j in keep]
+        print(f"  [CLEAN] removed {n_removed} labelled attack alerts from the pre-attack baseline")
     lab_ct = collections.Counter(labels)
     print(f"\n=== {sc}: {len(A)} alerts (dropped {dup_fast} fast.log duplicates); "
           f"labels matched: {sum(v for k, v in lab_ct.items() if k != 'unmatched')}, unmatched {lab_ct['unmatched']}")
@@ -131,6 +141,8 @@ for sc in scenarios:
         a_all = auc(s[y == 1], s[ben]); a_deep = auc(s[deep], s[ben])
         first = {st: int(min(r[[i for i, l in enumerate(L) if l == st]])) for st in stages}
         cov100 = sum(1 for st in stages if first[st] <= 100)
+        per = {st: auc(s[np.array([l == st for l in L])], s[ben]) for st in stages if st not in SCANS}
+        print(f"  {name:28s} per-stage AUC: " + ", ".join(f"{k[:14]} {v:.3f}" for k, v in per.items()))
         print(f"  {name:28s} AUC non-scan {a_deep:.3f} | stages top-100 {cov100}/{len(stages)} | first rank: " + ", ".join(f"{k[:12]} {v}" for k, v in first.items()))
         SUMMARY.append((sc, name, a_deep, cov100, len(stages), first))
     # ---- grouped queue: one item per repeat group = same host, same rule, no gap > 1 h.
@@ -157,4 +169,4 @@ for sc in scenarios:
         SUMMARY.append((sc, "[grouped] " + name, None, cov, len(stages), first))
     print(f"  ({time.time()-t_start:.0f}s)")
 
-import pickle; pickle.dump(SUMMARY, open(f"summary_{'_'.join(scenarios)}.pkl", "wb"))
+import pickle; pickle.dump(SUMMARY, open(f"summary_{'_'.join(scenarios)}{'_clean' if os.environ.get('CLEAN') == '1' else ''}.pkl", "wb"))

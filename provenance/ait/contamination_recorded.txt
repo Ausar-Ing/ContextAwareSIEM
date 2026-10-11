@@ -1,0 +1,42 @@
+
+=== santos: 82401 alerts (dropped 44112 fast.log duplicates); labels matched: 82401, unmatched 0
+  entity resolution: {'host': '100.0%', 'srcip': '63.1%', 'user': '0.2%'}
+  host: baseline windows 52101 (training pool 5211), eval windows 30275, constant on baseline: none
+  srcip: baseline windows 34248 (training pool 3425), eval windows 14844, constant on baseline: ['tactic_progression', 'novel_rule_flag']
+  user: 21 baseline windows — too few, skipped
+  evaluation period: 30280 admitted alerts, attack 7766, of which non-scan 14
+  B0 rule level                per-stage AUC: attacker_chang 0.497, escalated_sudo 0.568, online_crackin 0.497
+  B0 rule level                AUC non-scan 0.533 | stages top-100 0/6 | first rank: attacker_cha 19068, dirb 276, escalated_su 7854, online_crack 19068, service_scan 4212, wpscan 276
+  novelty only                 per-stage AUC: attacker_chang 0.961, escalated_sudo 0.966, online_crackin 0.961
+  novelty only                 AUC non-scan 0.963 | stages top-100 0/6 | first rank: attacker_cha 8621, dirb 276, escalated_su 7757, online_crack 8621, service_scan 4164, wpscan 276
+  S_seq only                   per-stage AUC: attacker_chang 0.996, escalated_sudo 0.999, online_crackin 0.993
+  S_seq only                   AUC non-scan 0.997 | stages top-100 5/6 | first rank: attacker_cha 93, dirb 37, escalated_su 37, online_crack 135, service_scan 37, wpscan 37
+  hybrid (0.3 rule + 0.5 seq)  per-stage AUC: attacker_chang 0.993, escalated_sudo 0.994, online_crackin 0.990
+  hybrid (0.3 rule + 0.5 seq)  AUC non-scan 0.993 | stages top-100 2/6 | first rank: attacker_cha 7869, dirb 3, escalated_su 7853, online_crack 7878, service_scan 595, wpscan 3
+  grouped queue: 30280 alerts -> 124 queue items
+  [grouped] B0 rule level              stages in top-20 items 2/6 | first item rank: attacker_cha 89, dirb 2, escalated_su 52, online_crack 89, service_scan 31, wpscan 2
+  [grouped] novelty only               stages in top-20 items 3/6 | first item rank: attacker_cha 33, dirb 2, escalated_su 23, online_crack 33, service_scan 16, wpscan 2
+  [grouped] S_seq only                 stages in top-20 items 5/6 | first item rank: attacker_cha 7, dirb 7, escalated_su 7, online_crack 28, service_scan 7, wpscan 7
+  [grouped] hybrid (0.3 rule + 0.5 seq) stages in top-20 items 3/6 | first item rank: attacker_cha 55, dirb 1, escalated_su 51, online_crack 63, service_scan 11, wpscan 1
+  (16s)
+
+=== harrison: 516343 alerts (dropped 67411 fast.log duplicates); labels matched: 516343, unmatched 0
+  entity resolution: {'host': '100.0%', 'srcip': '93.6%', 'user': '0.0%'}
+  host: baseline windows 89454 (training pool 8946), eval windows 426867, constant on baseline: none
+  srcip: baseline windows 60868 (training pool 6087), eval windows 419987, constant on baseline: ['tactic_progression']
+  user: 77 baseline windows — too few, skipped
+  evaluation period: 426867 admitted alerts, attack 416401, of which non-scan 985
+  B0 rule level                per-stage AUC: attacker_chang 0.496, dnsteal 0.496, escalated_sudo 0.546
+  B0 rule level                AUC non-scan 0.497 | stages top-100 0/6 | first rank: attacker_cha 421172, dirb 14810, dnsteal 421172, escalated_su 415477, service_scan 222874, wpscan 14810
+  novelty only                 per-stage AUC: attacker_chang 0.967, dnsteal 0.466, escalated_sudo 0.970
+  novelty only                 AUC non-scan 0.472 | stages top-100 0/6 | first rank: attacker_cha 415754, dirb 14810, dnsteal 421503, escalated_su 415423, service_scan 222847, wpscan 14810
+  S_seq only                   per-stage AUC: attacker_chang 1.000, dnsteal 0.167, escalated_sudo 1.000
+  S_seq only                   AUC non-scan 0.178 | stages top-100 3/6 | first rank: attacker_cha 67, dirb 1, dnsteal 349275, escalated_su 67, service_scan 4972, wpscan 593
+  hybrid (0.3 rule + 0.5 seq)  per-stage AUC: attacker_chang 0.992, dnsteal 0.167, escalated_sudo 0.992
+  hybrid (0.3 rule + 0.5 seq)  AUC non-scan 0.178 | stages top-100 2/6 | first rank: attacker_cha 415481, dirb 1, dnsteal 415808, escalated_su 415477, service_scan 34301, wpscan 100
+  grouped queue: 426867 alerts -> 65 queue items
+  [grouped] B0 rule level              stages in top-20 items 3/6 | first item rank: attacker_cha 48, dirb 1, dnsteal 48, escalated_su 30, service_scan 17, wpscan 1
+  [grouped] novelty only               stages in top-20 items 6/6 | first item rank: attacker_cha 18, dirb 1, dnsteal 18, escalated_su 12, service_scan 8, wpscan 1
+  [grouped] S_seq only                 stages in top-20 items 5/6 | first item rank: attacker_cha 5, dirb 1, dnsteal 29, escalated_su 5, service_scan 1, wpscan 1
+  [grouped] hybrid (0.3 rule + 0.5 seq) stages in top-20 items 3/6 | first item rank: attacker_cha 32, dirb 1, dnsteal 45, escalated_su 30, service_scan 6, wpscan 1
+  (96s)
