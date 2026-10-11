@@ -24,9 +24,21 @@ Use this file to keep the citation numbering stable while drafting Deliverable 1
 
 Proposed during system model design, 2026-09-05. Numbers continue the existing sequence; confirm before citing.
 
+**Update 2026-10-11:** [16]–[19] are now cited in Deliverable 3, and [20]–[23] were added there (table below). Numbering is shared by Deliverables 2 and 3.
+
 | No. | Short label | Full reference | Why add it |
 | --- | --- | --- | --- |
 | [16] | Jalalvand et al., alert prioritisation survey | F. Jalalvand, M. Baruwal Chhetri, S. Nepal, and C. Paris, "Alert Prioritisation in Security Operations Centres: A Systematic Survey on Criteria and Methods," ACM Computing Surveys, 2024, doi: 10.1145/3695462. | A prioritisation-specific survey, which the current set lacks; [14] is a broader alert-screening survey. Its automation/augmentation/collaboration framing gives a ready way to position this work. |
 | [17] | Alboushy et al., Smart-SIEM context-aware web attack detection | B. Alboushy, A. Jafar, M. Aljnidi, M. B. Disoki, and A. Shaheed, "Context-Aware Web Attack Detection in Open-Source SIEM Systems via MITRE ATT&CK-Enriched Behavioral Profiling," arXiv:2605.13337 [cs.CR], May 2026. | Closest work to this project: Wazuh-specific, builds a per-source-IP behavioural context vector from the last N events, LightGBM/XGBoost cascade on a purpose-built labelled testbed. Reports context features worth +0.25-0.35 F1 over non-contextual baselines. Both a methodological template and the work this project must differentiate from. |
 | [18] | Jalalvand et al., learning to defer with human feedback | F. Jalalvand, M. Baruwal Chhetri, S. Nepal, and C. Paris, "Adaptive alert prioritisation in security operations centres via learning to defer with human feedback," arXiv:2506.18462, 2025. | Analyst-in-the-loop prioritisation. Cite as future work only; requires a deep RL agent and sustained analyst feedback that this project cannot supply. |
 | [19] | Splunk risk-based alerting documentation | Splunk, "How risk-based alerting works in Splunk Enterprise Security," Splunk Enterprise Security documentation, accessed Sep. 2026. | Practitioner grounding for the entity risk accumulation model in Component 8: risk events accumulate per risk object, modified by asset/identity criticality, escalating to a notable on threshold plus technique/source diversity. Complements [9], which is the academic treatment. |
+
+## Added in Deliverable 3 (2026-10-11)
+
+| No. | Short label | Full reference | PDF in this folder |
+| --- | --- | --- | --- |
+| [20] | Isolation Forest (Liu, Ting, Zhou) | F. T. Liu, K. M. Ting, and Z.-H. Zhou, "Isolation Forest," 2008 Eighth IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 413-422, doi: 10.1109/ICDM.2008.17. | — (cited since Deliverable 2) |
+| [21] | AIT Alert Data Set (AIT-ADS) | M. Landauer, F. Skopik, and M. Wurzenberger, "Introducing a New Alert Data Set for Multi-Step Attack Analysis," in Proc. 17th Cyber Security Experimentation and Test Workshop (CSET), 2024, doi: 10.1145/3675741.3675748. Data: Zenodo, doi: 10.5281/zenodo.8263181. | — |
+| [22] | AIT Log Data Set V2 (maintainable log datasets) | M. Landauer, F. Skopik, M. Frank, W. Hotwagner, M. Wurzenberger and A. Rauber, "Maintainable Log Datasets for Evaluation of Intrusion Detection Systems," IEEE Transactions on Dependable and Secure Computing, vol. 20, no. 4, pp. 3466-3482, Jul.-Aug. 2023, doi: 10.1109/TDSC.2022.3201582. | `Maintainable_Log_Datasets_for_Evaluation_of_Intrusion_Detection_Systems.pdf` |
+| [23] | Windows-APT 2025 dataset | M. Mozaffari, A. Yazdinejad, and A. Dehghantanha, "Windows-APT 2025: A Dataset for APT-Inspired Attack Scenarios on Windows Systems," Data in Brief, vol. 65, 112569, 2026, doi: 10.1016/j.dib.2026.112569. | — (cited as a dataset NOT used for ground truth: its labels follow ATT&CK-tag presence) |
+
