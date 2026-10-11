@@ -123,9 +123,25 @@ FEATURE_NAMES = [
     "night_fraction",
 ]
 
+# Entry mode (collapse_s set): the window holds ENTRIES, not alerts. An entry is
+# a run of one rule on one entity with no gap longer than delta = collapse_s
+# between consecutive members. Same 15 slots, restated over entries; the three
+# whose meaning changes are renamed so a printout cannot be misread:
+#   slot 0  window_size   -> window_entries     (entries, not alerts)
+#   slot 3  repeat_ratio  -> volume_share_max   (alerts in the largest entry /
+#                                                alerts represented by the window)
+#   slot 12 burst_ratio   -> current_run_length (alerts in the current alert's entry)
+# Everything else is computed over entries: levels are each entry's max level,
+# tactics/techniques the union of its members, timing uses entry START times.
+ENTRY_FEATURE_NAMES = list(FEATURE_NAMES)
+ENTRY_FEATURE_NAMES[0] = "window_entries"
+ENTRY_FEATURE_NAMES[3] = "volume_share_max"
+ENTRY_FEATURE_NAMES[12] = "current_run_length"
+
 # section 4.3.3: heavy-tailed features, log1p before fitting
 LOG_FEATURES = ["window_duration_s", "inter_arrival_mean_s", "inter_arrival_min_s"]
 LOG_IDX = [FEATURE_NAMES.index(f) for f in LOG_FEATURES]
+ENTRY_LOG_IDX = LOG_IDX + [12]       # run length is a count with a heavy tail
 
 MIN_WINDOW_FOR_SCORING = 3          # section 4.2.5 cold start
 
@@ -168,6 +184,29 @@ class Alert:
     @property
     def admissible(self) -> bool:
         return not (set(self.rule_groups) & COMPLIANCE_GROUPS) and not self.scan_timed
+
+
+@dataclass
+class Entry:
+    """A collapsed run: one rule on one entity, members no more than delta apart.
+    Duck-types the Alert fields the feature map reads (ts, rule_id, rule_level,
+    techniques, tactics) so the timing code is shared; ts is the run's START."""
+    rule_id: str
+    rule_level: int
+    ts: float                        # first member
+    t_last: float                    # newest member
+    count: int = 1
+    techniques: tuple = ()
+    tactics: tuple = ()
+
+    def absorb(self, a: "Alert"):
+        self.t_last = max(self.t_last, a.ts)
+        self.count += 1
+        self.rule_level = max(self.rule_level, a.rule_level)
+        if a.techniques:
+            self.techniques = tuple(dict.fromkeys(self.techniques + a.techniques))
+        if a.tactics:
+            self.tactics = tuple(dict.fromkeys(self.tactics + a.tactics))
 
 
 # --- section 4.1.3 entity resolution ----------------------------------------
@@ -280,8 +319,15 @@ class WindowBuilder:
     def __init__(self, N: int = 20, T_hours: float = 24.0,
                  baseline_rules: set | None = None, learn_rules: bool = False,
                  site_utc_offset_h: float = SITE_UTC_OFFSET_H,
-                 downtime_gap_s: float | None = DOWNTIME_GAP_S):
+                 downtime_gap_s: float | None = DOWNTIME_GAP_S,
+                 collapse_s: float | None = None):
         self.N = N
+        # Entry mode: None keeps the alert window of D2 (N alerts). A number is
+        # delta, the largest gap inside one run; the window is then the last N
+        # ENTRIES within T, so a flood of one rule occupies one slot instead of
+        # pushing every other rule out.
+        self.delta = collapse_s
+        self.feature_names = FEATURE_NAMES if collapse_s is None else ENTRY_FEATURE_NAMES
         self.T = T_hours * 3600.0
         self.tz = site_utc_offset_h * 3600.0
         self.win: dict = collections.defaultdict(collections.deque)
@@ -339,6 +385,8 @@ class WindowBuilder:
         self.observe(a)
         if not a.admissible:
             return []
+        if self.delta is not None:
+            return self._push_entries(a)
         out = []
         for e in a.entities:
             d = self.win[e]
@@ -354,6 +402,110 @@ class WindowBuilder:
             if self.learn_rules:
                 self.baseline_rules.add((e, a.rule_id))
         return out
+
+    def _push_entries(self, a: Alert):
+        """Entry-mode admission. The alert joins the most recent entry of its
+        rule if that entry's newest member is at most delta old; otherwise it
+        opens a new entry. Only the most recent entry of a rule is a candidate,
+        so runs are split at every gap > delta and never re-joined. Interleaved
+        rules (A B A B ...) each keep their own run."""
+        out = []
+        for e in a.entities:
+            d = self.win[e]
+            cur = None
+            for x in reversed(d):
+                if x.rule_id == a.rule_id:
+                    if a.ts - x.t_last <= self.delta:
+                        cur = x
+                    break
+            if cur is not None:
+                cur.absorb(a)
+            else:
+                cur = Entry(a.rule_id, a.rule_level, a.ts, a.ts, 1, a.techniques, a.tactics)
+                d.append(cur)
+                while len(d) > self.N:
+                    d.popleft()
+            # time bound on the NEWEST member: an entry still receiving alerts
+            # is live however long ago it started. Entries are ordered by start,
+            # so a stale one can sit behind a live one; filter, do not popleft.
+            if any(a.ts - x.t_last > self.T for x in d):
+                self.win[e] = d = collections.deque(x for x in d if a.ts - x.t_last <= self.T)
+            w = list(d)
+            feats = self.features_entries(w, a, cur, e)
+            scoreable = sum(x.count for x in w) >= MIN_WINDOW_FOR_SCORING
+            out.append((e, feats, scoreable))
+            if self.learn_rules:
+                self.baseline_rules.add((e, a.rule_id))
+        return out
+
+    def _timing(self, ts: np.ndarray, cur: Alert):
+        """Active gaps between consecutive times, and the observed subset used
+        for inter-arrival statistics (fully-down gaps dropped). Shared by both
+        modes; see features() for the reasoning."""
+        n = len(ts)
+        raw_gaps = np.diff(ts) if n >= 2 else np.zeros(0)
+        if n >= 2 and self.G is not None:
+            host = self._host_of(cur)
+            down = self._downtime_in(host, ts[:-1], ts[1:])
+            act_gaps = np.maximum(raw_gaps - down, 0.0)
+            obs_gaps = act_gaps[~((down > 0) & (act_gaps <= 0.0))]
+        else:
+            act_gaps = obs_gaps = raw_gaps
+        return act_gaps, obs_gaps
+
+    def features_entries(self, w: list, cur: Alert, cur_entry: Entry, ent=None) -> np.ndarray:
+        """The feature map over entries (ENTRY_FEATURE_NAMES). w is ordered by
+        entry start; cur is the alert just admitted, cur_entry the entry it is in."""
+        n = len(w)
+        starts = np.array([x.ts for x in w])
+        lv = np.array([x.rule_level for x in w], dtype=float)
+        counts = np.array([x.count for x in w], dtype=float)
+
+        _, obs_gaps = self._timing(starts, cur)
+        # duration: active span from the first entry's start to NOW (the current
+        # alert), which may lie inside a run that started earlier.
+        span, _ = self._timing(np.append(starts, max(cur.ts, starts[-1])), cur)
+        duration = float(span.sum())
+
+        rules = [x.rule_id for x in w]
+        distinct_rules = len(set(rules))
+        volume_share = float(counts.max() / counts.sum())
+
+        if n >= 2:
+            xm = (n - 1) / 2.0
+            sxx = n * (n * n - 1) / 12.0
+            trend = float(((np.arange(n) - xm) * lv).sum() / sxx)
+            if len(obs_gaps):
+                gaps = np.maximum(obs_gaps, INTER_ARRIVAL_FLOOR_S)
+                ia_mean, ia_min = float(gaps.mean()), float(gaps.min())
+            else:
+                ia_mean, ia_min = 0.0, 0.0
+        else:
+            trend, ia_mean, ia_min = 0.0, 0.0, 0.0
+
+        techs, tacs = set(), set()
+        pos, ordi = [], []
+        for i, x in enumerate(w):
+            techs.update(x.techniques)
+            tacs.update(x.tactics)
+            o = [TACTIC_ORDINAL[t] for t in x.tactics if t in TACTIC_ORDINAL]
+            if o:
+                pos.append(i)
+                ordi.append(min(o))
+        prog = 0.0
+        if len(pos) >= 3 and len(set(ordi)) > 1:
+            prog = float(_spearman(np.array(pos, float), np.array(ordi, float)))
+
+        novel = 0.0 if (ent, cur.rule_id) in self.baseline_rules else 1.0
+        hours = ((starts + self.tz) % 86400.0) // 3600.0
+        night = float(((hours < WORK_START) | (hours >= WORK_END)).mean())
+
+        return np.array([
+            n, duration, distinct_rules, volume_share,
+            lv.max(), lv.mean(), trend,
+            len(techs), len(tacs), prog,
+            ia_mean, ia_min, float(cur_entry.count), novel, night,
+        ], dtype=float)
 
     def features(self, w: list, cur: Alert, ent=None) -> np.ndarray:
         n = len(w)
@@ -453,8 +605,10 @@ def _rank(x: np.ndarray) -> np.ndarray:
     return r
 
 
-def log_transform(X: np.ndarray) -> np.ndarray:
-    """Section 4.3.3 preprocessing. Applied to the model input, not the feature."""
+def log_transform(X: np.ndarray, entries: bool = False) -> np.ndarray:
+    """Section 4.3.3 preprocessing. Applied to the model input, not the feature.
+    entries=True for entry-mode vectors, which also log the run length."""
     X = X.copy()
-    X[:, LOG_IDX] = np.log1p(np.maximum(X[:, LOG_IDX], 0.0))
+    idx = ENTRY_LOG_IDX if entries else LOG_IDX
+    X[:, idx] = np.log1p(np.maximum(X[:, idx], 0.0))
     return X
