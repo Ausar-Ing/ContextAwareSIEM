@@ -7,6 +7,16 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+
+% Draft markers for supervisor review. Remove before submission.
+\newcommand{\open}[1]{\textcolor{blue!70!black}{\textbf{[Open:} #1\textbf{]}}}
+\newcommand{\prov}{\textsuperscript{\textcolor{orange!80!black}{p}}}   % provisional parameter
+\newcommand{\meas}{\textsuperscript{\textcolor{green!45!black}{m}}}    % measured parameter
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 \begin{document}
 
@@ -23,7 +33,7 @@ Thanayos Ongpisut, Somchart Fugkeaw}
 \maketitle
 
 \begin{abstract}
-Security Information and Event Management (SIEM) systems generate far more alerts than analysts can investigate, producing the condition known as alert fatigue, in which high-risk activity is delayed or overlooked because it is buried among low-value alerts. Ranking those alerts by static rule severity does not reflect the operational risk of the underlying activity. Existing enrichment approaches attach contextual attributes to each alert independently, which leaves them unable to distinguish an isolated event from the same event occurring as part of a sustained campaign. In this paper, we present the system model for a context-aware alert prioritization layer built on top of Wazuh. Rather than evaluating alerts in isolation, the proposed layer derives context across time within a single alert stream: for every incoming alert it forms a bounded window of preceding alerts belonging to the same entity, and encodes that window as a feature vector describing rule diversity, severity trend, MITRE ATT\&CK tactic progression, and arrival timing. An unsupervised anomaly model scores the window, and the resulting score is combined with Wazuh rule severity and static asset context in a transparent hybrid scoring function. A decaying per-entity risk accumulator escalates sustained low-severity activity to incident level. The design is evaluated by an ablation over four ranking systems using ground truth obtained from MITRE ATT\&CK-aligned adversary emulation, measured with ranking metrics rather than classification metrics. The contribution of this paper is the system model and its evaluation protocol; implementation and results follow.
+Security Information and Event Management (SIEM) systems generate far more alerts than analysts can investigate, and ranking those alerts by static rule severity does not reflect the operational risk of the underlying activity. Enrichment approaches attach attributes to each alert independently, which leaves them unable to distinguish an isolated event from the same event occurring within an attack. We present a context-aware prioritization layer for the open-source SIEM Wazuh that derives context across time within the alert stream itself. For each alert and each entity it concerns, the layer forms a bounded window of that entity's recent alerts, encodes the window as a fifteen-feature vector computed from Wazuh alert fields alone, and scores it with an Isolation Forest trained without labels on benign activity and calibrated per host. The score is combined with rule severity and asset exposure in a transparent hybrid function, alerts are presented as repeat groups so that high-volume floods occupy one queue position, and a per-entity accumulator escalates sustained activity. We evaluate on the public, labelled AIT Alert Data Set, comprising eight simulated enterprise networks with multi-step attacks, and characterize false promotion on five weeks of alerts from a real workstation. A preliminary, untuned check on the eight AIT scenarios finds that rule severity ranks post-reconnaissance attack alerts no better than chance, while the window anomaly score separates them with an AUC above 0.97 in seven of eight scenarios.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -36,11 +46,11 @@ Security Information and Event Management (SIEM) systems are widely used in mode
 
 Wazuh provides a suitable base for this type of research because it already supports log analysis, endpoint monitoring, rule-based detection, vulnerability detection, threat intelligence integration, MITRE ATT\&CK-aligned evaluation, and active response workflows. Recent Wazuh-focused studies have explored real-time threat feed integration \cite{ref3}, MITRE ATT\&CK evaluation \cite{ref12}, and machine learning-based improvements to threat detection \cite{ref13}. However, many of these approaches focus mainly on detection accuracy, threat intelligence enrichment, or response automation. Less attention has been given to an additional Wazuh-based prioritization layer that uses created context to decide which alerts should be investigated first.
 
-A prioritization layer that evaluates each alert independently, however, cannot express the distinction that matters most to an analyst. Consider two alerts that are identical in every recorded field: the same Wazuh rule, the same host, the same severity level. In the first case the alert is the only one raised on that host in six hours. In the second it is the fortieth occurrence of that rule within ninety seconds, immediately followed by a successful authentication. The second is a successful brute-force attack and the first is routine noise, yet no amount of attribute enrichment separates them, because the difference does not reside in the alert. It resides in the sequence of alerts surrounding it. Temporal context is therefore not a refinement that improves an enrichment pipeline; for this class of activity it is the only signal that distinguishes the two cases at all.
+A prioritization layer that evaluates each alert independently cannot express the distinction that matters most to an analyst. Consider two alerts identical in every recorded field: Wazuh rule 60122 (a failed Windows logon), the same host, the same user, the same severity level. In the first case it is the only such alert for that user in six hours, a mistyped password. In the second it is the fortieth within ninety seconds, followed by rule 60118, a successful logon. The second is a successful password-guessing attack and the first is routine noise, yet no attribute enrichment separates them, because the difference does not reside in the alert. It resides in the sequence of alerts surrounding it.
 
-This paper proposes a context-aware alert prioritization layer for Wazuh whose primary signal is derived across time within a single alert stream. The layer does not replace Wazuh's detection rules or introduce new detections; it consumes alerts that Wazuh has already raised and re-orders them. For each incoming alert it forms a bounded window of preceding alerts concerning the same entity, encodes that window as a feature vector, and rates it with an unsupervised anomaly model. That rating is combined with Wazuh rule severity and the static asset context available in the deployment to produce an interpretable priority score, transparent scoring being retained because analysts must be able to understand and challenge a ranking \cite{ref9,ref10}. A decaying per-entity risk accumulator then raises sustained activity to incident level, so that a campaign of individually unremarkable alerts becomes visible without requiring any single alert to be scored highly.
+This paper proposes a context-aware alert prioritization layer for Wazuh whose primary signal is derived across time within a single alert stream. The layer does not replace Wazuh's detection rules or introduce new detections; it consumes alerts that Wazuh has already raised and re-orders them. For each incoming alert it forms a bounded window of preceding alerts concerning the same entity, encodes that window as a feature vector, and rates it with an unsupervised anomaly model. That rating is combined with Wazuh rule severity and asset exposure in an interpretable priority score, transparent scoring being retained because analysts must be able to understand and challenge a ranking \cite{ref9,ref10}. A decaying per-entity risk accumulator then raises sustained activity to incident level.
 
-We make four contributions. First, a system model for a Wazuh-based prioritization layer in which correlation is derived mechanically from the alert stream rather than authored in advance as rule thresholds. Second, a temporal context feature set computed entirely from Wazuh alert fields, requiring no data source beyond the SIEM itself. Third, a hybrid scoring model combining rule severity, static context, and an unsupervised anomaly score while remaining inspectable term by term. Fourth, an evaluation protocol based on MITRE ATT\&CK-aligned adversary emulation \cite{ref12} that yields labelled ground truth where no labelled alert corpus exists, with an ablation isolating the contribution of temporal context. Implementation and experimental results are the subject of subsequent work.
+We make four contributions. First, a system model for a Wazuh prioritization layer in which correlation is derived mechanically from the alert stream rather than authored in advance as rule thresholds, with alert, context and risk state separated so that every result can be reproduced by replaying an immutable alert log. Second, a temporal context feature set computed entirely from Wazuh alert fields, including an active-time correction that separates a host being switched off from an entity being quiet. Third, a scoring design combining a per-host calibrated anomaly score with rule severity and exposure while remaining inspectable term by term, together with a repeat-group queue and an accumulator designed against measured double counting. Fourth, an evaluation on a public labelled alert corpus, the AIT Alert Data Set \cite{ref21}, complemented by five weeks of benign alerts from a real workstation, with an ablation isolating the contribution of temporal context and comparators that test whether the learned model earns its place.
 
 \section{Related Work}
 
@@ -58,108 +68,298 @@ DEEPCASE \cite{ref15} establishes the mechanism this work adopts. For each secur
 
 \subsection{Machine Learning Applied to Wazuh}
 
-Chamkar et al. \cite{ref13} apply machine learning to improve threat detection in Wazuh, and Al Siam et al. \cite{ref3} integrate real-time threat feeds with Wazuh for automated malware detection and response. Winkler and Sharma \cite{ref12} evaluate Wazuh against the MITRE ATT\&CK framework using adversary emulation, and their methodology is adopted here for ground-truth generation. These works target detection accuracy or enrichment rather than the ordering of the resulting alert queue.
+Chamkar et al. \cite{ref13} apply machine learning to improve threat detection in Wazuh, and Al Siam et al. \cite{ref3} integrate real-time threat feeds with Wazuh for automated malware detection and response. Winkler and Sharma \cite{ref12} evaluate Wazuh against the MITRE ATT\&CK framework using adversary emulation. These works target detection accuracy or enrichment rather than the ordering of the resulting alert queue.
 
-Closest to the present work, Alboushy et al. \cite{ref17} propose Smart-SIEM, which constructs a per-source-IP behavioural context vector from the most recent $N$ events within Wazuh and classifies web application attacks using a LightGBM and XGBoost cascade. An ablation over $N \in \{3,\dots,35\}$ identifies $N = 30$, and context features are reported to improve all eight algorithms tested by 0.25 to 0.35 $F_1$, leading the authors to conclude that the context vector rather than the choice of algorithm is the primary contribution. That finding directly motivates the ablation design used here. The present work differs in three respects. Smart-SIEM performs classification, deciding whether an event is an attack and of which category, whereas this work performs ranking and is evaluated with ranking metrics. Smart-SIEM is fully supervised and required a purpose-built corpus of 46{,}454 labelled events with synthetic oversampling to address class imbalance, whereas the anomaly model proposed here is trained without labels on benign baseline activity. Finally, Smart-SIEM operates on HTTP application-layer telemetry, while this work operates on host security audit logs and endpoint telemetry, and it adds an incident-level accumulation stage that Smart-SIEM does not include.
+Closest to the present work, Alboushy et al. \cite{ref17} propose Smart-SIEM, which constructs a per-source-IP behavioural context vector from the most recent $N$ events within Wazuh and classifies web application attacks using a LightGBM and XGBoost cascade. An ablation over $N \in \{3,\dots,35\}$ identifies $N = 30$, and context features are reported to improve all eight algorithms tested by 0.25 to 0.35 $F_1$, leading the authors to conclude that the context vector rather than the choice of algorithm is the primary contribution. That finding directly motivates the ablation design used here. The present work differs in three respects. Smart-SIEM performs classification, whereas this work performs ranking and is evaluated with ranking metrics. Smart-SIEM is fully supervised and required a purpose-built corpus of 46{,}454 labelled events with synthetic oversampling, whereas the anomaly model proposed here is trained without labels on benign activity. Finally, Smart-SIEM operates on HTTP application-layer telemetry, while this work operates on the full Wazuh alert stream and adds an incident-level accumulation stage.
 
-Graph-based approaches have also been applied to Wazuh telemetry: Chaurasia et al. \cite{ref4} predict attack paths from event correlation, and Pomsathit \cite{ref11} applies graph neural networks with continual learning to Wazuh EDR data. These are not pursued here, as the entity graph produced by the intended testbed contains too few distinct hosts and accounts for message passing to propagate meaningful signal.
+Graph-based approaches have also been applied to Wazuh telemetry: Chaurasia et al. \cite{ref4} predict attack paths from event correlation, and Pomsathit \cite{ref11} applies graph neural networks with continual learning to Wazuh EDR data. These are not pursued here; the project focuses on learned scoring of stream-local context.
 
 \subsection{Risk-Based Prioritization and Human Feedback}
 
-Malach et al. \cite{ref8} combine alert triage with explainable graph representations and Shapley-based attribution, reinforcing that analysts require reasons accompanying a ranking; that explainability requirement is retained here even though graph propagation is not. Shamsi et al. \cite{ref9} present human-centric risk-based alert prioritization in Splunk, and operational risk-based alerting practice \cite{ref19} accumulates risk per entity and escalates when a threshold is crossed together with evidence from multiple distinct sources or techniques. This model informs the accumulation stage described in Section III-E. Khayat et al. \cite{ref10} combine multiple alert features using ensembled deep learning and hybrid optimization. Jalalvand et al. \cite{ref18} adapt prioritization through learning to defer with analyst feedback; the survey by the same authors \cite{ref16} organizes prioritization approaches by the degree of human-AI teaming involved. Feedback-driven adaptation is treated here as future work, as it presupposes sustained analyst interaction that this project cannot provide.
+Malach et al. \cite{ref8} combine alert triage with explainable graph representations and Shapley-based attribution, reinforcing that analysts require reasons accompanying a ranking. Shamsi et al. \cite{ref9} present human-centric risk-based alert prioritization in Splunk, and operational risk-based alerting practice \cite{ref19} accumulates risk per entity and escalates when a threshold is crossed together with evidence from multiple distinct sources or techniques. Khayat et al. \cite{ref10} combine multiple alert features using ensembled deep learning and hybrid optimization. Jalalvand et al. \cite{ref18} adapt prioritization through learning to defer with analyst feedback, and their survey \cite{ref16} organizes prioritization approaches by the degree of human-AI teaming involved. Feedback-driven adaptation is treated here as future work.
 
-Across these approaches, contextual enrichment, graph propagation, and supervised classification have each been applied to SIEM alerts, but the combination of stream-local temporal correlation, label-free anomaly scoring, and transparent ranking has not been evaluated for Wazuh.
+\subsection{Labelled Alert Corpora}
 
-\section{Our Proposed System}
+Public intrusion datasets such as CICIDS2017 and UNSW-NB15 consist of network flow records rather than SIEM alerts and cannot be consumed by an alert-level layer. Landauer et al. \cite{ref21} release the AIT Alert Data Set (AIT-ADS): alerts produced by Wazuh, Suricata and AMiner when the logs of the AIT Log Data Set \cite{ref22} are replayed through them, covering eight simulated enterprise networks, each with several days of simulated user activity and one multi-step attack, with both time-interval and event-level labels. It was designed for alert aggregation and attack-graph research and, to our knowledge, has not been used to evaluate alert ranking. Wazuh-collected Windows datasets also exist \cite{ref23}, but their per-record labels are derived from the presence of ATT\&CK tags on the triggering rule, which Section~\ref{sec:prelim} shows to be common in benign activity; we therefore do not use them as ground truth.
 
-\subsection{System Overview}
+\section{Proposed System}
+\label{sec:system}
+
+\subsection{Overview and State Model}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{architecture.pdf}
-\caption{Proposed context-aware alert prioritization architecture. Shaded components retain state across alerts; unshaded components process each alert independently.}
+\includegraphics[width=0.92\columnwidth]{architecture.pdf}
+\caption{Proposed prioritization layer. Tinted components retain state across alerts.}
 \label{fig:architecture}
 \end{figure}
 
-In this section, we present our proposed context-aware alert prioritization layer. Fig.~\ref{fig:architecture} presents the overall system architecture. We consider a layer that consumes alerts emitted by the Wazuh manager and passes them through nine components. Components 1 to 4 are stateless: each processes a single alert without reference to any other. Components 5, 6 and 8 retain state across alerts, and it is in these components that the temporal requirement of Section I is satisfied.
-
-Component 1 ingests alerts from the Wazuh manager and preserves the original record for audit and reprocessing. Component 2 projects each alert onto a fixed internal schema retaining rule identifier and level, MITRE ATT\&CK technique and tactic where present, agent identity, and the network, user and process fields supplied by the relevant decoder. Because Wazuh normalizes all monitored sources into a unified alert structure before this point, the layer consumes a single format regardless of whether a record originated from a Windows event channel, a Linux audit log, or a syslog source. Component 3 resolves the entities an alert concerns, namely host, user, and source address, which are the units over which temporal context accumulates. Component 4 attaches attributes that do not depend on alert history: asset criticality and environment from an inventory, open vulnerability counts and maximum CVSS from the Wazuh vulnerability detector, and address reputation from threat intelligence.
-
-\subsection{Temporal Context Window Builder}
-
-Component 5 is the core of our design. For each incoming alert $a$ and each entity $e$ that $a$ resolves to, the builder retrieves the preceding $N$ alerts concerning $e$ within a maximum lookback $T$, and encodes that window as a feature vector. This is an attribute-based correlation step: alerts are treated as related when they concern the same entity within a bounded interval.
-
-The window features fall into five groups, summarized in Table~\ref{tab:features}. Every feature is computed from Wazuh alert fields alone, so the component requires no data source beyond the SIEM and can be reproduced by any Wazuh deployment.
+Fig.~\ref{fig:architecture} shows the nine components. Components 1--4 process each alert independently; Components 5, 6 and 8 retain state across alerts. The layer holds three kinds of state, summarized in Table~\ref{tab:state}. Context state and risk state are pure functions of the immutable alert log, the latter because the decay in Section~\ref{sec:accum} is closed-form, so every system variant in the evaluation is produced by replaying one corpus under a different configuration. Fitted models, calibration tables and tuned constants are \emph{parameters}: they are fitted once on baseline data, versioned, and never refitted on evaluation data. Parameters marked \meas{} below were measured on data; those marked \prov{} are provisional and tuned as described in Section~\ref{sec:protocol}.
 
 \begin{table}[t]
-\caption{Temporal context window features}
-\label{tab:features}
-\centering
-\footnotesize
-\begin{tabular}{@{}ll@{}}
+\caption{The three kinds of state held by the layer}
+\label{tab:state}
+\centering\footnotesize
+\begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{Group} & \textbf{Features} \\
+& \textbf{Alert} & \textbf{Context} & \textbf{Risk} \\
 \midrule
-Volume & \texttt{window\_size}, \texttt{window\_duration} \\
-Diversity & \texttt{distinct\_rule\_count}, \texttt{repeat\_ratio} \\
-Severity & \texttt{rule\_level\_max}, \texttt{\_mean}, \texttt{\_trend} \\
-ATT\&CK & \texttt{distinct\_technique\_count}, \\
-        & \texttt{distinct\_tactic\_count}, \texttt{tactic\_progression} \\
-Timing & \texttt{inter\_arrival\_mean}, \texttt{\_min}, \texttt{burst\_ratio} \\
-Novelty & \texttt{novel\_rule\_flag}, \texttt{night\_fraction} \\
+Key & alert id & (entity, alert) & entity \\
+Behaviour & frozen & slides ($N$, $T$) & decays ($h$) \\
+Produced by & C1--C4 & C5 & C8 \\
+Scoring term & $S_\mathrm{rule}$, $S_\mathrm{exp}$ & $S_\mathrm{seq}$ & $R_e$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The tracked ATT\&CK techniques are selected in advance of data collection by inspecting the public Wazuh ruleset at a pinned release, retaining techniques referenced by at least ten distinct rules in the Windows or Sysmon rule groups and associated with host-based intrusion activity in the ATT\&CK Enterprise matrix. This a priori procedure follows \cite{ref17} and prevents feature selection from being influenced by results. Each tactic is assigned an ordinal approximating adversary progression, and \texttt{tactic\_progression} is the Spearman rank correlation between an alert's position in the window and the ordinal of its tactic. Because ATT\&CK tactics are not strictly sequential, this ordering is a heuristic and the feature is interpreted as a weak ordering signal only.
+\subsection{Admission and Normalization (C1, C2)}
 
-\subsection{Machine Learning Components}
+Not every Wazuh alert describes behaviour, and admitting those that do not corrupts the window features rather than merely diluting them. The admitted stream is
+\begin{multline}
+\mathcal{A} = \{\, a : \mathrm{grp}(a) \cap G_c = \emptyset, \\
+\mathrm{mode}(a) \neq \texttt{scheduled},\ a \notin \mathcal{D} \,\},
+\end{multline}
+where $G_c$ = \{\texttt{sca}, \texttt{rootcheck}, \texttt{policy\_monitoring}, \texttt{ciscat}\} are configuration-assessment groups, whose ATT\&CK fields describe what a check mitigates rather than what anyone did; $\mathrm{mode}(a)$ is the file-integrity monitoring mode, excluded when \texttt{scheduled} because such an alert carries the time the scan ran rather than the time of the change (on the workstation, 1{,}190 registry alerts fell into four distinct minutes); and $\mathcal{D}$ is the set of duplicate ingestions, alerts that re-enter the stream through a second log path. In AIT-ADS every Suricata alert is ingested twice, once from \texttt{eve.json} and once from \texttt{fast.log}; the second copy is in $\mathcal{D}$.
 
-Component 6 converts the window vector into a scalar anomaly score $S_\mathrm{seq} \in [0,100]$. \textbf{We apply unsupervised learning at this stage, using an Isolation Forest \cite{ref20} trained on window vectors collected during a benign baseline period.} No attack labels are used at any point during training.
+Normalization projects each alert onto a fixed schema: rule identifier, level and groups; ATT\&CK techniques and tactics; timestamp; agent; source address; user; and an ingestion sequence number that totally orders alerts sharing a timestamp. Wazuh writes ATT\&CK tags in two shapes: detection rules use a nested \texttt{rule.mitre} object with tactic names, configuration checks use flat lists of identifiers. Both are read and tactics normalized to identifiers. No other content, such as command lines, paths or the raw log line, is read: the layer is content-blind by construction.
 
-We adopt unsupervised learning because of label availability. No labelled corpus of Wazuh alerts exists for the intended deployment, and obtaining one requires the adversary emulation described in Section III-F, which produces labels only for the techniques actually executed. An unsupervised model avoids this dependency entirely: it learns the shape of normal windows and scores departures from it, so it can rank activity that no label ever described. Isolation Forest is also the established choice for this role in the alert triage literature \cite{ref5}, and its training and inference costs are low enough for real-time operation at testbed scale.
+\subsection{Entity Resolution (C3)}
 
-Isolation Forest does not model the distribution of normal data and then measure deviation from it. Instead it exploits the observation that anomalies are few and different, and are therefore easier to separate from the remaining data than normal points are. The model constructs an ensemble of $t$ isolation trees, each built from a random subsample of $\psi$ training vectors. At every node a feature is selected at random and a split value is drawn uniformly between the minimum and maximum of that feature among the points at the node, and partitioning recurses until each point is isolated or a height limit is reached. Because an anomalous vector lies in a sparse region of the feature space, a random split is likely to separate it early, so it comes to rest near the root; a vector resembling the bulk of the baseline requires many more splits and comes to rest deep in the tree. The path length $\ell(\mathbf{v})$, that is the number of edges from the root to the leaf containing $\mathbf{v}$, is therefore short for anomalies and long for normal observations.
+Each alert resolves to a set of entities $E(a) \subseteq \{\mathrm{host}, \mathrm{user}, \mathrm{srcip}\}$, the units over which context accumulates. The host is the monitored machine, mapped from the Wazuh agent through a frozen alias table so that a re-enrolled agent remains one entity. The user is taken, for Windows logon events, from the target account and otherwise from the subject account, with machine and service identities excluded and domain and case variants normalized. The source address is taken from the decoder's source field when routable. Table~\ref{tab:resolution} gives the measured resolution rates. Each corpus populates two of the three types, and the pair differs: the workstation has no network logons, and AIT's dominant benign alert, a mail-server login, records the account only in the raw line, which the layer does not read.
 
-Path lengths are averaged across the ensemble and normalized against the expected path length of an unsuccessful search in a binary search tree of $\psi$ points, $c(\psi) = 2H(\psi-1) - 2(\psi-1)/\psi$, where $H(i) \approx \ln(i) + \gamma$ and $\gamma \approx 0.5772$ is the Euler--Mascheroni constant. The anomaly score is
+\begin{table}[t]
+\caption{Measured entity resolution (share of admitted alerts)}
+\label{tab:resolution}
+\centering\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Corpus} & \textbf{host} & \textbf{user} & \textbf{srcip} \\
+\midrule
+Workstation (25 days) & 100\% & 57.6\% & 0\% \\
+AIT-ADS (two scenarios checked) & 100\% & 0.2--0.4\% & 52.7--63.1\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Temporal Context Window (C5)}
+\label{sec:window}
+
+For an admitted alert $a$ and an entity $e \in E(a)$, the window is the last $N$ elements of
 \begin{equation}
-s(\mathbf{v}, \psi) = 2^{-\,\mathbb{E}[\ell(\mathbf{v})]\,/\,c(\psi)},
+\{\, x \in \mathcal{A} : e \in E(x),\ \tau(a) - T < \tau(x) \le \tau(a) \,\},
 \end{equation}
-where $\mathbb{E}[\ell(\mathbf{v})]$ is the mean path length over the ensemble. The score lies in $(0,1)$: values approaching $1$ indicate a vector isolated far more easily than a typical baseline window and therefore strongly anomalous, values well below $0.5$ indicate a window consistent with normal activity, and values near $0.5$ indicate that the data contain no clearly distinguishable anomaly. We obtain the sequence anomaly score by rescaling, $S_\mathrm{seq} = 100 \cdot s(\mathbf{v}, \psi)$. The model is governed by the number of trees $t$, the subsample size $\psi$, and the contamination rate assumed when converting scores to a binary flag; only $t$ and $\psi$ affect the ranking, since the layer consumes the continuous score rather than a thresholded decision.
+ordered by timestamp $\tau$ and then ingestion sequence. The window includes $a$ itself and is bounded by count and time simultaneously; $N = 20$\prov{} and $T = 24$\,h\prov{}. An alert resolving to two entities produces two windows.
 
-It should be noted that a supervised ensemble such as Random Forest cannot be used in this role. Random Forest requires labelled examples of both classes in order to learn a decision boundary, so it could not be trained before emulation has been performed, and once trained it would recognize only activity resembling the emulated techniques. Isolation Forest and Random Forest are both tree ensembles, but they answer different questions: the former asks how unusual an observation is relative to a learned notion of normal, the latter asks which of several known classes an observation belongs to. Only the former can be trained on the data available at the time the system must begin operating.
-
-A supervised arm nonetheless has a defensible place in our evaluation. Once emulation has produced labels, we may train a supervised ranker such as Random Forest or gradient boosting on one emulation session and test it on a disjoint one, giving an upper bound on the performance attainable when labels are available. This is reported as an optional additional system rather than as part of the proposed layer, and its limitation, that it generalizes only to techniques resembling those emulated, is reported with it.
-
-Deep sequence models are excluded. The attention-based architecture of DEEPCASE \cite{ref15} is more expressive than the approach adopted here, but requires event volumes and training budgets that the intended testbed cannot supply.
-
-\subsection{Hybrid Priority Scoring}
-
-Component 7 combines the transparent and learned signals into a single priority score,
+\textbf{Active-time correction.} A workstation is switched off most nights, and a window built on the first alert of the morning would otherwise span the overnight gap (up to 23\,h on our workstation). The host being off is not the entity being quiet, and only the second is evidence. For each host $h$ the builder records, online, every gap longer than $G$ between consecutive alerts in $h$'s \emph{global} stream (all of its alerts, including those excluded at admission, which still prove the machine was on), giving a set of downtime intervals $I_h$. A gap is recognized when the first alert after it arrives, so the correction is causal. For consecutive window alerts $x_i, x_{i+1}$,
 \begin{equation}
-P(a) = w_r S_\mathrm{rule}(a) + w_c S_\mathrm{ctx}(a) + w_s S_\mathrm{seq}(a),
+g_i = \tau(x_{i+1}) - \tau(x_i) - \sum_{[s,f] \in I_h} \big| [\tau(x_i), \tau(x_{i+1})] \cap [s,f] \big| ,
 \end{equation}
-where $S_\mathrm{rule}$ is the Wazuh rule level normalized to $[0,100]$, $S_\mathrm{ctx}$ is the static context score from Component 4, and $S_\mathrm{seq}$ is the anomaly score from Component 6. The function is linear and each term's contribution to a given alert can be displayed to the analyst, which preserves the explainability requirement identified in \cite{ref8}.
+the active gap. Gaps lying wholly within downtime ($g_i = 0$ with downtime present) are omitted from the inter-arrival statistics, since they are not observations of the entity; counted as zero they would mimic two simultaneous alerts. $G = 1800$\,s\meas{} was measured on the workstation, where it separated 23 nightly shutdowns from awake activity. The correction is disabled for AIT-ADS, whose servers run continuously.
 
-We do not assert the weights as general values. We report results under a documented default, perform a sensitivity analysis over the weight simplex to show how ranking quality varies, and report separately, as a fitted upper bound, the weights that maximize ranking quality on a tuning set. All numeric parameters in this system model, including $N$, $T$ and the weights, are provisional estimates to be re-derived from observed alert behaviour.
+\textbf{Features.} Table~\ref{tab:features} defines the fifteen features. Features 2, 11 and 12 are $\log(1+x)$-transformed before modelling. The tracked tactic ordinal follows ATT\&CK's Enterprise matrix order, and \texttt{tactic\_progression} is a weak ordering signal only, since tactics are not strictly sequential.
 
-\subsection{Entity Risk Accumulation}
+\begin{table*}[t]
+\caption{Window features. $W = (x_1,\dots,x_n)$, $l_i$ the rule level, $r_i$ the rule, $g_i$ the active gap, $O$ the observed gaps, $\epsilon = 1$\,ms}
+\label{tab:features}
+\centering\footnotesize
+\begin{tabular}{@{}rlll@{}}
+\toprule
+\textbf{\#} & \textbf{Feature} & \textbf{Definition} & \textbf{Captures} \\
+\midrule
+1 & \texttt{window\_size} & $n = |W|$ & sparse vs.\ saturated \\
+2 & \texttt{window\_duration} & $\sum_i g_i$ & burst vs.\ slow activity \\
+3 & \texttt{distinct\_rule\_count} & $|\{r_i\}|$ & varied vs.\ repetitive \\
+4 & \texttt{repeat\_ratio} & $\max_r |\{i : r_i = r\}| / n$ & dominance of one rule \\
+5--6 & \texttt{rule\_level\_max}, \texttt{\_mean} & $\max_i l_i$,\ $\frac{1}{n}\sum_i l_i$ & severity \\
+7 & \texttt{rule\_level\_trend} & OLS slope $\sum_i (i-\bar\imath)(l_i-\bar l) / \sum_i (i-\bar\imath)^2$ & escalation \\
+8--9 & \texttt{distinct\_technique}/\texttt{tactic\_count} & $|\bigcup_i \mathrm{tech}(x_i)|$,\ $|\bigcup_i \mathrm{tac}(x_i)|$ & ATT\&CK breadth \\
+10 & \texttt{tactic\_progression} & Spearman $\rho$(position, min tactic ordinal) over tagged $x_i$; 0 if fewer than 3 & kill-chain order \\
+11--12 & \texttt{inter\_arrival\_mean}, \texttt{\_min} & mean and min of $\max(g_i,\epsilon)$ over $i \in O$ & pace, automation \\
+13 & \texttt{burst\_ratio} & $|\{i : \tau(a) - \tau(x_i) \le 60\,\mathrm{s}\}| / n$ & immediate burst \\
+14 & \texttt{novel\_rule\_flag} & $\mathbf{1}[(e, r(a)) \notin \mathcal{B}]$, $\mathcal{B}$ the (entity, rule) pairs seen in the baseline & novelty \\
+15 & \texttt{night\_fraction} & share of $W$ outside 09:00--18:00 site time; computed, \emph{not} a model input & --- \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-Component 8 maintains a decaying risk total per entity so that a sustained campaign of individually unremarkable alerts becomes visible,
+\begin{algorithm}[t]
+\caption{Online window construction for one admitted alert}
+\label{alg:window}
+\begin{algorithmic}[1]
+\Require alert $a$; per-entity deques $Q$; per-host last time $L$ and downtime $I$
+\State $h \gets \mathrm{host}(a)$ \Comment{runs for every alert, admitted or not}
+\If{$\tau(a) - L[h] > G$} \State $I[h] \gets I[h] \cup \{[L[h], \tau(a)]\}$ \EndIf
+\State $L[h] \gets \max(L[h], \tau(a))$; drop intervals in $I[h]$ ending before $\tau(a) - T$
+\If{$a \notin \mathcal{A}$} \Return \EndIf
+\For{$e \in E(a)$}
+  \State append $a$ to $Q[e]$; evict while $|Q[e]| > N$ or oldest older than $T$
+  \State $\phi \gets \textsc{Features}(Q[e], a, I[h])$ \Comment{Table~\ref{tab:features}}
+  \State emit $(a, e, \phi)$, scoreable iff $|Q[e]| \ge 3$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Sequence Anomaly Scoring (C6)}
+\label{sec:iforest}
+
+Component 6 converts a window vector into $S_\mathrm{seq} \in [0,100]$ using an Isolation Forest \cite{ref20} trained without labels on benign windows. Unsupervised learning is used because it needs no attack labels and can rank activity no label described; it is the established choice for this role in alert triage \cite{ref5}. A forest of $t$ trees is grown on subsamples of size $\psi$; each tree splits on a random feature at a uniformly random value until points are isolated, so a vector in a sparse region is isolated near the root. With $\ell(\mathbf{v})$ the path length and $c(\psi) = 2H(\psi - 1) - 2(\psi - 1)/\psi$ its expected value under unsuccessful search,
 \begin{equation}
-R_e(t) = \sum_{i \in \mathrm{alerts}(e)} P(a_i)\, 2^{-(t - t_i)/h},
+s(\mathbf{v}) = 2^{-\mathbb{E}[\ell(\mathbf{v})] / c(\psi)} .
 \end{equation}
-with half-life $h$. An entity is escalated to a risk notable when $R_e(t)$ exceeds a threshold $\theta$ \emph{and} the contributing alerts span at least two distinct ATT\&CK tactics. The second condition suppresses the characteristic failure of accumulation models, in which a single noisy repeating rule crosses the threshold unaided. Component 9 emits the ranked queue together with, for each entry, the highest-contributing scoring terms, the window features that most influenced $S_\mathrm{seq}$, and the alerts contributing to $R_e$.
 
-\subsection{Evaluation Design}
+\textbf{Model scope and training set.} One forest is fitted per entity type, since host windows (dense, mixed) and address or user windows (sparse) follow different distributions. Overlapping windows share up to $N-1$ alerts, so the training set is the baseline windows subsampled at stride $s = 10$\meas{}, which in simulation also improved ranking by giving quiet periods proportionate weight. Where several hosts feed one forest, the training set is stratified so that each host contributes an equal share up to its available windows, preventing the most active machine from defining normal for all. Inputs are the fourteen model features of Table~\ref{tab:features}, with no further scaling.
 
-In this section, we present the evaluation methodology for the proposed layer. Since Wazuh alerts carry no attack labels, we generate ground truth through controlled attack execution following \cite{ref12}. Benign activity runs continuously to produce background alerts, we execute attack techniques from a manifest recording the technique identifier, target host, and start and end times of each execution, and we label an alert positive when it falls within the execution interval on the target host. It should be noted that labelling by execution interval is imperfect, since a benign alert occurring inside an interval is mislabelled; we estimate the rate of such cases by manual inspection of a sample and report it with the results.
+\textbf{Hyperparameters.} $t = 200$ and $\psi = \min(4096, n)$\meas{}. The original setting $\psi = 256$ assumes anomalies form a dense cluster, which attack windows do not; in a simulation over ten seeds, $\psi = 256$ ranked attacks at AUC 0.926, below a Mahalanobis comparator (0.965), while $\psi = 4096$ reached 0.991. The training target is 8{,}000 windows after striding, with a floor of 4{,}000\meas{}: below about 2{,}000 the variance across seeds exceeded the effect the ablation is meant to measure. Results are reported as mean $\pm$ standard deviation over ten seeds.
 
-We compare four systems in an ablation, each adding one component to the previous: B0 ranks by Wazuh rule level alone; B1 adds static context; B2 adds the sequence anomaly score; and B3 adds entity accumulation. The comparison of B2 against B1 isolates the contribution of temporal context and is the measurement the design exists to make. Because prioritization produces an ordering rather than a decision, we measure it with ranking metrics rather than classification metrics: normalized discounted cumulative gain at $k$, precision at $k$, the fraction of executed techniques represented in the top $k$, and mean reciprocal rank.
+\textbf{Per-host calibration.} Raw scores concentrate near 0.5, so a linear rescale would make the sequence term nearly constant. Scores are instead mapped through the empirical distribution of each host's own baseline windows,
+\begin{equation}
+S_\mathrm{seq}(a, e) = 100 \cdot \hat F_{h,k}\big( s(\phi(W(e,a))) \big),
+\end{equation}
+where $\hat F_{h,k}$ is fitted on the baseline windows of host $h$ and entity type $k$, falling back to the type-level distribution when $h$ has fewer than 500\prov{} baseline windows. $S_\mathrm{seq}$ is then uniform on benign data by construction, commensurate with the other terms, and expresses how unusual a window is \emph{for that machine}.
 
-We apply three controls to protect the measurement. The benign baseline is collected with no emulation running, and the highest-scoring baseline windows are inspected before the anomaly model is frozen, so that attack activity is not learned as normal. The anomaly model is fitted only on baseline data preceding the evaluation period and is never refitted on evaluation data. We execute emulation as two disjoint sessions, performing all parameter and weight selection on the first and drawing every reported comparison from the second, so that tuning does not inflate the reported result.
+\textbf{Reduction and cold start.} An alert's score is the maximum over its entities, $S_\mathrm{seq}(a) = \max_{e \in E(a)} S_\mathrm{seq}(a,e)$, with the arg-max entity recorded for the explanation: an alert unremarkable for its host but highly unusual for its source address should rise. Windows with fewer than three alerts are unscored, receive the baseline median 50, and are flagged so that the analyst sees ``no temporal evidence'' rather than ``normal''.
 
-\begin{thebibliography}{20}
+\textbf{Attribution.} For an alert an analyst opens, each feature $j$ is replaced by its baseline median and the drop in $S_\mathrm{seq}$ is reported; the three largest drops are shown.
+
+\subsection{Hybrid Priority Score (C4, C7)}
+
+Component 4 attaches attributes that do not depend on history, giving an exposure score $S_\mathrm{exp} \in [0,100]$ from asset role and criticality (documented host roles in AIT-ADS; an authored inventory on the workstation) and, where available, vulnerability counts. Component 7 combines
+\begin{equation}
+P(a) = w_r\, S_\mathrm{rule}(a) + w_c\, S_\mathrm{exp}(a) + w_s\, S_\mathrm{seq}(a),
+\end{equation}
+with $S_\mathrm{rule} = 100\, l(a)/15$ for rule level $l(a)$, linear so that each term's contribution can be displayed. Weights are reported under a default $(0.3, 0.2, 0.5)$\prov{}, across a sensitivity sweep of the weight simplex, and as fitted on the tuning scenarios. Section~\ref{sec:prelim} shows that the default weights are not neutral: \open{the rule-severity term lets high-volume, higher-level scan alerts bury post-reconnaissance stages; whether $w_r$ should be small, or $S_\mathrm{rule}$ replaced by a rank within rule, is to be settled on the tuning scenarios.}
+
+\subsection{Repeat-Group Queue (C9)}
+\label{sec:queue}
+
+An attack phase or a benign job can raise thousands of near-identical alerts; in AIT-ADS a single directory brute force produces over 400{,}000. Ranked individually they occupy the whole queue. The queue therefore ranks \emph{repeat groups}: maximal runs of admitted alerts with the same host and rule in which consecutive members are at most $\Delta = 1$\,h\prov{} apart. A group's priority is the maximum of its members' and it is shown once, with its count and time span. On the eight AIT scenarios this reduces 13{,}877--432{,}649 alerts in the evaluation period to 65--213 queue items (Section~\ref{sec:prelim}). Each queue item lists its three highest-contributing terms, the window features that most influenced $S_\mathrm{seq}$, the arg-max entity, and, for risk notables, the contributing groups.
+
+\subsection{Entity Risk Accumulation (C8)}
+\label{sec:accum}
+
+Component 8 keeps a decaying risk total per entity so that a campaign of individually unremarkable alerts becomes visible. Summing $P(a)$ over alerts, as first proposed, measures volume rather than evidence: on a 300-alert sample it inflated host risk twentyfold, 93\% of it from one 23-second configuration scan. Three mechanisms cause this and each has a remedy.
+
+\textit{Repeat inflation.} Identical alerts each contributed in full. Alerts are grouped into accumulation groups $g$ by (entity, rule), split when the rule is silent for longer than $T$, and a group of $k_g$ alerts contributes $(1 + \ln k_g)$ times one alert's value.
+
+\textit{Window evidence charged per alert.} $S_\mathrm{seq}$ describes a set of up to $N$ alerts, so a single anomalous window was charged up to $N$ times as it slid. The window term therefore enters as a decayed running maximum, not a sum.
+
+\textit{Cross-entity fan-out.} An alert resolving to two entities raises two totals; totals are compared only within an entity type, and notables sharing contributing alerts are merged into one incident.
+
+The accumulator is
+\begin{multline}
+R_e(t) = \sum_{g \in \mathcal{G}_e} v_g\,(1 + \ln k_g)\, 2^{-(t - t^{\mathrm{last}}_g)/h} \\
++ w_s \max_{a :\, t - \tau(a) < T} q(a, e)\, 2^{-(t - \tau(a))/h},
+\end{multline}
+with $v_g = w_r S_\mathrm{rule} + w_c S_\mathrm{exp}$ of the group's first member, $t^{\mathrm{last}}_g$ its most recent member, and half-life $h = 4$\,h\prov{}. Decaying from the most recent member, and splitting groups at gaps longer than $T$, keeps a burst today from being absorbed into a group that began weeks earlier, which would otherwise make any repeat of a known rule contribute nothing.
+
+The window term uses a surprise score rather than $S_\mathrm{seq}$ itself. Because $S_\mathrm{seq}$ is uniform on benign data, the maximum over many windows approaches 100 for any busy entity: a host producing hundreds of windows an hour would hold a near-constant window term. With $u = S_\mathrm{seq}(a,e)/100$ and $n_e$ the effective number of the entity's windows in the preceding $T$ (window count divided by $N$),
+\begin{equation}
+q(a, e) = 100 \cdot \min\!\big(1,\ -\log_{10}(1 - u^{\,n_e}) / \lambda \big),
+\end{equation}
+the probability that $n_e$ benign windows would produce a maximum this high, expressed on a log scale saturating at $\lambda = 4$\prov{}. \open{This correction is derived, not yet measured; it is validated by checking that the window term is not flat for the workstation host across a benign day.}
+
+\textbf{Escalation.} An entity becomes a risk notable when $R_e(t) > \theta$\prov{}, its contributing alerts span at least two accumulation groups, and they span at least two ATT\&CK tactics contributed by \emph{different} rules. The last condition is a correction: several common benign rules each carry two or three tactics, so the original ``two tactics'' condition was met by a single benign alert.
+
+\section{Evaluation Design}
+\label{sec:eval}
+
+\subsection{Datasets}
+
+\textbf{AIT-ADS} \cite{ref21} provides the labelled evaluation. Each of its eight scenarios is a separate simulated organization of 9--11 monitored hosts with 1.9--4.3 days of activity before a multi-step attack: scans, a webshell upload, password cracking, a reverse shell, privilege escalation, and DNS exfiltration in some scenarios. Table~\ref{tab:ait} summarizes the scenarios after admission. We use the event-level labels, which mark the alerts produced by attacker actions, and not the time-interval labels, which mark every alert inside an attack phase: we found that most time-labelled alerts in the post-reconnaissance phases are benign mail logins and antivirus updates that happened to occur during the phase. Stages that produced no Wazuh alert, such as the webshell and reverse shell, are outside the layer's boundary, which cannot rank what Wazuh did not raise.
+
+\begin{table}[t]
+\caption{AIT-ADS scenarios after admission. Base: alerts before the first attack step. Causal: event-labelled attack alerts other than scans (\textit{dnsteal} in parentheses)}
+\label{tab:ait}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Scenario} & \textbf{Hosts} & \textbf{Span (d)} & \textbf{Admitted} & \textbf{Base} & \textbf{Causal} \\
+\midrule
+harrison & 9 & 5.0 & 516{,}343 & 89{,}476 & 13 (47{,}183) \\
+wheeler & 11 & 5.0 & 535{,}265 & 68{,}882 & 9 \\
+russellmitchell & 10 & 4.0 & 32{,}302 & 18{,}425 & 6 \\
+shaw & 11 & 6.0 & 51{,}831 & 28{,}682 & 10 \\
+\midrule
+fox & 11 & 4.9 & 451{,}439 & 18{,}790 & 12 \\
+wilson & 10 & 6.0 & 560{,}265 & 79{,}901 & 10 \\
+santos & 10 & 3.9 & 82{,}401 & 52{,}121 & 14 (25{,}707) \\
+wardbeck & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Workstation baseline.} A Windows 11 workstation in daily personal use was monitored with stock Wazuh 4.14.7 and Sysmon (alert level 3, no custom rules) from 12 September 2026, with the baseline frozen on 17 October. By 7 October it held 94{,}092 admitted alerts (about 3{,}700 per calendar day, at 10.0 awake hours per day), giving 9{,}409 host and 5{,}410 user training windows. It contains no attacks and is used for what AIT-ADS cannot show: false promotion on a real person's activity. Measured on it: 7.7\% of benign alerts carry ATT\&CK tags, the most frequent being T1570 \emph{Lateral Tool Transfer} on a machine with nothing to move laterally to, and 34\% of alerts arrive within fifteen minutes of the machine starting.
+
+\subsection{Systems Compared}
+
+\begin{itemize}
+\item \textbf{B0}: rule level. \textbf{B1}: B0 + exposure.
+\item \textbf{B2}: B1 + sequence anomaly score; \emph{B2 vs.\ B1 isolates temporal context}.
+\item \textbf{B2$'$}: B2 with the forest replaced by a robust z-score, $\max_j |z_j|$ against baseline medians: does the forest earn its place?
+\item \textbf{B2$_\mathrm{nov}$}: B2 with $S_\mathrm{seq}$ replaced by the novelty flag alone: does the window add anything beyond ``never seen this rule here''?
+\item \textbf{B3}: B2 + entity accumulation.
+\end{itemize}
+
+\subsection{Protocol and Metrics}
+\label{sec:protocol}
+
+For each scenario, the forest and calibration are fitted on that scenario's activity before its first attack step and frozen; the evaluation period is the remainder. Scenarios are split before any tuning into a tuning set \{harrison, wheeler, russellmitchell, shaw\} and a test set \{fox, wilson, santos, wardbeck\}, each with two large and two small scenarios and one with exfiltration. All weights, $\Delta$, $\theta$ and the novelty and calibration choices are selected on the tuning set; every reported comparison comes from the test set. Ranking is measured over queue items, an item being relevant if it contains an event-labelled alert:
+\begin{itemize}
+\item \emph{stage coverage@k}: the fraction of attack stages that raised a Wazuh alert with an item in the top $k$ ($k \in \{10, 20, 50\}$), the primary metric;
+\item \emph{first-item rank} of each stage, and MRR over non-scan stages;
+\item nDCG@k and precision@k over items;
+\item alert-level AUC of non-scan attack alerts against benign alerts, as a secondary, queue-independent measure.
+\end{itemize}
+On the workstation, the hold-out is the final week of the frozen baseline. Under stationarity 1\% of benign windows should exceed the 99th baseline percentile; the observed share measures calibration drift, and the number of queue items per awake hour above the B2 threshold that captures half of AIT's attack items measures the analyst load the layer would add.
+
+\subsection{Threats to Validity}
+
+AIT's users and attacks are simulated, its baselines are short (no weekly cycle) and its hosts are Linux servers; the workstation supplies realistic benign activity but no attacks, so no single corpus provides both. Only 6--14 non-scan attack alerts exist per scenario, so per-stage ranks are reported for every scenario rather than averaged away. The scan stages are easy for every system and are reported separately. The workstation baseline spans an examination period with reduced use, and its agent was re-enrolled once, handled by the alias table.
+
+\section{Preliminary Feasibility Check}
+\label{sec:prelim}
+
+Before fixing the protocol we ran the design once, untuned, on all eight scenarios: forests per entity type on each scenario's pre-attack windows (three seeds, $\psi = \min(4096, n)$, stride 10, active-time correction off), per-type calibration, no exposure term ($w_c = 0$), and default $w_r = 0.3$, $w_s = 0.5$. Table~\ref{tab:prelim} reports the alert-level AUC of non-scan attack alerts against benign alerts and the stage coverage in the top 20 queue items. These numbers use all eight scenarios and no tuning; they establish feasibility, not results.
+
+\begin{table}[t]
+\caption{Preliminary check (untuned). AUC: non-scan attack vs.\ benign alerts. Cov: stages with an item in the top 20 queue items / stages raising alerts}
+\label{tab:prelim}
+\centering\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}l cc cc cc cc@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{B0 level}} & \multicolumn{2}{c}{\textbf{Novelty}} & \multicolumn{2}{c}{$\boldsymbol{S_\mathrm{seq}}$} & \multicolumn{2}{c}{\textbf{Hybrid}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+\textbf{Scenario} & AUC & Cov & AUC & Cov & AUC & Cov & AUC & Cov \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{tuning set}}\\
+harrison & .497 & 3/6 & .472 & \textbf{6/6} & .178 & 5/6 & .178 & 3/6 \\
+wheeler & .553 & 2/5 & .978 & \textbf{3/5} & \textbf{.996} & \textbf{3/5} & .994 & \textbf{3/5} \\
+russellmitchell & .489 & 2/5 & .857 & 2/5 & \textbf{.979} & \textbf{4/5} & .968 & 3/5 \\
+shaw & .544 & 2/4 & .956 & 3/4 & \textbf{.998} & \textbf{4/4} & .988 & 2/4 \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{test set}}\\
+fox & .496 & 2/6 & .580 & 2/6 & \textbf{.995} & \textbf{4/6} & .991 & 3/6 \\
+wilson & .548 & \textbf{3/5} & .580 & \textbf{3/5} & \textbf{.998} & \textbf{3/5} & .996 & \textbf{3/5} \\
+santos & .533 & 2/6 & .963 & 3/6 & \textbf{.997} & \textbf{5/6} & .993 & 3/6 \\
+wardbeck & .547 & 2/5 & .847 & 3/5 & \textbf{.999} & \textbf{5/5} & .994 & 3/5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Four observations shape the design. First, rule severity ranks post-reconnaissance attack alerts at chance: privilege escalation raises level-3 alerts, the same level as routine logins. Second, the window score separates them with AUC above 0.97 in seven of eight scenarios; the exception, harrison, is driven by its long-running DNS exfiltration, whose windows become repetitive and therefore look normal, which is the case the accumulator rather than the window score is meant to catch. Third, the novelty flag alone separates attack alerts well in some scenarios and poorly in others (AUC 0.47--0.98), and surfaces fewer stages in the queue than the window score in five of eight scenarios, as many in two and more in one (harrison); in a short baseline many benign rules are also new. The window therefore adds information beyond novelty in most, but not all, scenarios. Fourth, ranking individual alerts fails for every system: scan floods occupy the first thousands of positions, which motivated the repeat-group queue, and even with grouping the default hybrid weights rank escalation below noisier, higher-level groups.
+
+\section{Open Points for Discussion}
+
+\begin{enumerate}
+\item Is evaluating on AIT-ADS (Linux servers, simulated users) with the workstation for false-promotion analysis an acceptable division, or should a small set of attacks also be run on the workstation after its baseline freeze?
+\item Should the rule-severity term be kept with a small weight, or replaced, given the finding in Section~\ref{sec:prelim}?
+\item The accumulator's surprise correction (Section~\ref{sec:accum}) is derived but unmeasured; is the formulation sound before it is implemented?
+\item Is a documented role-based exposure score acceptable for $S_\mathrm{exp}$, given that neither corpus has an authentic asset inventory?
+\item Is the tuning/test split of scenarios, fixed before tuning, sufficient to address tuning on the test set, given that the preliminary check above used all eight?
+\end{enumerate}
+
+\begin{thebibliography}{30}
 \scriptsize
 \setlength{\itemsep}{0pt}
 \setlength{\parskip}{0pt}
@@ -204,6 +404,12 @@ We apply three controls to protect the measurement. The benign baseline is colle
 \bibitem{ref19} Splunk, ``How risk-based alerting works in Splunk Enterprise Security,'' Splunk Enterprise Security Documentation, accessed Sep. 2026.
 
 \bibitem{ref20} F. T. Liu, K. M. Ting, and Z.-H. Zhou, ``Isolation Forest,'' 2008 Eighth IEEE International Conference on Data Mining, Pisa, Italy, 2008, pp. 413--422, doi: 10.1109/ICDM.2008.17.
+
+\bibitem{ref21} M. Landauer, F. Skopik, and M. Wurzenberger, ``Introducing a New Alert Data Set for Multi-Step Attack Analysis,'' in Proc. 17th Cyber Security Experimentation and Test Workshop (CSET), 2024, doi: 10.1145/3675741.3675748. Data: AIT Alert Data Set, Zenodo, doi: 10.5281/zenodo.8263181.
+
+\bibitem{ref22} M. Landauer, F. Skopik, M. Frank, W. Hotwagner, M. Wurzenberger, and A. Rauber, ``Maintainable Log Datasets for Evaluation of Intrusion Detection Systems,'' IEEE Transactions on Dependable and Secure Computing, vol. 20, no. 4, pp. 3466--3482, 2023. \open{verify volume/pages}
+
+\bibitem{ref23} ``Windows-APT 2025: A dataset for APT-inspired attack scenarios on Windows systems,'' Data in Brief, 2026; Mendeley Data, doi: 10.17632/b8fmtzvpy8.3. \open{complete author list}
 
 \end{thebibliography}
 \end{document}
