@@ -158,7 +158,7 @@ The entry gap $\delta$ is easily confused with the queue's group gap $\Delta$. T
 \begin{equation}
 g_i = \tau_{i+1} - \tau_i - \sum_{[s,f] \in I_h} \big| [\tau_i, \tau_{i+1}] \cap [s,f] \big| ,
 \end{equation}
-the active gap between the starts of successive runs. Gaps lying wholly within downtime ($g_i = 0$ with downtime present) are omitted from the inter-arrival statistics, since they are not observations of the entity; counted as zero they would mimic two simultaneous alerts. $G = 1800$\,s\meas{} was measured on the workstation, where it separated 23 nightly shutdowns from awake activity. The correction is disabled for AIT-ADS, whose servers run continuously.
+the active gap between the starts of successive runs. Gaps lying wholly within downtime ($g_i = 0$ with downtime present) are omitted from the inter-arrival statistics, since they are not observations of the entity; counted as zero they would mimic two simultaneous alerts. $G = 1800$\,s\meas{} was measured on the workstation, where it separated 23 nightly shutdowns from awake activity. The correction exists for the workstation only: it is disabled for AIT-ADS, whose servers run continuously, so no AIT result depends on $G$.
 
 \textbf{Features.} Table~\ref{tab:features} defines the fifteen features over entries. Volume, which collapsing removes from the window's length, is kept explicitly in features 4 and 13. Features 2, 11, 12 and 13 are $\log(1+x)$-transformed before modelling. The tracked tactic ordinal follows ATT\&CK's Enterprise matrix order, and \texttt{tactic\_progression} is a weak ordering signal only, since tactics are not strictly sequential.
 
@@ -272,7 +272,37 @@ the probability that $n_e$ benign windows would produce a maximum this high, exp
 
 \subsection{Datasets}
 
-\textbf{AIT-ADS} \cite{ref21} provides the labelled evaluation. Each of its eight scenarios is a separate simulated organization of 9--11 monitored hosts with 1.9--4.3 days of activity before a multi-step attack of ten steps: network and service scans, directory and WordPress scans, a webshell upload, password cracking, a reverse shell, privilege escalation, a service stop, and DNS exfiltration. Table~\ref{tab:ait} summarizes the scenarios after admission. We use the event-level labels, which mark the alerts produced by attacker actions, and not the time-interval labels, which mark every alert inside an attack phase: we found that most time-labelled alerts in the post-reconnaissance phases are benign mail logins and antivirus updates that happened to occur during the phase. \textbf{What reaches the layer.} Which attack steps produce an alert at all is a property of the corpus, and we measured it before designing the metrics. Of the ten steps, four (the network scan, webshell upload, reverse shell and service stop) raise no Wazuh or Suricata alert in any of the eight scenarios. Password cracking raises one only where it is performed online against a service (two of the seven scenarios that include it, through Suricata), and the exfiltration in two of eight. The directory and WordPress scans and privilege escalation raise alerts in all eight, the service scan in seven. A layer that re-ranks alerts cannot rank what was never raised, so stage coverage counts only stages with at least one alert, and the unalerted steps are reported as outside the layer's boundary rather than as misses. The gap lies in the rule set, not in the logs: the dataset's log-based anomaly detector, AMiner, run on the same raw logs, flags the webshell commands, offline password cracking and DNS scanning that Wazuh does not.
+The two corpora have different roles and never meet. AIT-ADS is the primary corpus: every ranking result comes from it. The workstation is secondary: it contains no attacks and answers one question, how much benign activity on a real machine the layer would promote. Both pass through the same nine components, but each is replayed separately with its own fitted models; no alerts, windows, forests or calibration tables are shared or pooled. Only configuration crosses, in one direction: the weights, $\Delta$ and $\theta$ selected on the AIT tuning scenarios are applied to the workstation unchanged, so that its false-promotion figures describe the layer as it would be deployed. Table~\ref{tab:corpora} lists every component setting that differs between them.
+
+\begin{table}[t]
+\caption{Corpus roles and the settings that differ. All other components and parameters are identical}
+\label{tab:corpora}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+& \textbf{AIT-ADS (primary)} & \textbf{Workstation (secondary)} \\
+\midrule
+Role & ranking evaluation & false promotion \\
+Labels & event-level & none (no attacks) \\
+Hosts & 9--11 Ubuntu servers, & 1 Windows 11, \\
+ & simulated users & real user \\
+\midrule
+C1 duplicates $\mathcal{D}$ & Suricata \texttt{fast.log} & none \\
+C2 time / site zone & \texttt{@timestamp} / UTC & \texttt{timestamp} / UTC+7 \\
+C3 alias table & none & agent 002 $\to$ 001 \\
+C3 entities populated & host, srcip & host, user \\
+C4 $S_\mathrm{exp}$ & documented host roles & constant (one host) \\
+C5 active time & off & on, $G = 1800$\,s \\
+C6 training data & pre-attack period & own baseline \\
+C7--C9 $w$, $\Delta$, $\theta$ & selected (tuning set) & inherited, frozen \\
+\midrule
+Metrics & coverage@$k$, ranks, AUC & drift, load per awake hour \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{AIT-ADS (primary)} \cite{ref21} provides the labelled evaluation. Each of its eight scenarios is a separate simulated organization of 9--11 monitored hosts with 1.9--4.3 days of activity before a multi-step attack of ten steps: network and service scans, directory and WordPress scans, a webshell upload, password cracking, a reverse shell, privilege escalation, a service stop, and DNS exfiltration. Table~\ref{tab:ait} summarizes the scenarios after admission. We use the event-level labels, which mark the alerts produced by attacker actions, and not the time-interval labels, which mark every alert inside an attack phase: we found that most time-labelled alerts in the post-reconnaissance phases are benign mail logins and antivirus updates that happened to occur during the phase. \textbf{What reaches the layer.} Which attack steps produce an alert at all is a property of the corpus, and we measured it before designing the metrics. Of the ten steps, four (the network scan, webshell upload, reverse shell and service stop) raise no Wazuh or Suricata alert in any of the eight scenarios. Password cracking raises one only where it is performed online against a service (two of the seven scenarios that include it, through Suricata), and the exfiltration in two of eight. The directory and WordPress scans and privilege escalation raise alerts in all eight, the service scan in seven. A layer that re-ranks alerts cannot rank what was never raised, so stage coverage counts only stages with at least one alert, and the unalerted steps are reported as outside the layer's boundary rather than as misses. The gap lies in the rule set, not in the logs: the dataset's log-based anomaly detector, AMiner, run on the same raw logs, flags the webshell commands, offline password cracking and DNS scanning that Wazuh does not.
 
 \textbf{Designed contamination.} The dataset authors start the DNS exfiltration at the beginning of every simulation, deliberately poisoning the training period of anomaly detectors \cite{ref22}. Whether this reaches the alert stream depends on whether a rule fires: in harrison and santos, a Suricata rule for DNS queries to a \texttt{.biz} domain raised 46{,}211 and 25{,}707 event-labelled exfiltration alerts \emph{before} the first attack step, 52\% and 49\% of their baselines; in the other six scenarios the exfiltration raised no alert at all. These two scenarios therefore test the layer under a heavily contaminated baseline, the risk that an unsupervised model learns an ongoing attack as normal. We report them as recorded, since a deployed layer cannot know its baseline is clean, and additionally retrain them with the labelled exfiltration alerts removed to measure what the contamination costs. The end of the exfiltration, which the authors intend as a detection target, produces an absence of alerts and is outside what an alert-ranking layer can observe.
 
@@ -298,7 +328,7 @@ wardbeck & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
 \end{tabular}
 \end{table}
 
-\textbf{Workstation baseline.} A Windows 11 workstation in daily personal use was monitored with stock Wazuh 4.14.7 and Sysmon (alert level 3, no custom rules) from 12 September 2026, with the baseline frozen on 17 October. By 7 October it held 94{,}092 admitted alerts (about 3{,}700 per calendar day, at 10.0 awake hours per day), giving 9{,}409 host and 5{,}410 user training windows. It contains no attacks and is used for what AIT-ADS cannot show: false promotion on a real person's activity. Measured on it: 7.7\% of benign alerts carry ATT\&CK tags, the most frequent being T1570 \emph{Lateral Tool Transfer} on a machine with nothing to move laterally to, and 34\% of alerts arrive within fifteen minutes of the machine starting.
+\textbf{Workstation (secondary).} A Windows 11 workstation in daily personal use was monitored with stock Wazuh 4.14.7 and Sysmon (alert level 3, no custom rules) from 12 September 2026, with the baseline frozen on 17 October. By 7 October it held 94{,}092 admitted alerts (about 3{,}700 per calendar day, at 10.0 awake hours per day), giving 9{,}409 host and 5{,}410 user training windows. It contains no attacks and is used for what AIT-ADS cannot show: false promotion on a real person's activity. With one host, $S_\mathrm{exp}$ is constant there, so B1 and B0 rank identically on it and the exposure term is evaluated on AIT-ADS alone. Measured on it: 7.7\% of benign alerts carry ATT\&CK tags, the most frequent being T1570 \emph{Lateral Tool Transfer} on a machine with nothing to move laterally to, and 34\% of alerts arrive within fifteen minutes of the machine starting.
 
 \subsection{Systems Compared}
 
