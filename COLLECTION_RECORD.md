@@ -856,6 +856,16 @@ enter the host corpus (`weekly_check.sh` keeps `--agent 001,002`;
 unchanged from VM T0 through Sessions A and B.** A difference between the
 baseline and the sessions is a confound, not a detail.
 
+> **STATUS 2026-10-11: VM baseline PAUSED (researcher's decision).** After five
+> guest freezes (the fifth 1 h 38 m after boot, with `--paravirt-provider minimal`,
+> G.4b #13), and with the earliest possible VM baseline end (~31 Oct–1 Nov) falling
+> after Session A, the labelled evaluation moves to the public **AIT Alert Data
+> Set** (AIT-ADS, Landauer et al., CSET 2024). The host baseline continues to its
+> 17 Oct freeze and is used for benign-side evaluation. Atomic Red Team is now an
+> optional case study, most likely run on the host after the freeze against its
+> real baseline, not on the VM. The VM, agent `003` and everything in this part
+> are kept as they are, so the work can resume if needed; no VM data is reported.
+
 ## G.1 Decisions (handoff §4)
 
 | # | Decision | Answer | Reason | Date |

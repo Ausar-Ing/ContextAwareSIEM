@@ -49,3 +49,6 @@ provenance/raw/
 # Wazuh installer credentials live in WSL ~/wazuh-setup, never in this repo
 Pass.txt
 wazuh-passwords.txt
+
+# Public datasets (large, licensed separately; download from source, never commit)
+data/
