@@ -1,0 +1,2614 @@
+{
+ "harrison": {
+  "alert5": {
+   "single_rule_host_windows": 0.968,
+   "S_seq": {
+    "auc_nonscan": 0.9635,
+    "auc_stage": {
+     "attacker_change_user": 0.9984,
+     "dnsteal": 0.9631,
+     "escalated_sudo_command": 0.9944
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 5,
+     "dirb": 5,
+     "dnsteal": 44,
+     "escalated_sudo_command": 5,
+     "service_scan": 5,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9629,
+    "auc_stage": {
+     "attacker_change_user": 0.9919,
+     "dnsteal": 0.9625,
+     "escalated_sudo_command": 0.9904
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 44,
+     "escalated_sudo_command": 30,
+     "service_scan": 7,
+     "wpscan": 1
+    },
+    "median_first_item": 18.5
+   },
+   "seconds": 64
+  },
+  "alert10": {
+   "single_rule_host_windows": 0.943,
+   "S_seq": {
+    "auc_nonscan": 0.9491,
+    "auc_stage": {
+     "attacker_change_user": 0.9998,
+     "dnsteal": 0.9484,
+     "escalated_sudo_command": 0.9988
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 2,
+     "dnsteal": 48,
+     "escalated_sudo_command": 7,
+     "service_scan": 2,
+     "wpscan": 2
+    },
+    "median_first_item": 4.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9489,
+    "auc_stage": {
+     "attacker_change_user": 0.9924,
+     "dnsteal": 0.9483,
+     "escalated_sudo_command": 0.9918
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 48,
+     "escalated_sudo_command": 30,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 65
+  },
+  "alert20": {
+   "single_rule_host_windows": 0.902,
+   "S_seq": {
+    "auc_nonscan": 0.8951,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.8937,
+     "escalated_sudo_command": 1.0
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 1,
+     "dirb": 5,
+     "dnsteal": 28,
+     "escalated_sudo_command": 1,
+     "service_scan": 5,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.895,
+    "auc_stage": {
+     "attacker_change_user": 0.9924,
+     "dnsteal": 0.8937,
+     "escalated_sudo_command": 0.9924
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 44,
+     "escalated_sudo_command": 30,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 72
+  },
+  "alert40": {
+   "single_rule_host_windows": 0.828,
+   "S_seq": {
+    "auc_nonscan": 0.8281,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.8258,
+     "escalated_sudo_command": 1.0
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 5,
+     "dirb": 2,
+     "dnsteal": 20,
+     "escalated_sudo_command": 2,
+     "service_scan": 2,
+     "wpscan": 2
+    },
+    "median_first_item": 2.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.8279,
+    "auc_stage": {
+     "attacker_change_user": 0.9924,
+     "dnsteal": 0.8257,
+     "escalated_sudo_command": 0.9924
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 1,
+     "dnsteal": 39,
+     "escalated_sudo_command": 30,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 88
+  },
+  "entry5d60": {
+   "single_rule_host_windows": 0.761,
+   "S_seq": {
+    "auc_nonscan": 0.9576,
+    "auc_stage": {
+     "attacker_change_user": 0.9986,
+     "dnsteal": 0.9571,
+     "escalated_sudo_command": 0.9942
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 8,
+     "dirb": 3,
+     "dnsteal": 18,
+     "escalated_sudo_command": 8,
+     "service_scan": 3,
+     "wpscan": 3
+    },
+    "median_first_item": 5.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9529,
+    "auc_stage": {
+     "attacker_change_user": 0.991,
+     "dnsteal": 0.9524,
+     "escalated_sudo_command": 0.9884
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 38,
+     "escalated_sudo_command": 30,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 136
+  },
+  "entry10d60": {
+   "single_rule_host_windows": 0.578,
+   "S_seq": {
+    "auc_nonscan": 0.9536,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.953,
+     "escalated_sudo_command": 0.995
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 9,
+     "dirb": 4,
+     "dnsteal": 19,
+     "escalated_sudo_command": 9,
+     "service_scan": 4,
+     "wpscan": 4
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9489,
+    "auc_stage": {
+     "attacker_change_user": 0.9924,
+     "dnsteal": 0.9484,
+     "escalated_sudo_command": 0.9889
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 38,
+     "escalated_sudo_command": 29,
+     "service_scan": 7,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 151
+  },
+  "entry20d60": {
+   "single_rule_host_windows": 0.381,
+   "S_seq": {
+    "auc_nonscan": 0.9543,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.9537,
+     "escalated_sudo_command": 1.0
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 8,
+     "dirb": 4,
+     "dnsteal": 21,
+     "escalated_sudo_command": 8,
+     "service_scan": 4,
+     "wpscan": 4
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9504,
+    "auc_stage": {
+     "attacker_change_user": 0.9928,
+     "dnsteal": 0.9498,
+     "escalated_sudo_command": 0.9929
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 40,
+     "escalated_sudo_command": 26,
+     "service_scan": 7,
+     "wpscan": 1
+    },
+    "median_first_item": 16.5
+   },
+   "seconds": 171
+  },
+  "entry40d60": {
+   "single_rule_host_windows": 0.372,
+   "S_seq": {
+    "auc_nonscan": 0.9187,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.9176,
+     "escalated_sudo_command": 0.9999
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 10,
+     "dirb": 3,
+     "dnsteal": 22,
+     "escalated_sudo_command": 10,
+     "service_scan": 3,
+     "wpscan": 3
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.916,
+    "auc_stage": {
+     "attacker_change_user": 0.9939,
+     "dnsteal": 0.915,
+     "escalated_sudo_command": 0.9939
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 27,
+     "dirb": 1,
+     "dnsteal": 38,
+     "escalated_sudo_command": 24,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 15.0
+   },
+   "seconds": 177
+  },
+  "entry5d300": {
+   "single_rule_host_windows": 0.382,
+   "S_seq": {
+    "auc_nonscan": 0.9216,
+    "auc_stage": {
+     "attacker_change_user": 0.994,
+     "dnsteal": 0.9206,
+     "escalated_sudo_command": 0.9936
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 2,
+     "dnsteal": 16,
+     "escalated_sudo_command": 11,
+     "service_scan": 2,
+     "wpscan": 2
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9197,
+    "auc_stage": {
+     "attacker_change_user": 0.9881,
+     "dnsteal": 0.9188,
+     "escalated_sudo_command": 0.9883
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 33,
+     "dirb": 1,
+     "dnsteal": 37,
+     "escalated_sudo_command": 30,
+     "service_scan": 6,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 140
+  },
+  "entry10d300": {
+   "single_rule_host_windows": 0.375,
+   "S_seq": {
+    "auc_nonscan": 0.9422,
+    "auc_stage": {
+     "attacker_change_user": 0.9999,
+     "dnsteal": 0.9415,
+     "escalated_sudo_command": 0.9941
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 6,
+     "dirb": 1,
+     "dnsteal": 17,
+     "escalated_sudo_command": 6,
+     "service_scan": 10,
+     "wpscan": 1
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9396,
+    "auc_stage": {
+     "attacker_change_user": 0.9924,
+     "dnsteal": 0.9389,
+     "escalated_sudo_command": 0.9887
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 35,
+     "escalated_sudo_command": 26,
+     "service_scan": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 17.5
+   },
+   "seconds": 152
+  },
+  "entry20d300": {
+   "single_rule_host_windows": 0.37,
+   "S_seq": {
+    "auc_nonscan": 0.875,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.8734,
+     "escalated_sudo_command": 0.9999
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 5,
+     "dirb": 2,
+     "dnsteal": 20,
+     "escalated_sudo_command": 5,
+     "service_scan": 11,
+     "wpscan": 2
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.8721,
+    "auc_stage": {
+     "attacker_change_user": 0.9927,
+     "dnsteal": 0.8705,
+     "escalated_sudo_command": 0.9928
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 29,
+     "dirb": 1,
+     "dnsteal": 38,
+     "escalated_sudo_command": 25,
+     "service_scan": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 161
+  },
+  "entry40d300": {
+   "single_rule_host_windows": 0.358,
+   "S_seq": {
+    "auc_nonscan": 0.8765,
+    "auc_stage": {
+     "attacker_change_user": 0.9999,
+     "dnsteal": 0.8749,
+     "escalated_sudo_command": 0.9999
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 8,
+     "dirb": 3,
+     "dnsteal": 21,
+     "escalated_sudo_command": 8,
+     "service_scan": 8,
+     "wpscan": 3
+    },
+    "median_first_item": 8.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.8749,
+    "auc_stage": {
+     "attacker_change_user": 0.9939,
+     "dnsteal": 0.8733,
+     "escalated_sudo_command": 0.9939
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 26,
+     "dirb": 1,
+     "dnsteal": 36,
+     "escalated_sudo_command": 24,
+     "service_scan": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 16.5
+   },
+   "seconds": 172
+  },
+  "entry5d900": {
+   "single_rule_host_windows": 0.365,
+   "S_seq": {
+    "auc_nonscan": 0.7933,
+    "auc_stage": {
+     "attacker_change_user": 0.9947,
+     "dnsteal": 0.7906,
+     "escalated_sudo_command": 0.9958
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 12,
+     "dirb": 1,
+     "dnsteal": 17,
+     "escalated_sudo_command": 9,
+     "service_scan": 5,
+     "wpscan": 1
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.7925,
+    "auc_stage": {
+     "attacker_change_user": 0.988,
+     "dnsteal": 0.7899,
+     "escalated_sudo_command": 0.9896
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 34,
+     "dirb": 1,
+     "dnsteal": 38,
+     "escalated_sudo_command": 30,
+     "service_scan": 7,
+     "wpscan": 1
+    },
+    "median_first_item": 18.5
+   },
+   "seconds": 136
+  },
+  "entry10d900": {
+   "single_rule_host_windows": 0.356,
+   "S_seq": {
+    "auc_nonscan": 0.7633,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.7601,
+     "escalated_sudo_command": 0.9998
+    },
+    "grouped_top20": 6,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 2,
+     "dirb": 5,
+     "dnsteal": 19,
+     "escalated_sudo_command": 2,
+     "service_scan": 9,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.7619,
+    "auc_stage": {
+     "attacker_change_user": 0.9925,
+     "dnsteal": 0.7588,
+     "escalated_sudo_command": 0.9924
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 1,
+     "dnsteal": 39,
+     "escalated_sudo_command": 28,
+     "service_scan": 8,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 149
+  },
+  "entry20d900": {
+   "single_rule_host_windows": 0.354,
+   "S_seq": {
+    "auc_nonscan": 0.7164,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.7126,
+     "escalated_sudo_command": 1.0
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 6,
+     "dirb": 2,
+     "dnsteal": 21,
+     "escalated_sudo_command": 6,
+     "service_scan": 12,
+     "wpscan": 2
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.7155,
+    "auc_stage": {
+     "attacker_change_user": 0.9929,
+     "dnsteal": 0.7118,
+     "escalated_sudo_command": 0.993
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 28,
+     "dirb": 1,
+     "dnsteal": 36,
+     "escalated_sudo_command": 26,
+     "service_scan": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 17.5
+   },
+   "seconds": 161
+  },
+  "entry40d900": {
+   "single_rule_host_windows": 0.354,
+   "S_seq": {
+    "auc_nonscan": 0.6729,
+    "auc_stage": {
+     "attacker_change_user": 1.0,
+     "dnsteal": 0.6685,
+     "escalated_sudo_command": 1.0
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 8,
+     "dirb": 2,
+     "dnsteal": 26,
+     "escalated_sudo_command": 8,
+     "service_scan": 11,
+     "wpscan": 2
+    },
+    "median_first_item": 8.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.6716,
+    "auc_stage": {
+     "attacker_change_user": 0.993,
+     "dnsteal": 0.6673,
+     "escalated_sudo_command": 0.9931
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 6,
+    "n_stages": 6,
+    "first_item": {
+     "attacker_change_user": 29,
+     "dirb": 1,
+     "dnsteal": 42,
+     "escalated_sudo_command": 26,
+     "service_scan": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 17.5
+   },
+   "seconds": 167
+  }
+ },
+ "russellmitchell": {
+  "alert5": {
+   "single_rule_host_windows": 0.952,
+   "S_seq": {
+    "auc_nonscan": 0.9888,
+    "auc_stage": {
+     "attacker_change_user": 0.9979,
+     "escalated_sudo_command": 0.9842
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 5,
+     "dirb": 5,
+     "escalated_sudo_command": 5,
+     "service_scan": 11,
+     "wpscan": 11
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9732,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9712
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 2,
+     "escalated_sudo_command": 32,
+     "service_scan": 20,
+     "wpscan": 2
+    },
+    "median_first_item": 20.0
+   },
+   "seconds": 5
+  },
+  "alert10": {
+   "single_rule_host_windows": 0.913,
+   "S_seq": {
+    "auc_nonscan": 0.9967,
+    "auc_stage": {
+     "attacker_change_user": 0.9957,
+     "escalated_sudo_command": 0.9972
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 11,
+     "escalated_sudo_command": 11,
+     "service_scan": 11,
+     "wpscan": 11
+    },
+    "median_first_item": 11.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9768,
+    "auc_stage": {
+     "attacker_change_user": 0.9765,
+     "escalated_sudo_command": 0.9769
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 34,
+     "dirb": 2,
+     "escalated_sudo_command": 34,
+     "service_scan": 19,
+     "wpscan": 2
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 5
+  },
+  "alert20": {
+   "single_rule_host_windows": 0.85,
+   "S_seq": {
+    "auc_nonscan": 0.979,
+    "auc_stage": {
+     "attacker_change_user": 0.9727,
+     "escalated_sudo_command": 0.9822
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 27,
+     "dirb": 4,
+     "escalated_sudo_command": 19,
+     "service_scan": 4,
+     "wpscan": 4
+    },
+    "median_first_item": 4.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9675,
+    "auc_stage": {
+     "attacker_change_user": 0.9636,
+     "escalated_sudo_command": 0.9695
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 40,
+     "dirb": 1,
+     "escalated_sudo_command": 37,
+     "service_scan": 17,
+     "wpscan": 1
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 5
+  },
+  "alert40": {
+   "single_rule_host_windows": 0.739,
+   "S_seq": {
+    "auc_nonscan": 0.9525,
+    "auc_stage": {
+     "attacker_change_user": 0.9594,
+     "escalated_sudo_command": 0.949
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 22,
+     "dirb": 5,
+     "escalated_sudo_command": 39,
+     "service_scan": 5,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9465,
+    "auc_stage": {
+     "attacker_change_user": 0.9505,
+     "escalated_sudo_command": 0.9444
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 37,
+     "dirb": 1,
+     "escalated_sudo_command": 45,
+     "service_scan": 17,
+     "wpscan": 1
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 6
+  },
+  "entry5d60": {
+   "single_rule_host_windows": 0.706,
+   "S_seq": {
+    "auc_nonscan": 0.9909,
+    "auc_stage": {
+     "attacker_change_user": 0.9842,
+     "escalated_sudo_command": 0.9942
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 22,
+     "dirb": 7,
+     "escalated_sudo_command": 7,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.974,
+    "auc_stage": {
+     "attacker_change_user": 0.9706,
+     "escalated_sudo_command": 0.9757
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 35,
+     "dirb": 1,
+     "escalated_sudo_command": 32,
+     "service_scan": 18,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 6
+  },
+  "entry10d60": {
+   "single_rule_host_windows": 0.479,
+   "S_seq": {
+    "auc_nonscan": 0.9606,
+    "auc_stage": {
+     "attacker_change_user": 0.9568,
+     "escalated_sudo_command": 0.9624
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 33,
+     "dirb": 9,
+     "escalated_sudo_command": 31,
+     "service_scan": 9,
+     "wpscan": 9
+    },
+    "median_first_item": 9.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9549,
+    "auc_stage": {
+     "attacker_change_user": 0.9518,
+     "escalated_sudo_command": 0.9565
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 42,
+     "dirb": 2,
+     "escalated_sudo_command": 41,
+     "service_scan": 19,
+     "wpscan": 2
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 7
+  },
+  "entry20d60": {
+   "single_rule_host_windows": 0.324,
+   "S_seq": {
+    "auc_nonscan": 0.999,
+    "auc_stage": {
+     "attacker_change_user": 0.999,
+     "escalated_sudo_command": 0.999
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 7,
+     "escalated_sudo_command": 7,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9772,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9772
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 1,
+     "escalated_sudo_command": 32,
+     "service_scan": 18,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 7
+  },
+  "entry40d60": {
+   "single_rule_host_windows": 0.294,
+   "S_seq": {
+    "auc_nonscan": 0.9989,
+    "auc_stage": {
+     "attacker_change_user": 0.9991,
+     "escalated_sudo_command": 0.9989
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 7,
+     "escalated_sudo_command": 7,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9772,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9771
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 1,
+     "escalated_sudo_command": 32,
+     "service_scan": 18,
+     "wpscan": 1
+    },
+    "median_first_item": 18.0
+   },
+   "seconds": 8
+  },
+  "entry5d300": {
+   "single_rule_host_windows": 0.374,
+   "S_seq": {
+    "auc_nonscan": 0.8525,
+    "auc_stage": {
+     "attacker_change_user": 0.8337,
+     "escalated_sudo_command": 0.862
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 49,
+     "dirb": 7,
+     "escalated_sudo_command": 43,
+     "service_scan": 7,
+     "wpscan": 1
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.8506,
+    "auc_stage": {
+     "attacker_change_user": 0.8323,
+     "escalated_sudo_command": 0.8597
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 49,
+     "dirb": 1,
+     "escalated_sudo_command": 46,
+     "service_scan": 19,
+     "wpscan": 1
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 6
+  },
+  "entry10d300": {
+   "single_rule_host_windows": 0.319,
+   "S_seq": {
+    "auc_nonscan": 0.9974,
+    "auc_stage": {
+     "attacker_change_user": 0.9973,
+     "escalated_sudo_command": 0.9975
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 5,
+     "dirb": 10,
+     "escalated_sudo_command": 2,
+     "service_scan": 10,
+     "wpscan": 10
+    },
+    "median_first_item": 10.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9772,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9772
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 33,
+     "dirb": 1,
+     "escalated_sudo_command": 32,
+     "service_scan": 20,
+     "wpscan": 1
+    },
+    "median_first_item": 20.0
+   },
+   "seconds": 7
+  },
+  "entry20d300": {
+   "single_rule_host_windows": 0.285,
+   "S_seq": {
+    "auc_nonscan": 0.9836,
+    "auc_stage": {
+     "attacker_change_user": 0.995,
+     "escalated_sudo_command": 0.9779
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 3,
+     "escalated_sudo_command": 17,
+     "service_scan": 5,
+     "wpscan": 3
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9659,
+    "auc_stage": {
+     "attacker_change_user": 0.9763,
+     "escalated_sudo_command": 0.9607
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 33,
+     "dirb": 1,
+     "escalated_sudo_command": 35,
+     "service_scan": 19,
+     "wpscan": 1
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 8
+  },
+  "entry40d300": {
+   "single_rule_host_windows": 0.272,
+   "S_seq": {
+    "auc_nonscan": 0.9982,
+    "auc_stage": {
+     "attacker_change_user": 0.999,
+     "escalated_sudo_command": 0.9978
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 4,
+     "dirb": 3,
+     "escalated_sudo_command": 8,
+     "service_scan": 3,
+     "wpscan": 3
+    },
+    "median_first_item": 3.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9772,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9772
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 2,
+     "escalated_sudo_command": 33,
+     "service_scan": 16,
+     "wpscan": 2
+    },
+    "median_first_item": 16.0
+   },
+   "seconds": 8
+  },
+  "entry5d900": {
+   "single_rule_host_windows": 0.353,
+   "S_seq": {
+    "auc_nonscan": 0.7523,
+    "auc_stage": {
+     "attacker_change_user": 0.7562,
+     "escalated_sudo_command": 0.7503
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 52,
+     "dirb": 7,
+     "escalated_sudo_command": 52,
+     "service_scan": 17,
+     "wpscan": 4
+    },
+    "median_first_item": 17.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.752,
+    "auc_stage": {
+     "attacker_change_user": 0.7559,
+     "escalated_sudo_command": 0.7501
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 52,
+     "dirb": 3,
+     "escalated_sudo_command": 52,
+     "service_scan": 24,
+     "wpscan": 3
+    },
+    "median_first_item": 24.0
+   },
+   "seconds": 6
+  },
+  "entry10d900": {
+   "single_rule_host_windows": 0.307,
+   "S_seq": {
+    "auc_nonscan": 0.9922,
+    "auc_stage": {
+     "attacker_change_user": 0.992,
+     "escalated_sudo_command": 0.9923
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 1,
+     "escalated_sudo_command": 7,
+     "service_scan": 4,
+     "wpscan": 1
+    },
+    "median_first_item": 4.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9718,
+    "auc_stage": {
+     "attacker_change_user": 0.9718,
+     "escalated_sudo_command": 0.9718
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 33,
+     "dirb": 1,
+     "escalated_sudo_command": 32,
+     "service_scan": 16,
+     "wpscan": 1
+    },
+    "median_first_item": 16.0
+   },
+   "seconds": 7
+  },
+  "entry20d900": {
+   "single_rule_host_windows": 0.27,
+   "S_seq": {
+    "auc_nonscan": 0.9804,
+    "auc_stage": {
+     "attacker_change_user": 0.9893,
+     "escalated_sudo_command": 0.9759
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 9,
+     "dirb": 3,
+     "escalated_sudo_command": 13,
+     "service_scan": 3,
+     "wpscan": 3
+    },
+    "median_first_item": 3.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9616,
+    "auc_stage": {
+     "attacker_change_user": 0.9689,
+     "escalated_sudo_command": 0.958
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 2,
+     "escalated_sudo_command": 33,
+     "service_scan": 17,
+     "wpscan": 2
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 8
+  },
+  "entry40d900": {
+   "single_rule_host_windows": 0.266,
+   "S_seq": {
+    "auc_nonscan": 0.991,
+    "auc_stage": {
+     "attacker_change_user": 0.999,
+     "escalated_sudo_command": 0.9869
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 2,
+     "dirb": 2,
+     "escalated_sudo_command": 12,
+     "service_scan": 2,
+     "wpscan": 2
+    },
+    "median_first_item": 2.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9708,
+    "auc_stage": {
+     "attacker_change_user": 0.9772,
+     "escalated_sudo_command": 0.9675
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 32,
+     "dirb": 1,
+     "escalated_sudo_command": 33,
+     "service_scan": 16,
+     "wpscan": 1
+    },
+    "median_first_item": 16.0
+   },
+   "seconds": 8
+  }
+ },
+ "wheeler": {
+  "alert20": {
+   "single_rule_host_windows": 0.929,
+   "S_seq": {
+    "auc_nonscan": 0.9955,
+    "auc_stage": {
+     "attacker_change_user": 0.9943,
+     "escalated_sudo_command": 0.9958
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 53,
+     "dirb": 4,
+     "escalated_sudo_command": 44,
+     "service_scan": 4,
+     "wpscan": 4
+    },
+    "median_first_item": 4.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9938,
+    "auc_stage": {
+     "attacker_change_user": 0.9928,
+     "escalated_sudo_command": 0.9941
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 77,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 14,
+     "wpscan": 1
+    },
+    "median_first_item": 14.0
+   },
+   "seconds": 81
+  },
+  "entry20d300": {
+   "single_rule_host_windows": 0.424,
+   "S_seq": {
+    "auc_nonscan": 0.9619,
+    "auc_stage": {
+     "attacker_change_user": 0.9674,
+     "escalated_sudo_command": 0.9604
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 23,
+     "dirb": 5,
+     "escalated_sudo_command": 26,
+     "service_scan": 5,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.96,
+    "auc_stage": {
+     "attacker_change_user": 0.965,
+     "escalated_sudo_command": 0.9585
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 68,
+     "dirb": 2,
+     "escalated_sudo_command": 55,
+     "service_scan": 19,
+     "wpscan": 2
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 169
+  },
+  "alert5": {
+   "single_rule_host_windows": 0.976,
+   "S_seq": {
+    "auc_nonscan": 0.9968,
+    "auc_stage": {
+     "attacker_change_user": 0.9947,
+     "escalated_sudo_command": 0.9974
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 88,
+     "dirb": 2,
+     "escalated_sudo_command": 9,
+     "service_scan": 2,
+     "wpscan": 2
+    },
+    "median_first_item": 2.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.995,
+    "auc_stage": {
+     "attacker_change_user": 0.994,
+     "escalated_sudo_command": 0.9952
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 89,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 13,
+     "wpscan": 1
+    },
+    "median_first_item": 13.0
+   },
+   "seconds": 73
+  },
+  "alert10": {
+   "single_rule_host_windows": 0.959,
+   "S_seq": {
+    "auc_nonscan": 0.9953,
+    "auc_stage": {
+     "attacker_change_user": 0.9874,
+     "escalated_sudo_command": 0.9976
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 90,
+     "dirb": 3,
+     "escalated_sudo_command": 29,
+     "service_scan": 3,
+     "wpscan": 3
+    },
+    "median_first_item": 3.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9933,
+    "auc_stage": {
+     "attacker_change_user": 0.9873,
+     "escalated_sudo_command": 0.995
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 95,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 14,
+     "wpscan": 1
+    },
+    "median_first_item": 14.0
+   },
+   "seconds": 73
+  },
+  "alert40": {
+   "single_rule_host_windows": 0.877,
+   "S_seq": {
+    "auc_nonscan": 0.9995,
+    "auc_stage": {
+     "attacker_change_user": 0.9995,
+     "escalated_sudo_command": 0.9995
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 13,
+     "dirb": 13,
+     "escalated_sudo_command": 13,
+     "service_scan": 13,
+     "wpscan": 13
+    },
+    "median_first_item": 13.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9958,
+    "auc_stage": {
+     "attacker_change_user": 0.9957,
+     "escalated_sudo_command": 0.9958
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 67,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 17,
+     "wpscan": 1
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 96
+  },
+  "entry5d60": {
+   "single_rule_host_windows": 0.815,
+   "S_seq": {
+    "auc_nonscan": 0.9907,
+    "auc_stage": {
+     "attacker_change_user": 0.9677,
+     "escalated_sudo_command": 0.9973
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 54,
+     "dirb": 8,
+     "escalated_sudo_command": 17,
+     "service_scan": 8,
+     "wpscan": 8
+    },
+    "median_first_item": 8.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9885,
+    "auc_stage": {
+     "attacker_change_user": 0.9669,
+     "escalated_sudo_command": 0.9947
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 76,
+     "dirb": 2,
+     "escalated_sudo_command": 62,
+     "service_scan": 16,
+     "wpscan": 2
+    },
+    "median_first_item": 16.0
+   },
+   "seconds": 149
+  },
+  "entry10d60": {
+   "single_rule_host_windows": 0.684,
+   "S_seq": {
+    "auc_nonscan": 0.9796,
+    "auc_stage": {
+     "attacker_change_user": 0.9296,
+     "escalated_sudo_command": 0.9938
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 67,
+     "dirb": 6,
+     "escalated_sudo_command": 20,
+     "service_scan": 6,
+     "wpscan": 6
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9775,
+    "auc_stage": {
+     "attacker_change_user": 0.9288,
+     "escalated_sudo_command": 0.9914
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 84,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 15,
+     "wpscan": 1
+    },
+    "median_first_item": 15.0
+   },
+   "seconds": 163
+  },
+  "entry20d60": {
+   "single_rule_host_windows": 0.567,
+   "S_seq": {
+    "auc_nonscan": 0.9949,
+    "auc_stage": {
+     "attacker_change_user": 0.9971,
+     "escalated_sudo_command": 0.9943
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 26,
+     "dirb": 6,
+     "escalated_sudo_command": 46,
+     "service_scan": 6,
+     "wpscan": 6
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9929,
+    "auc_stage": {
+     "attacker_change_user": 0.9943,
+     "escalated_sudo_command": 0.9924
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 70,
+     "dirb": 1,
+     "escalated_sudo_command": 58,
+     "service_scan": 15,
+     "wpscan": 1
+    },
+    "median_first_item": 15.0
+   },
+   "seconds": 180
+  },
+  "entry40d60": {
+   "single_rule_host_windows": 0.531,
+   "S_seq": {
+    "auc_nonscan": 0.9948,
+    "auc_stage": {
+     "attacker_change_user": 0.9967,
+     "escalated_sudo_command": 0.9942
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 20,
+     "dirb": 5,
+     "escalated_sudo_command": 20,
+     "service_scan": 5,
+     "wpscan": 5
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9924,
+    "auc_stage": {
+     "attacker_change_user": 0.9941,
+     "escalated_sudo_command": 0.9919
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 61,
+     "dirb": 1,
+     "escalated_sudo_command": 50,
+     "service_scan": 15,
+     "wpscan": 1
+    },
+    "median_first_item": 15.0
+   },
+   "seconds": 190
+  },
+  "entry5d300": {
+   "single_rule_host_windows": 0.488,
+   "S_seq": {
+    "auc_nonscan": 0.9614,
+    "auc_stage": {
+     "attacker_change_user": 0.8387,
+     "escalated_sudo_command": 0.9965
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 31,
+     "dirb": 7,
+     "escalated_sudo_command": 7,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9587,
+    "auc_stage": {
+     "attacker_change_user": 0.8379,
+     "escalated_sudo_command": 0.9932
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 72,
+     "dirb": 1,
+     "escalated_sudo_command": 62,
+     "service_scan": 15,
+     "wpscan": 1
+    },
+    "median_first_item": 15.0
+   },
+   "seconds": 150
+  },
+  "entry10d300": {
+   "single_rule_host_windows": 0.458,
+   "S_seq": {
+    "auc_nonscan": 0.9439,
+    "auc_stage": {
+     "attacker_change_user": 0.8564,
+     "escalated_sudo_command": 0.9689
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 59,
+     "dirb": 15,
+     "escalated_sudo_command": 31,
+     "service_scan": 5,
+     "wpscan": 7
+    },
+    "median_first_item": 15.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9422,
+    "auc_stage": {
+     "attacker_change_user": 0.8554,
+     "escalated_sudo_command": 0.9669
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 81,
+     "dirb": 3,
+     "escalated_sudo_command": 62,
+     "service_scan": 21,
+     "wpscan": 3
+    },
+    "median_first_item": 21.0
+   },
+   "seconds": 162
+  },
+  "entry40d300": {
+   "single_rule_host_windows": 0.393,
+   "S_seq": {
+    "auc_nonscan": 0.9725,
+    "auc_stage": {
+     "attacker_change_user": 0.9635,
+     "escalated_sudo_command": 0.975
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 22,
+     "dirb": 7,
+     "escalated_sudo_command": 27,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9707,
+    "auc_stage": {
+     "attacker_change_user": 0.9615,
+     "escalated_sudo_command": 0.9733
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 60,
+     "dirb": 3,
+     "escalated_sudo_command": 51,
+     "service_scan": 22,
+     "wpscan": 3
+    },
+    "median_first_item": 22.0
+   },
+   "seconds": 183
+  },
+  "entry5d900": {
+   "single_rule_host_windows": 0.385,
+   "S_seq": {
+    "auc_nonscan": 0.9613,
+    "auc_stage": {
+     "attacker_change_user": 0.8292,
+     "escalated_sudo_command": 0.9991
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 24,
+     "dirb": 10,
+     "escalated_sudo_command": 10,
+     "service_scan": 10,
+     "wpscan": 10
+    },
+    "median_first_item": 10.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9584,
+    "auc_stage": {
+     "attacker_change_user": 0.8283,
+     "escalated_sudo_command": 0.9956
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 68,
+     "dirb": 2,
+     "escalated_sudo_command": 62,
+     "service_scan": 17,
+     "wpscan": 2
+    },
+    "median_first_item": 17.0
+   },
+   "seconds": 150
+  },
+  "entry10d900": {
+   "single_rule_host_windows": 0.381,
+   "S_seq": {
+    "auc_nonscan": 0.9011,
+    "auc_stage": {
+     "attacker_change_user": 0.7585,
+     "escalated_sudo_command": 0.9419
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 61,
+     "dirb": 6,
+     "escalated_sudo_command": 18,
+     "service_scan": 6,
+     "wpscan": 6
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.8989,
+    "auc_stage": {
+     "attacker_change_user": 0.7576,
+     "escalated_sudo_command": 0.9392
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 80,
+     "dirb": 2,
+     "escalated_sudo_command": 60,
+     "service_scan": 19,
+     "wpscan": 2
+    },
+    "median_first_item": 19.0
+   },
+   "seconds": 163
+  },
+  "entry20d900": {
+   "single_rule_host_windows": 0.38,
+   "S_seq": {
+    "auc_nonscan": 0.9433,
+    "auc_stage": {
+     "attacker_change_user": 0.9965,
+     "escalated_sudo_command": 0.9282
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 15,
+     "dirb": 8,
+     "escalated_sudo_command": 39,
+     "service_scan": 3,
+     "wpscan": 8
+    },
+    "median_first_item": 8.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9413,
+    "auc_stage": {
+     "attacker_change_user": 0.9936,
+     "escalated_sudo_command": 0.9264
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 67,
+     "dirb": 3,
+     "escalated_sudo_command": 58,
+     "service_scan": 23,
+     "wpscan": 3
+    },
+    "median_first_item": 23.0
+   },
+   "seconds": 166
+  },
+  "entry40d900": {
+   "single_rule_host_windows": 0.38,
+   "S_seq": {
+    "auc_nonscan": 0.9796,
+    "auc_stage": {
+     "attacker_change_user": 0.9886,
+     "escalated_sudo_command": 0.977
+    },
+    "grouped_top20": 5,
+    "grouped_top50": 5,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 17,
+     "dirb": 7,
+     "escalated_sudo_command": 17,
+     "service_scan": 7,
+     "wpscan": 7
+    },
+    "median_first_item": 7.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9771,
+    "auc_stage": {
+     "attacker_change_user": 0.986,
+     "escalated_sudo_command": 0.9745
+    },
+    "grouped_top20": 3,
+    "grouped_top50": 3,
+    "n_stages": 5,
+    "first_item": {
+     "attacker_change_user": 60,
+     "dirb": 3,
+     "escalated_sudo_command": 52,
+     "service_scan": 20,
+     "wpscan": 3
+    },
+    "median_first_item": 20.0
+   },
+   "seconds": 173
+  }
+ },
+ "shaw": {
+  "alert5": {
+   "single_rule_host_windows": 0.954,
+   "S_seq": {
+    "auc_nonscan": 0.9954,
+    "auc_stage": {
+     "attacker_change_user": 0.9991,
+     "escalated_sudo_command": 0.9938
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 17,
+     "dirb": 5,
+     "escalated_sudo_command": 14,
+     "wpscan": 5
+    },
+    "median_first_item": 9.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9871,
+    "auc_stage": {
+     "attacker_change_user": 0.9881,
+     "escalated_sudo_command": 0.9867
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 58,
+     "dirb": 2,
+     "escalated_sudo_command": 50,
+     "wpscan": 2
+    },
+    "median_first_item": 26.0
+   },
+   "seconds": 8
+  },
+  "alert10": {
+   "single_rule_host_windows": 0.924,
+   "S_seq": {
+    "auc_nonscan": 0.9977,
+    "auc_stage": {
+     "attacker_change_user": 0.997,
+     "escalated_sudo_command": 0.998
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 13,
+     "dirb": 1,
+     "escalated_sudo_command": 9,
+     "wpscan": 1
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9874,
+    "auc_stage": {
+     "attacker_change_user": 0.9871,
+     "escalated_sudo_command": 0.9876
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 59,
+     "dirb": 1,
+     "escalated_sudo_command": 50,
+     "wpscan": 1
+    },
+    "median_first_item": 25.5
+   },
+   "seconds": 8
+  },
+  "alert20": {
+   "single_rule_host_windows": 0.878,
+   "S_seq": {
+    "auc_nonscan": 0.9978,
+    "auc_stage": {
+     "attacker_change_user": 0.9978,
+     "escalated_sudo_command": 0.9978
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 10,
+     "dirb": 2,
+     "escalated_sudo_command": 18,
+     "wpscan": 2
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9876,
+    "auc_stage": {
+     "attacker_change_user": 0.9876,
+     "escalated_sudo_command": 0.9876
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 53,
+     "dirb": 1,
+     "escalated_sudo_command": 50,
+     "wpscan": 1
+    },
+    "median_first_item": 25.5
+   },
+   "seconds": 9
+  },
+  "alert40": {
+   "single_rule_host_windows": 0.795,
+   "S_seq": {
+    "auc_nonscan": 0.9988,
+    "auc_stage": {
+     "attacker_change_user": 0.9996,
+     "escalated_sudo_command": 0.9985
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 8,
+     "dirb": 3,
+     "escalated_sudo_command": 8,
+     "wpscan": 3
+    },
+    "median_first_item": 5.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9883,
+    "auc_stage": {
+     "attacker_change_user": 0.9885,
+     "escalated_sudo_command": 0.9883
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 51,
+     "dirb": 1,
+     "escalated_sudo_command": 47,
+     "wpscan": 1
+    },
+    "median_first_item": 24.0
+   },
+   "seconds": 10
+  },
+  "entry5d60": {
+   "single_rule_host_windows": 0.709,
+   "S_seq": {
+    "auc_nonscan": 0.998,
+    "auc_stage": {
+     "attacker_change_user": 0.9999,
+     "escalated_sudo_command": 0.9972
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 2,
+     "escalated_sudo_command": 11,
+     "wpscan": 2
+    },
+    "median_first_item": 4.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9872,
+    "auc_stage": {
+     "attacker_change_user": 0.9886,
+     "escalated_sudo_command": 0.9866
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 51,
+     "dirb": 1,
+     "escalated_sudo_command": 49,
+     "wpscan": 1
+    },
+    "median_first_item": 25.0
+   },
+   "seconds": 9
+  },
+  "entry10d60": {
+   "single_rule_host_windows": 0.511,
+   "S_seq": {
+    "auc_nonscan": 0.9984,
+    "auc_stage": {
+     "attacker_change_user": 0.9998,
+     "escalated_sudo_command": 0.9978
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 2,
+     "escalated_sudo_command": 13,
+     "wpscan": 2
+    },
+    "median_first_item": 4.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9878,
+    "auc_stage": {
+     "attacker_change_user": 0.9888,
+     "escalated_sudo_command": 0.9873
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 51,
+     "dirb": 1,
+     "escalated_sudo_command": 46,
+     "wpscan": 1
+    },
+    "median_first_item": 23.5
+   },
+   "seconds": 9
+  },
+  "entry20d60": {
+   "single_rule_host_windows": 0.339,
+   "S_seq": {
+    "auc_nonscan": 0.9984,
+    "auc_stage": {
+     "attacker_change_user": 0.9998,
+     "escalated_sudo_command": 0.9977
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 2,
+     "escalated_sudo_command": 11,
+     "wpscan": 2
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9884,
+    "auc_stage": {
+     "attacker_change_user": 0.9894,
+     "escalated_sudo_command": 0.9879
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 50,
+     "dirb": 1,
+     "escalated_sudo_command": 42,
+     "wpscan": 1
+    },
+    "median_first_item": 21.5
+   },
+   "seconds": 11
+  },
+  "entry40d60": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9995,
+    "auc_stage": {
+     "attacker_change_user": 0.9998,
+     "escalated_sudo_command": 0.9994
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 7,
+     "dirb": 3,
+     "escalated_sudo_command": 12,
+     "wpscan": 3
+    },
+    "median_first_item": 5.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9898,
+    "auc_stage": {
+     "attacker_change_user": 0.9898,
+     "escalated_sudo_command": 0.9898
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 47,
+     "dirb": 1,
+     "escalated_sudo_command": 43,
+     "wpscan": 1
+    },
+    "median_first_item": 22.0
+   },
+   "seconds": 12
+  },
+  "entry5d300": {
+   "single_rule_host_windows": 0.347,
+   "S_seq": {
+    "auc_nonscan": 0.9941,
+    "auc_stage": {
+     "attacker_change_user": 0.992,
+     "escalated_sudo_command": 0.995
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 2,
+     "escalated_sudo_command": 11,
+     "wpscan": 2
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9855,
+    "auc_stage": {
+     "attacker_change_user": 0.983,
+     "escalated_sudo_command": 0.9865
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 52,
+     "dirb": 1,
+     "escalated_sudo_command": 49,
+     "wpscan": 1
+    },
+    "median_first_item": 25.0
+   },
+   "seconds": 9
+  },
+  "entry10d300": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9894,
+    "auc_stage": {
+     "attacker_change_user": 0.9937,
+     "escalated_sudo_command": 0.9876
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 16,
+     "dirb": 2,
+     "escalated_sudo_command": 20,
+     "wpscan": 2
+    },
+    "median_first_item": 9.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9811,
+    "auc_stage": {
+     "attacker_change_user": 0.9834,
+     "escalated_sudo_command": 0.9802
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 52,
+     "dirb": 1,
+     "escalated_sudo_command": 45,
+     "wpscan": 1
+    },
+    "median_first_item": 23.0
+   },
+   "seconds": 10
+  },
+  "entry20d300": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9918,
+    "auc_stage": {
+     "attacker_change_user": 0.9978,
+     "escalated_sudo_command": 0.9892
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 19,
+     "dirb": 2,
+     "escalated_sudo_command": 19,
+     "wpscan": 2
+    },
+    "median_first_item": 10.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.983,
+    "auc_stage": {
+     "attacker_change_user": 0.9876,
+     "escalated_sudo_command": 0.9809
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 56,
+     "dirb": 1,
+     "escalated_sudo_command": 44,
+     "wpscan": 1
+    },
+    "median_first_item": 22.5
+   },
+   "seconds": 11
+  },
+  "entry40d300": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9975,
+    "auc_stage": {
+     "attacker_change_user": 0.9998,
+     "escalated_sudo_command": 0.9966
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 10,
+     "dirb": 2,
+     "escalated_sudo_command": 10,
+     "wpscan": 2
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9879,
+    "auc_stage": {
+     "attacker_change_user": 0.9899,
+     "escalated_sudo_command": 0.9871
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 47,
+     "dirb": 1,
+     "escalated_sudo_command": 44,
+     "wpscan": 1
+    },
+    "median_first_item": 22.5
+   },
+   "seconds": 12
+  },
+  "entry5d900": {
+   "single_rule_host_windows": 0.341,
+   "S_seq": {
+    "auc_nonscan": 0.9878,
+    "auc_stage": {
+     "attacker_change_user": 0.9712,
+     "escalated_sudo_command": 0.9949
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 11,
+     "dirb": 2,
+     "escalated_sudo_command": 7,
+     "wpscan": 2
+    },
+    "median_first_item": 4.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.981,
+    "auc_stage": {
+     "attacker_change_user": 0.9679,
+     "escalated_sudo_command": 0.9867
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 52,
+     "dirb": 1,
+     "escalated_sudo_command": 48,
+     "wpscan": 1
+    },
+    "median_first_item": 24.5
+   },
+   "seconds": 9
+  },
+  "entry10d900": {
+   "single_rule_host_windows": 0.337,
+   "S_seq": {
+    "auc_nonscan": 0.9928,
+    "auc_stage": {
+     "attacker_change_user": 0.993,
+     "escalated_sudo_command": 0.9928
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 17,
+     "dirb": 2,
+     "escalated_sudo_command": 9,
+     "wpscan": 2
+    },
+    "median_first_item": 5.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.984,
+    "auc_stage": {
+     "attacker_change_user": 0.9836,
+     "escalated_sudo_command": 0.9842
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 55,
+     "dirb": 1,
+     "escalated_sudo_command": 49,
+     "wpscan": 1
+    },
+    "median_first_item": 25.0
+   },
+   "seconds": 10
+  },
+  "entry20d900": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9993,
+    "auc_stage": {
+     "attacker_change_user": 0.9999,
+     "escalated_sudo_command": 0.9991
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 9,
+     "dirb": 3,
+     "escalated_sudo_command": 9,
+     "wpscan": 3
+    },
+    "median_first_item": 6.0
+   },
+   "hybrid": {
+    "auc_nonscan": 0.9891,
+    "auc_stage": {
+     "attacker_change_user": 0.9894,
+     "escalated_sudo_command": 0.9891
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 49,
+     "dirb": 1,
+     "escalated_sudo_command": 46,
+     "wpscan": 1
+    },
+    "median_first_item": 23.5
+   },
+   "seconds": 11
+  },
+  "entry40d900": {
+   "single_rule_host_windows": 0.336,
+   "S_seq": {
+    "auc_nonscan": 0.9995,
+    "auc_stage": {
+     "attacker_change_user": 0.9999,
+     "escalated_sudo_command": 0.9993
+    },
+    "grouped_top20": 4,
+    "grouped_top50": 4,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 10,
+     "dirb": 3,
+     "escalated_sudo_command": 10,
+     "wpscan": 3
+    },
+    "median_first_item": 6.5
+   },
+   "hybrid": {
+    "auc_nonscan": 0.989,
+    "auc_stage": {
+     "attacker_change_user": 0.989,
+     "escalated_sudo_command": 0.989
+    },
+    "grouped_top20": 2,
+    "grouped_top50": 3,
+    "n_stages": 4,
+    "first_item": {
+     "attacker_change_user": 51,
+     "dirb": 1,
+     "escalated_sudo_command": 46,
+     "wpscan": 1
+    },
+    "median_first_item": 23.5
+   },
+   "seconds": 12
+  }
+ },
+ "_meta": {
+  "script": "tools/ait_sweep.py",
+  "window_builder": "entry mode (collapse_s)",
+  "baseline": "oracle-cleaned (event-labelled attack alerts before first step removed)",
+  "seeds": 3,
+  "psi": "min(4096,n)",
+  "trees": 200,
+  "stride": 10,
+  "queue_groups": "(host, rule, gap<=3600s)",
+  "scenarios": "tuning set only",
+  "date": "2026-10-11"
+ }
+}

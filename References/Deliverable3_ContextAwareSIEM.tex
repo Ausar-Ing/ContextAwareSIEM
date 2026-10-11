@@ -150,9 +150,9 @@ For an admitted alert $a$ and an entity $e \in E(a)$, the window could simply be
 \begin{equation}
 \varepsilon = \big(r,\ \max_{x} l(x),\ \textstyle\bigcup_x \mathrm{tech}(x),\ \bigcup_x \mathrm{tac}(x),\ \tau^{\mathrm{f}},\ \tau^{\mathrm{l}},\ k\big),
 \end{equation}
-its rule, highest level, ATT\&CK tags, first and last member times and member count. A new alert joins the most recent entry of its rule if $\tau(a) - \tau^{\mathrm{l}} \le \delta$, and otherwise opens a new entry; interleaved rules keep separate runs, and a run broken by a gap longer than $\delta$ is never rejoined. The window $W(e,a)$ is the last $N$ entries of $e$, ordered by $\tau^{\mathrm{f}}$, whose newest member satisfies $\tau(a) - \tau^{\mathrm{l}} < T$, and it contains the entry holding $a$. $N = 20$\prov{}, $\delta = 60$\,s\prov{} and $T = 24$\,h\prov{}; Section~\ref{sec:prelim} reports the sweep over $N$ and $\delta$ that set them. An alert resolving to two entities updates two windows.
+its rule, highest level, ATT\&CK tags, first and last member times and member count. A new alert joins the most recent entry of its rule if $\tau(a) - \tau^{\mathrm{l}} \le \delta$, and otherwise opens a new entry; interleaved rules keep separate runs, and a run broken by a gap longer than $\delta$ is never rejoined. The window $W(e,a)$ is the last $N$ entries of $e$, ordered by $\tau^{\mathrm{f}}$, whose newest member satisfies $\tau(a) - \tau^{\mathrm{l}} < T$, and it contains the entry holding $a$. $N = 20$\prov{}, $\delta = 60$\,s\prov{} and $T = 24$\,h\prov{}; Section~\ref{sec:prelim} reports the sweep over $N$ and $\delta$: it fixes $\delta$, but does not by itself choose between entries and alert windows. An alert resolving to two entities updates two windows.
 
-The entry gap $\delta$ is easily confused with the queue's group gap $\Delta$. The queue's repeat groups (Section~\ref{sec:queue}) merge over $\Delta = 1$\,h because they serve display; entries keep $\delta$ short because their start times carry the timing features, and a long $\delta$ erases exactly the pacing those features measure. The sweep confirms this: at $N = 20$, raising $\delta$ from 60\,s to 900\,s lowered the mean AUC from 0.987 to 0.910.
+The entry gap $\delta$ is easily confused with the queue's group gap $\Delta$. The queue's repeat groups (Section~\ref{sec:queue}) merge over $\Delta = 1$\,h because they serve display; entries keep $\delta$ short because their start times carry the timing features, and a long $\delta$ erases exactly the pacing those features measure. The sweep confirms this: at $N = 20$, raising $\delta$ from 60\,s to 900\,s lowered the mean AUC from 0.963 to 0.829.
 
 \textbf{Active-time correction.} A workstation is switched off most nights, and a window built on the first alert of the morning would otherwise span the overnight gap (up to 23\,h on our workstation). The host being off is not the entity being quiet, and only the second is evidence. For each host $h$ the builder records, online, every gap longer than $G$ between consecutive alerts in $h$'s \emph{global} stream (all of its alerts, including those excluded at admission, which still prove the machine was on), giving a set of downtime intervals $I_h$. A gap is recognized when the first alert after it arrives, so the correction is causal. For consecutive entries $\varepsilon_i, \varepsilon_{i+1}$ of the window, with start times $\tau_i = \tau^{\mathrm{f}}(\varepsilon_i)$,
 \begin{equation}
@@ -216,13 +216,13 @@ s(\mathbf{v}) = 2^{-\mathbb{E}[\ell(\mathbf{v})] / c(\psi)} .
 
 \textbf{Model scope and training set.} One forest is fitted per entity type, since host windows (dense, mixed) and address or user windows (sparse) follow different distributions. Successive windows of an entity share almost all of their entries, so the training set is the baseline windows subsampled at stride $s = 10$\meas{}, which in simulation also improved ranking by giving quiet periods proportionate weight. Where several hosts feed one forest, the training set is stratified so that each host contributes an equal share up to its available windows, preventing the most active machine from defining normal for all. Inputs are the fourteen model features of Table~\ref{tab:features}, with no further scaling.
 
-\textbf{Hyperparameters.} $t = 200$ and $\psi = \min(4096, n)$\meas{}. The original setting $\psi = 256$ assumes anomalies form a dense cluster, which attack windows do not; in a simulation over ten seeds, $\psi = 256$ ranked attacks at AUC 0.926, below a Mahalanobis comparator (0.965), while $\psi = 4096$ reached 0.991. The training target is 8{,}000 windows after striding, with a floor of 4{,}000\meas{}: below about 2{,}000 the variance across seeds exceeded the effect the ablation is meant to measure. Results are reported as mean $\pm$ standard deviation over ten seeds.
+\textbf{Hyperparameters.} $t = 200$ and $\psi = \min(4096, n)$\meas{}. The original setting $\psi = 256$ assumes anomalies form a dense cluster, which attack windows do not; in a simulation over ten seeds, $\psi = 256$ ranked attacks at AUC 0.926, below a Mahalanobis comparator (0.965), while $\psi = 4096$ reached 0.991. The training target is 8{,}000 windows after striding, with a floor of 4{,}000\meas{}: below about 2{,}000 the variance across seeds exceeded the effect the ablation is meant to measure. Each seed is an independent replica, forest and calibration both; metrics are computed per seed and reported as mean $\pm$ standard deviation over ten seeds, never on scores averaged across seeds, which would amount to a larger forest and hide the variance.
 
 \textbf{Per-host calibration.} Raw scores concentrate near 0.5, so a linear rescale would make the sequence term nearly constant. Scores are instead mapped through the empirical distribution of each host's own baseline windows,
 \begin{equation}
 S_\mathrm{seq}(a, e) = 100 \cdot \hat F_{h,k}\big( s(\phi(W(e,a))) \big),
 \end{equation}
-where $\hat F_{h,k}$ is fitted on the baseline windows of host $h$ and entity type $k$, falling back to the type-level distribution when $h$ has fewer than 500\prov{} baseline windows. $S_\mathrm{seq}$ is then uniform on benign data by construction, commensurate with the other terms, and expresses how unusual a window is \emph{for that machine}.
+where $\hat F_{h,k}$ is fitted on the \emph{held-out} baseline windows of host $h$ and entity type $k$, those the stride left out of training, falling back to the type-level distribution when $h$ has fewer than 500\prov{} of them. Calibrating on the training windows themselves is biased, since the trees were grown from those points; in a synthetic check the bias was small (5.2\% rather than 5\% of unseen benign vectors above the 95th percentile, with twice the variance across seeds), but the held-out windows remove it at no cost, so the workstation's drift check measures behaviour rather than this artefact. $S_\mathrm{seq}$ is then uniform on benign data by construction, commensurate with the other terms, and expresses how unusual a window is \emph{for that machine}.
 
 \textbf{Reduction and cold start.} An alert's score is the maximum over its entities, $S_\mathrm{seq}(a) = \max_{e \in E(a)} S_\mathrm{seq}(a,e)$, with the arg-max entity recorded for the explanation: an alert unremarkable for its host but highly unusual for its source address should rise. Windows representing fewer than three alerts are unscored, receive the baseline median 50, and are flagged so that the analyst sees ``no temporal evidence'' rather than ``normal''.
 
@@ -337,7 +337,7 @@ wardbeck & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
 \item \textbf{B2}: B1 + sequence anomaly score; \emph{B2 vs.\ B1 isolates temporal context}.
 \item \textbf{B2$'$}: B2 with the forest replaced by a robust z-score, $\max_j |z_j|$ against baseline medians: does the forest earn its place?
 \item \textbf{B2$_\mathrm{nov}$}: B2 with $S_\mathrm{seq}$ replaced by the novelty flag alone: does the window add anything beyond ``never seen this rule here''?
-\item \textbf{B2$_\mathrm{alert}$}: B2 with the window of the last $N$ alerts instead of entries: does collapsing change the ranking?
+\item \textbf{B2$_\mathrm{alert}$}: B2 with the window of the last 5 alerts, the strongest alert window on the tuning set, instead of entries: does collapsing change the ranking?
 \item \textbf{B3}: B2 + entity accumulation.
 \end{itemize}
 
@@ -364,7 +364,7 @@ The layer consumes alerts only and reads no log content, so its reach is bounded
 \section{Preliminary Feasibility Check}
 \label{sec:prelim}
 
-Before fixing the protocol we ran the design once, untuned, on all eight scenarios, with the alert window of the previous design (the last 20 alerts): forests per entity type on each scenario's pre-attack windows (three seeds, $\psi = \min(4096, n)$, stride 10, active-time correction off), per-type calibration, no exposure term ($w_c = 0$), and default $w_r = 0.3$, $w_s = 0.5$. Table~\ref{tab:prelim} reports the alert-level AUC of non-scan attack alerts against benign alerts and the stage coverage in the top 20 queue items. These numbers use all eight scenarios and no tuning; they establish feasibility, not results. They have deliberately not been re-run with the entry window, so that the test scenarios are not used again before the protocol is fixed.
+Before fixing the protocol we ran the design once, untuned, on all eight scenarios, with the alert window of the previous design (the last 20 alerts): forests per entity type on each scenario's pre-attack windows (three seeds, $\psi = \min(4096, n)$, stride 10, active-time correction off), no exposure term ($w_c = 0$), and default $w_r = 0.3$, $w_s = 0.5$. Table~\ref{tab:prelim} reports the alert-level AUC of non-scan attack alerts against benign alerts and the stage coverage in the top 20 queue items. These numbers use all eight scenarios and no tuning; they establish feasibility, not results. This check also predates two corrections to Component 6: its scores were averaged over the three seeds, and calibrated per entity type on the training windows themselves rather than per host on held-out windows. Neither it nor its use of the 20-alert window has been re-run, deliberately, so that the test scenarios are not used again before the protocol is fixed; the window sweep below uses the method as specified.
 
 \begin{table}[t]
 \caption{Preliminary check (untuned). AUC: non-scan attack vs.\ benign alerts. Cov: stages with an item in the top 20 queue items / stages raising alerts}
@@ -395,28 +395,30 @@ wardbeck & .547 & 2/5 & .847 & 3/5 & \textbf{.999} & \textbf{5/5} & .994 & 3/5 \
 Four observations shape the design. First, rule severity ranks post-reconnaissance attack alerts at chance: privilege escalation raises level-3 alerts, the same level as routine logins. Second, the window score separates them with AUC above 0.97 in seven of eight scenarios. The exception, harrison, is the designed contamination: exfiltration alerts make up 52\% of its training baseline, so the model learned them as normal and ranks the remaining exfiltration alerts \emph{below} benign activity (AUC 0.18). Santos carries the same contamination but has almost no exfiltration alerts left to rank after its first attack step, so its score is unaffected. A contaminated baseline is the principal failure mode of the method. Retraining harrison with the 46{,}211 labelled exfiltration alerts removed from its baseline, all else unchanged, raises the exfiltration AUC from 0.17 to 0.89 and moves privilege escalation from the fifth queue item to the first; for santos the change is small (stage coverage 5/6 to 6/6, AUC 0.997 to 0.998). The window score is therefore effective only to the extent that the baseline it learns from is clean, and the evaluation reports both conditions. Third, the novelty flag alone separates attack alerts well in some scenarios and poorly in others (AUC 0.47--0.98), and surfaces fewer stages in the queue than the window score in five of eight scenarios, as many in two and more in one (harrison); in a short baseline many benign rules are also new. The window therefore adds information beyond novelty in most, but not all, scenarios. Fourth, ranking individual alerts fails for every system: scan floods occupy the first thousands of positions, which motivated the repeat-group queue, and even with grouping the default hybrid weights rank escalation below noisier, higher-level groups.
 
 
-\textbf{Window definition.} The window parameters were then set by a sweep on the four tuning scenarios only, with harrison's baseline oracle-cleaned so that its contamination does not decide the comparison, and otherwise the same pipeline (Table~\ref{tab:sweep}). Three results follow. First, the alert window is sensitive to $N$: on harrison its AUC falls from 0.96 to 0.83 as $N$ grows from 5 to 40, while entries at $\delta = 60$\,s stay between 0.92 and 0.96. Second, a long $\delta$ hurts, as argued in Section~\ref{sec:window}. Third, queue coverage does not separate the configurations: every row places 16 to 19 of the 20 stages in the top 20 items, a spread that a single alert's rank can account for. The small alert windows score as well as entries on these measures, but at $N = 5$ 96\% of host windows hold a single rule, so the window describes the current flood and almost nothing around it, which is the context the layer exists to use. We adopt entries with $N = 20$ and $\delta = 60$\,s, which match the best alert window on mean AUC (0.987 against 0.986) while most windows hold several rules, and keep the alert window as the ablation arm B2$_\mathrm{alert}$. The choice rests partly on that design argument, since the tuning data does not separate the leading configurations, and it is not uniformly better per stage: against the 20-alert window, the user change in wheeler moves from the 53rd queue item to the 26th and in russellmitchell from the 27th to the 7th, but in harrison privilege escalation moves from the first item to the eighth.
+\textbf{Window definition.} The window parameters were then examined by a sweep on the four tuning scenarios only, with harrison's baseline oracle-cleaned so that its contamination does not decide the comparison, Component 6 as specified in Section~\ref{sec:iforest}, and five seeds (Table~\ref{tab:sweep}). It settles $\delta$ and little else. A long $\delta$ hurts on every measure of separation, as argued in Section~\ref{sec:window}. Between entries and alert windows the measures disagree. Alert-level AUC favours short alert windows (0.985 for 5 alerts against 0.963 for 20 entries) and falls steeply with $N$: on harrison from 0.97 at $N = 5$ to 0.75 at $N = 40$. The queue position of the non-scan stages, which is what an analyst experiences, favours entries: with $N = 20$ entries the worst first-item rank of any non-scan stage averages 35, against 59 to 76 for alert windows of up to 20 alerts. Coverage in the top 20 items does not separate the configurations with $\delta \le 60$\,s (16 to 18 of 20 stages), because it is dominated by the scan stages, which every configuration surfaces. With two or three non-scan stages per scenario, the tuning set cannot select the window on the data. We adopt entries with $N = 20$ and $\delta = 60$\,s on two grounds, the bounded worst case for the stages that matter and a window that holds more than the current flood (40\% of host windows hold one rule, against 89--96\% for alert windows), at a measured cost in alert-level AUC, and carry the strongest alert window as the ablation arm B2$_\mathrm{alert}$ so that the test set reports the comparison. An earlier run of this sweep, with calibration on training windows and seed-averaged scores, appeared to favour entries on AUC as well; that advantage did not survive the corrected method, so the comparison is more sensitive to calibration details than to seeds, whose spread is small (AUC standard deviation at most 0.013 for $\delta \le 60$\,s).
 
 \begin{table}[t]
-\caption{Window sweep on the tuning scenarios ($S_\mathrm{seq}$ only, three seeds). 1-rule: share of baseline host windows holding a single rule. AUC: non-scan attack vs.\ benign, mean and minimum over scenarios. Cov: stages with an item in the top 20, summed over scenarios}
+\caption{Window sweep on the tuning scenarios ($S_\mathrm{seq}$ only, five seeds, metrics per seed then averaged). 1-rule: share of baseline host windows holding a single rule. AUC: non-scan attack vs.\ benign, mean and minimum over scenarios. Rank: first queue item of each non-scan stage, mean and worst. Cov: stages with an item in the top 20, summed}
 \label{tab:sweep}
 \centering\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lrr cccc@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrr c cc cc c@{}}
 \toprule
-\textbf{Window} & $N$ & $\delta$ (s) & \textbf{1-rule} & \textbf{AUC} & \textbf{min} & \textbf{Cov} \\
+& & & & \multicolumn{2}{c}{\textbf{AUC}} & \multicolumn{2}{c}{\textbf{Rank}} & \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+\textbf{Window} & $N$ & $\delta$ & \textbf{1-rule} & mean & min & mean & worst & \textbf{Cov} \\
 \midrule
-alerts & 5 & --- & .96 & .986 & .964 & 18/20 \\
-alerts & 10 & --- & .93 & .985 & .949 & 17/20 \\
-alerts (D2) & 20 & --- & .89 & .967 & .895 & 16/20 \\
-alerts & 40 & --- & .81 & .945 & .828 & 18/20 \\
+alerts & 5 & --- & .96 & \textbf{.985} & \textbf{.970} & 21 & 76 & 16.6 \\
+alerts & 10 & --- & .93 & .983 & .952 & 22 & 73 & 17.2 \\
+alerts (D2) & 20 & --- & .89 & .949 & .845 & 25 & 59 & 16.0 \\
+alerts & 40 & --- & .81 & .919 & .751 & \textbf{17} & 42 & \textbf{18.0} \\
 \midrule
-entries & 5 & 60 & .75 & .984 & .958 & 18/20 \\
-entries & 10 & 60 & .56 & .973 & .961 & 17/20 \\
-\textbf{entries} & \textbf{20} & \textbf{60} & \textbf{.40} & \textbf{.987} & \textbf{.954} & \textbf{17/20} \\
-entries & 40 & 60 & .38 & .978 & .919 & 19/20 \\
-entries & 20 & 300 & .35 & .953 & .875 & 18/20 \\
-entries & 20 & 900 & .34 & .910 & .716 & 18/20 \\
+entries & 5 & 60 & .75 & .971 & .933 & 23 & 64 & 16.4 \\
+entries & 10 & 60 & .56 & .951 & .911 & 27 & 78 & 16.0 \\
+\textbf{entries} & \textbf{20} & \textbf{60} & \textbf{.40} & .963 & .932 & 18 & 35 & 17.0 \\
+entries & 40 & 60 & .38 & .944 & .897 & \textbf{17} & \textbf{30} & 16.8 \\
+entries & 20 & 300 & .35 & .905 & .840 & 22 & 40 & 13.8 \\
+entries & 20 & 900 & .34 & .829 & .669 & 21 & 46 & 15.8 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -429,7 +431,7 @@ entries & 20 & 900 & .34 & .910 & .716 & 18/20 \\
 \item The accumulator's surprise correction (Section~\ref{sec:accum}) is derived but unmeasured; is the formulation sound before it is implemented?
 \item Is a documented role-based exposure score acceptable for $S_\mathrm{exp}$, given that neither corpus has an authentic asset inventory?
 \item Is the tuning/test split of scenarios, fixed before tuning, sufficient to address tuning on the test set, given that the preliminary check above used all eight?
-\item The tuning data does not separate the entry window from a small alert window (Table~\ref{tab:sweep}); entries are adopted on the argument that a window should hold more than the current flood, with the alert window kept as an ablation arm. Is that argument acceptable, or should the window be chosen on the data alone?
+\item The tuning data cannot select the window (Table~\ref{tab:sweep}): alert-level AUC favours a 5-alert window, the worst-case queue rank of non-scan stages favours entries. Entries are adopted on that worst case and on the argument that a window should hold more than the current flood, with the 5-alert window as an ablation arm. Is that acceptable, or should the primary configuration follow the AUC?
 \item Harrison and santos have about half of their baselines poisoned by design. Is reporting them as recorded, alongside an oracle-cleaned retraining, the right treatment, or should they be separated from the main comparison?
 \end{enumerate}
 
