@@ -223,7 +223,11 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
     """
     r = line_or_obj
     rule = r["rule"]
-    s = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", r["timestamp"])
+    # Live alerts.json carries "timestamp" (+0700 style offset); alerts exported
+    # from the indexer, as in the public AIT-ADS set, carry only "@timestamp"
+    # (ISO, "Z"). Both are the event time Wazuh assigned.
+    raw_ts = r.get("timestamp") or r["@timestamp"]
+    s = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", raw_ts.replace("Z", "+00:00"))
     ts = dt.datetime.fromisoformat(s).timestamp()
     data = r.get("data", {}) or {}
     win = (data.get("win") or {})
@@ -245,7 +249,8 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
     if user:
         ents.append(("user", user))
 
-    srcip = str(data.get("srcip") or wed.get("ipAddress") or "").strip()
+    srcip = str(data.get("srcip") or data.get("src_ip")   # src_ip: Suricata eve.json
+                or wed.get("ipAddress") or "").strip()
     if srcip and srcip not in NON_ROUTABLE_SRCIP:
         ents.append(("srcip", srcip))
     return Alert(

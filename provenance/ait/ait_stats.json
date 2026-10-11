@@ -1,0 +1,149 @@
+{
+ "russellmitchell": {
+  "raw": 41488,
+  "suricata_dup": 9186,
+  "admitted": 32302,
+  "baseline_admitted": 18425,
+  "hosts": 10,
+  "rules": 21,
+  "mitre_pct": 46.6,
+  "span_days": 4.0,
+  "baseline_days": 3.1,
+  "stages": {
+   "service_scan": 50,
+   "dirb": 4459,
+   "wpscan": 3168,
+   "attacker_change_user": 2,
+   "escalated_sudo_command": 4
+  }
+ },
+ "santos": {
+  "raw": 126513,
+  "suricata_dup": 44112,
+  "admitted": 82401,
+  "baseline_admitted": 52121,
+  "hosts": 10,
+  "rules": 23,
+  "mitre_pct": 36.6,
+  "span_days": 3.9,
+  "baseline_days": 2.3,
+  "stages": {
+   "dnsteal": 25707,
+   "service_scan": 29,
+   "dirb": 4459,
+   "wpscan": 3264,
+   "online_cracking": 4,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 7
+  }
+ },
+ "shaw": {
+  "raw": 68539,
+  "suricata_dup": 16708,
+  "admitted": 51831,
+  "baseline_admitted": 28682,
+  "hosts": 11,
+  "rules": 24,
+  "mitre_pct": 55.3,
+  "span_days": 6.0,
+  "baseline_days": 3.9,
+  "stages": {
+   "wpscan": 729,
+   "dirb": 4459,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 7
+  }
+ },
+ "wardbeck": {
+  "raw": 88204,
+  "suricata_dup": 24510,
+  "admitted": 63694,
+  "baseline_admitted": 23463,
+  "hosts": 10,
+  "rules": 23,
+  "mitre_pct": 51.8,
+  "span_days": 5.0,
+  "baseline_days": 1.9,
+  "stages": {
+   "service_scan": 23,
+   "wpscan": 747,
+   "dirb": 4459,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 7
+  }
+ },
+ "fox": {
+  "raw": 462523,
+  "suricata_dup": 11084,
+  "admitted": 451439,
+  "baseline_admitted": 18790,
+  "hosts": 11,
+  "rules": 24,
+  "mitre_pct": 12.9,
+  "span_days": 4.9,
+  "baseline_days": 2.3,
+  "stages": {
+   "service_scan": 38,
+   "wpscan": 4737,
+   "dirb": 405855,
+   "online_cracking": 2,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 7
+  }
+ },
+ "harrison": {
+  "raw": 583754,
+  "suricata_dup": 67411,
+  "admitted": 516343,
+  "baseline_admitted": 89476,
+  "hosts": 9,
+  "rules": 23,
+  "mitre_pct": 12.2,
+  "span_days": 5.0,
+  "baseline_days": 4.3,
+  "stages": {
+   "dnsteal": 47183,
+   "service_scan": 26,
+   "wpscan": 4815,
+   "dirb": 410575,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 10
+  }
+ },
+ "wheeler": {
+  "raw": 603939,
+  "suricata_dup": 68674,
+  "admitted": 535265,
+  "baseline_admitted": 68882,
+  "hosts": 11,
+  "rules": 25,
+  "mitre_pct": 14.4,
+  "span_days": 5.0,
+  "baseline_days": 3.2,
+  "stages": {
+   "service_scan": 42,
+   "dirb": 412642,
+   "wpscan": 6638,
+   "attacker_change_user": 2,
+   "escalated_sudo_command": 7
+  }
+ },
+ "wilson": {
+  "raw": 625303,
+  "suricata_dup": 65038,
+  "admitted": 560265,
+  "baseline_admitted": 79901,
+  "hosts": 10,
+  "rules": 25,
+  "mitre_pct": 17.5,
+  "span_days": 6.0,
+  "baseline_days": 3.4,
+  "stages": {
+   "service_scan": 50,
+   "dirb": 423708,
+   "wpscan": 3190,
+   "attacker_change_user": 3,
+   "escalated_sudo_command": 7
+  }
+ }
+}
