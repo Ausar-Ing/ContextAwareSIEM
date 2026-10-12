@@ -108,7 +108,7 @@ for sc in scenarios:
     stage_items = {st: np.unique(gid[[i for i, l in enumerate(L) if l == st]]) for st in stages}
     for mode, N, delta in CONFIGS:
         name = f"{mode}{N}" + (f"d{delta}" if delta else "")
-        if RESULTS.get(sc, {}).get(name):
+        if RESULTS.get(sc, {}).get(name) and not os.environ.get("SAVE_DIR"):
             continue
         t0 = time.time()
         wb = W.WindowBuilder(N=N, learn_rules=True, downtime_gap_s=None,
@@ -148,6 +148,13 @@ for sc in scenarios:
             sseq[sseq < 0] = 50.0          # cold start / no forest: baseline median
             per_seed.append(sseq)
         res = {"single_rule_host_windows": round(single_rule, 3), "seeds": SEEDS}
+        if os.environ.get("SAVE_DIR"):
+            # per-seed alert scores and the queue structure, for offline analysis of
+            # how queue groups are scored (C9) without re-running the forests
+            np.savez_compressed(f"{os.environ['SAVE_DIR']}/{sc}_{name}.npz",
+                                sseq=np.array(per_seed), gid=gid, lvl=lvl,
+                                ts=np.array([A[j].ts for j in ev]), labels=np.array(L, dtype=object),
+                                rule=np.array([A[j].rule_id for j in ev], dtype=object), N=N)
         for sysname, f in (("S_seq", lambda x: x), ("hybrid", lambda x: 0.3 * lvl * 100 / 15 + 0.5 * x)):
             aucs, c20, c50, firsts = [], [], [], []
             for sseq in per_seed:
