@@ -1,0 +1,167 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+
+% Companion to the integrated version: every [Open:] proposal of Deliverable3_ContextAwareSIEM.tex is written
+% into the method as ordinary text. Keep the two files in step; edit proposals in the main file.
+% Draft markers for supervisor review. Remove before submission.
+\newcommand{\open}[1]{\textcolor{blue!70!black}{\textbf{[Open:} #1\textbf{]}}}
+\newcommand{\prov}{\textsuperscript{\textcolor{orange!80!black}{p}}}   % provisional parameter
+\newcommand{\meas}{\textsuperscript{\textcolor{green!45!black}{m}}}    % measured parameter
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\begin{document}
+
+\title{Context-Aware Alert Prioritization for SIEM Systems:\\ Feasibility Check and Open Points}
+\author{%
+\IEEEauthorblockN{Companion to the integrated Deliverable 3 draft}
+\IEEEauthorblockA{Section and table numbers III-x refer to the integrated draft; S-numbers to this document.}
+}
+\maketitle
+
+\section{Preliminary Feasibility Check}
+\label{sec:prelim}
+
+Before fixing the protocol we ran the design once, untuned, on all eight scenarios, with the alert window of the previous design (the last 20 alerts): forests per entity type on each scenario's pre-attack windows (three seeds, $\psi = \min(4096, n)$, stride 10, active-time correction off), no exposure term ($w_c = 0$), and default $w_r = 0.3$, $w_s = 0.5$. Table~\ref{tab:prelim} reports the alert-level AUC of non-scan attack alerts against benign alerts and the stage coverage in the top 20 queue items. These numbers use all eight scenarios and no tuning; they establish feasibility, not results. This check also predates two corrections to Component 6: its scores were averaged over the three seeds, and calibrated per entity type on the training windows themselves rather than per host on held-out windows. Neither it nor its use of the 20-alert window has been re-run, deliberately, so that the test scenarios are not used again before the protocol is fixed; the window sweep below uses the method as specified.
+
+\begin{table}[t]
+\caption{Preliminary check (untuned). AUC: non-scan attack vs.\ benign alerts. Cov: stages with an item in the top 20 queue items / stages raising alerts}
+\label{tab:prelim}
+\centering\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}l cc cc cc cc@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{B0 level}} & \multicolumn{2}{c}{\textbf{Novelty}} & \multicolumn{2}{c}{$\boldsymbol{S_\mathrm{seq}}$} & \multicolumn{2}{c}{\textbf{Hybrid}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+\textbf{Scenario} & AUC & Cov & AUC & Cov & AUC & Cov & AUC & Cov \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{tuning set}}\\
+harrison & .497 & 3/6 & .472 & \textbf{6/6} & .178 & 5/6 & .178 & 3/6 \\
+wheeler & .553 & 2/5 & .978 & \textbf{3/5} & \textbf{.996} & \textbf{3/5} & .994 & \textbf{3/5} \\
+russellmitchell & .489 & 2/5 & .857 & 2/5 & \textbf{.979} & \textbf{4/5} & .968 & 3/5 \\
+shaw & .544 & 2/4 & .956 & 3/4 & \textbf{.998} & \textbf{4/4} & .988 & 2/4 \\
+\midrule
+\multicolumn{9}{@{}l}{\textit{test set}}\\
+fox & .496 & 2/6 & .580 & 2/6 & \textbf{.995} & \textbf{4/6} & .991 & 3/6 \\
+wilson & .548 & \textbf{3/5} & .580 & \textbf{3/5} & \textbf{.998} & \textbf{3/5} & .996 & \textbf{3/5} \\
+santos & .533 & 2/6 & .963 & 3/6 & \textbf{.997} & \textbf{5/6} & .993 & 3/6 \\
+wardbeck & .547 & 2/5 & .847 & 3/5 & \textbf{.999} & \textbf{5/5} & .994 & 3/5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Four observations shape the design. First, rule severity ranks post-reconnaissance attack alerts at chance: privilege escalation raises level-3 alerts, the same level as routine logins. Second, the window score separates them with AUC above 0.97 in seven of eight scenarios. The exception, harrison, is the designed contamination: exfiltration alerts make up 52\% of its training baseline, so the model learned them as normal and ranks the remaining exfiltration alerts \emph{below} benign activity (AUC 0.18). Santos carries the same contamination but has almost no exfiltration alerts left to rank after its first attack step, so its score is unaffected. A contaminated baseline is the principal failure mode of the method. Retraining harrison with the 46{,}211 labelled exfiltration alerts removed from its baseline, all else unchanged, raises the exfiltration AUC from 0.17 to 0.89 and moves privilege escalation from the fifth queue item to the first; for santos the change is small (stage coverage 5/6 to 6/6, AUC 0.997 to 0.998). The window score is therefore effective only to the extent that the baseline it learns from is clean, and the evaluation reports both conditions. Third, the novelty flag alone separates attack alerts well in some scenarios and poorly in others (AUC 0.47--0.98), and surfaces fewer stages in the queue than the window score in five of eight scenarios, as many in two and more in one (harrison); in a short baseline many benign rules are also new. The window therefore adds information beyond novelty in most, but not all, scenarios. Fourth, ranking individual alerts fails for every system: scan floods occupy the first thousands of positions, which motivated the repeat-group queue, and even with grouping the default hybrid weights rank escalation below noisier, higher-level groups.
+
+
+\textbf{Window definition.} The window parameters were first examined by a sweep on the four tuning scenarios only, with the Suricata rule collapse still in place, with harrison's baseline oracle-cleaned so that its contamination does not decide the comparison, Component 6 as specified in Section~III-E, and five seeds (Table~\ref{tab:sweep}). It settles $\delta$ and little else. A long $\delta$ hurts on every measure of separation, as argued in Section~III-D. Between entries and alert windows the measures disagree. Alert-level AUC favours short alert windows (0.985 for 5 alerts against 0.963 for 20 entries) and falls steeply with $N$: on harrison from 0.97 at $N = 5$ to 0.75 at $N = 40$. The queue position of the nine non-scan stages, which is what an analyst experiences, splits two ways. Entries bound the worst case: with $N = 20$ entries the worst first-item rank of any non-scan stage averages 35, against 59 to 76 for alert windows of up to 20 alerts. But under the maximum as group score, used for this table, they also place fewer non-scan stages in the top ten items (1.0 per run, against 2.0 for 5 alerts and 4.2 for the 20-alert window of D2). That weakness belongs to the group score rather than to entries, as the tuning under the protocol objective below shows. Coverage in the top 20 items does not separate the configurations with $\delta \le 60$\,s (16 to 18 of 20 stages), because it is dominated by the scan stages, which every configuration surfaces. Under the maximum, three measures thus favour three different windows. We adopt entries with $N = 20$ and $\delta = 60$\,s on two grounds, the bounded worst case for the stages that matter and a window that holds more than the current flood (40\% of host windows hold one rule, against 89--96\% for alert windows), at a measured cost in alert-level AUC, and carry the strongest alert window as the ablation arm B2$_\mathrm{alert}$ so that the test set reports the comparison. An earlier run of this sweep, with calibration on training windows and seed-averaged scores, appeared to favour entries on AUC as well; that advantage did not survive the corrected method, so the comparison is more sensitive to calibration details than to seeds, whose spread is small (AUC standard deviation at most 0.013 for $\delta \le 60$\,s).
+
+\begin{table}[t]
+\caption{Window sweep on the tuning scenarios, before Suricata signatures were used as rule identities ($S_\mathrm{seq}$ only, maximum as group score, five seeds, metrics per seed then averaged). 1-rule: share of baseline host windows holding a single rule. AUC: non-scan attack vs.\ benign, mean and minimum over scenarios. Rank: first queue item of each non-scan stage, mean and worst. Cov: stages with an item in the top 20, summed}
+\label{tab:sweep}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrr c cc cc c@{}}
+\toprule
+& & & & \multicolumn{2}{c}{\textbf{AUC}} & \multicolumn{2}{c}{\textbf{Rank}} & \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+\textbf{Window} & $N$ & $\delta$ & \textbf{1-rule} & mean & min & mean & worst & \textbf{Cov} \\
+\midrule
+alerts & 5 & --- & .96 & \textbf{.985} & \textbf{.970} & 21 & 76 & 16.6 \\
+alerts & 10 & --- & .93 & .983 & .952 & 22 & 73 & 17.2 \\
+alerts (D2) & 20 & --- & .89 & .949 & .845 & 25 & 59 & 16.0 \\
+alerts & 40 & --- & .81 & .919 & .751 & \textbf{17} & 42 & \textbf{18.0} \\
+\midrule
+entries & 5 & 60 & .75 & .971 & .933 & 23 & 64 & 16.4 \\
+entries & 10 & 60 & .56 & .951 & .911 & 27 & 78 & 16.0 \\
+\textbf{entries} & \textbf{20} & \textbf{60} & \textbf{.40} & .963 & .932 & 18 & 35 & 17.0 \\
+entries & 40 & 60 & .38 & .944 & .897 & \textbf{17} & \textbf{30} & 16.8 \\
+entries & 20 & 300 & .35 & .905 & .840 & 22 & 40 & 13.8 \\
+entries & 20 & 900 & .34 & .829 & .669 & 21 & 46 & 15.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\textbf{Tuning under the protocol objective.} The sweeps above were run before two changes: they collapse every Suricata alert into one rule, and they score queue groups by their maximum and are judged by AUC and coverage. We re-ran Component 6 with Suricata signatures as rule identities for three windows and five seeds, and evaluated group scores and weights by the protocol objective, $\alpha$-nDCG@20 (Table~\ref{tab:queue}). Three results replace earlier ones. First, Suricata identities matter: harrison's AUC for the 20-alert window rises from 0.85 to 0.99, because the exfiltration's DNS signature is no longer indistinguishable from routine TLS complaints, and the share of host windows holding a single rule falls from 89--96\% to 50--58\% for alert windows and to 1\% for entries. Second, under the objective the windows separate: entries with the surprise group score reach 0.395, against 0.317 for 20 alerts and 0.285 for 5, a margin several times the standard deviation across seeds (at most 0.025). Third, rule severity and exposure add nothing once the sequence term is present, and the strongest system without temporal context is not B0 but its rarity variant B0$_\mathrm{rank}$ (0.331), which also leads at $k = 10$ (0.316 against 0.271); it is therefore added as a comparator. Two near-ties are resolved by the tie rule, a difference within one seed standard deviation being a tie broken by MRR: $\pi$ over the member mean for entries (0.395 and 0.396; MRR 0.178 against 0.072), and $\lambda = 8$ over $\lambda = 4$ (0.395 and 0.399; MRR 0.178 against 0.107).
+
+\begin{table}[t]
+\caption{Tuning under the protocol objective: Suricata signatures as rule identities, tuning scenarios, five seeds. Graded $\alpha$-nDCG@k and MRR of non-scan stages, means over scenarios and seeds}
+\label{tab:queue}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll cccc@{}}
+\toprule
+\textbf{Window} & \textbf{Group score / weights} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{$S_\mathrm{seq}$ only}}\\
+5 alerts & maximum & .182 & .273 & .386 & .052 \\
+ & $\pi$ & .179 & .285 & .373 & .082 \\
+20 alerts & maximum & .257 & .322 & .402 & .049 \\
+ & $\pi$ & .258 & .317 & .425 & .142 \\
+entries & maximum & .152 & .264 & .398 & .052 \\
+ & mean & .263 & .396 & .454 & .072 \\
+ & $\boldsymbol{\pi}$ & .271 & \textbf{.395} & \textbf{.478} & \textbf{.178} \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{hybrid, entries, $\pi$}}\\
+ & default $(0.3, 0.2, 0.5)$ & .213 & .337 & .431 & .075 \\
+ & $(0, 0.4, 0.6)$ & .213 & .327 & .438 & .085 \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{no temporal context}}\\
+B0 & level & .187 & .198 & .262 & .016 \\
+B1 & level + exposure $(0.6, 0.4)$ & .160 & .182 & .229 & .015 \\
+B0$_\mathrm{rank}$ & level rarity & \textbf{.316} & .331 & .387 & .067 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results. Temporal context beats both static baselines on the queue: B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$) and earlier than the rarity baseline B0$_\mathrm{rank}$ for seven (p = 0.039). Two comparisons are not in the method's favour. The robust z-score B2$'$ comes within 0.015 of the forest in $\alpha$-nDCG@20 and places six of the nine stages earlier ($p = 0.16$), so on the tuning set the forest has not shown that it earns its place over a simpler scorer. And the 5-alert window, behind on $\alpha$-nDCG, wins three of nine stages ($p = 0.36$). Accumulation raises $\alpha$-nDCG@20 from 0.395 to 0.576, with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes from bundling: notables gather several stages into one top item, while the first-item ranks of the non-scan stages are not improved (three better, four worse, two tied).
+
+\begin{table}[t]
+\caption{All systems on the tuning scenarios (five seeds, not results): graded $\alpha$-nDCG@k, MRR and macro-AUC of non-scan stages, means over scenarios}
+\label{tab:tuneall}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l ccccc@{}}
+\toprule
+\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} \\
+\midrule
+B0 & .187 & .198 & .262 & .016 & .516 \\
+B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 \\
+B1 & .187 & .213 & .286 & .023 & .383 \\
+B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 \\
+B2$'$ & .279 & .380 & .458 & .131 & .959 \\
+B2, default weights & .198 & .282 & .420 & .075 & --- \\
+B2$_\mathrm{alert}$ & .179 & .285 & .373 & .082 & .987 \\
+\textbf{B2} & .271 & .395 & .478 & .178 & .980 \\
+\textbf{B3} & \textbf{.498} & \textbf{.576} & \textbf{.651} & \textbf{.309} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Open Points for Discussion}
+
+\begin{enumerate}
+\item Is evaluating on AIT-ADS (Linux servers, simulated users) with the workstation for false-promotion analysis an acceptable division, or should a small set of attacks also be run on the workstation after its baseline freeze?
+\item On the tuning set the rule-severity and exposure terms receive zero weight (Table~\ref{tab:queue}). Should they remain in the design as inspectable terms, or should the priority be stated as the sequence term alone for AIT-ADS?
+\item The accumulator's surprise correction (Section~III-H) is derived but unmeasured; is the formulation sound before it is implemented?
+\item Is a documented role-based exposure score acceptable for $S_\mathrm{exp}$, given that neither corpus has an authentic asset inventory?
+\item Is the tuning/test split of scenarios, fixed before tuning, sufficient to address tuning on the test set, given that the preliminary check above used all eight?
+\item With Suricata signatures and the protocol objective, entries lead the alert windows on the tuning set (Table~\ref{tab:queue}), while alert-level AUC differs little (0.986 for 5 alerts, 0.980 for entries). Entries are adopted and the 5-alert window is kept as the ablation arm; is that acceptable?
+\item How a risk notable is ranked against repeat groups has no measured basis yet. The working assumption (Section~III-H) absorbs its contributing groups and places it by the baseline percentile of $R_e$; is that an acceptable default until the tuning scenarios decide?
+\item On the tuning set a robust z-score comes within 0.015 of the Isolation Forest (Table~\ref{tab:tuneall}). If the test set confirms it, should the paper present the simpler scorer as the method, with the forest as the comparator?
+\item Harrison and santos have about half of their baselines poisoned by design. Is reporting them as recorded, alongside an oracle-cleaned retraining, the right treatment, or should they be separated from the main comparison?
+\end{enumerate}
+
+\end{document}
