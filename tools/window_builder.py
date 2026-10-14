@@ -15,6 +15,7 @@ from __future__ import annotations
 import collections
 import datetime as dt
 import math
+import os
 import re
 from dataclasses import dataclass, field
 
@@ -248,6 +249,13 @@ def _clean_user(v):
     return u
 
 
+# Reproducibility switch for results produced before 2026-10-14, when every
+# Suricata alert still carried Wazuh rule 86601 (Deliverable 3, Tables VII and
+# the first group-score study). CONTEXTSIEM_SURICATA_ID=0 restores that
+# behaviour; the default is the specified method.
+SURICATA_SIGNATURE_IDENTITY = os.environ.get("CONTEXTSIEM_SURICATA_ID", "1") != "0"
+
+
 def _rule_identity(rule: dict, data: dict) -> str:
     """The rule identity the layer reasons about (Deliverable 3, Sec. III-B).
 
@@ -259,7 +267,7 @@ def _rule_identity(rule: dict, data: dict) -> str:
     content-blind. Measured on shaw: 16,692 Suricata alerts, 10 signatures.
     """
     rid = str(rule["id"])
-    if "suricata" in (rule.get("groups") or ()):
+    if SURICATA_SIGNATURE_IDENTITY and "suricata" in (rule.get("groups") or ()):
         sid = ((data or {}).get("alert") or {}).get("signature_id")
         if sid not in (None, ""):
             return f"suricata:{sid}"

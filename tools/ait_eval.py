@@ -52,7 +52,7 @@ for r in csv.DictReader(open(args.labels)):
 
 
 def load(sc):
-    cache = f"evalcache_{sc}_{'rec' if args.recorded else 'clean'}.pkl"
+    cache = f"evalcache_{sc}_{'rec' if args.recorded else 'clean'}_sid{int(W.SURICATA_SIGNATURE_IDENTITY)}.pkl"
     if os.path.exists(cache):
         return pickle.load(open(cache, "rb"))
     lab = collections.defaultdict(list)

@@ -1,0 +1,4 @@
+# Environment used for the AIT-ADS runs in Deliverable 3 (Python 3.11.15)
+numpy==2.4.4
+scikit-learn==1.8.0
+scipy==1.17.1

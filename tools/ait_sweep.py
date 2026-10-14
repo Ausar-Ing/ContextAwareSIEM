@@ -52,7 +52,7 @@ def auc(pos, neg):
 
 
 def load(sc):
-    cache = f"cache_{sc}.pkl"
+    cache = f"cache_{sc}_sid{int(W.SURICATA_SIGNATURE_IDENTITY)}.pkl"
     if os.path.exists(cache):
         return pickle.load(open(cache, "rb"))
     lab = collections.defaultdict(list)
