@@ -59,5 +59,20 @@ check("registry FIM with no mode field is treated as scheduled", not fim(None, "
 check("file FIM with no mode field is admitted", fim(None, "550").admissible)
 check("non-FIM alerts are unaffected", alert({}).admissible)
 
+def suricata(sid):
+    r = {"@timestamp": "2022-01-24T10:00:00.000Z", "id": "1",
+         "rule": {"id": "86601", "level": 3, "groups": ["ids", "suricata"]},
+         "agent": {"id": "003"}, "data": {"src_ip": "10.0.0.5"}}
+    if sid is not None:
+        r["data"]["alert"] = {"signature_id": sid, "signature": "X"}
+    return W.parse_wazuh(r, 0)
+
+
+check("Suricata alerts take the signature id as rule identity",
+      suricata("2027865").rule_id == "suricata:2027865")
+check("two Suricata signatures are two rules", suricata("1").rule_id != suricata("2").rule_id)
+check("Suricata alert without a signature keeps the Wazuh rule id", suricata(None).rule_id == "86601")
+check("non-Suricata rules keep their Wazuh id", alert({}).rule_id == "60118")
+
 print(f"\n{'ALL PASS' if not FAILED else str(len(FAILED)) + ' FAILED: ' + ', '.join(FAILED)}")
 sys.exit(1 if FAILED else 0)

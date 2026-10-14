@@ -76,6 +76,7 @@ def load(sc):
             key = (int(a.ts), r["agent"].get("ip"), r["rule"].get("description"))
             l = lab[key].pop() if lab.get(key) else "unmatched"
             a.label = 0 if l in ("-", "unmatched") else 1
+            a.agent_ip = r["agent"].get("ip")     # joins the authors' host-role table (S_exp)
             A.append(a); labels.append(l)
     order = sorted(range(len(A)), key=lambda j: (A[j].ts, A[j].ingest_seq))
     A = [A[j] for j in order]; labels = [labels[j] for j in order]
@@ -154,7 +155,11 @@ for sc in scenarios:
             np.savez_compressed(f"{os.environ['SAVE_DIR']}/{sc}_{name}.npz",
                                 sseq=np.array(per_seed), gid=gid, lvl=lvl,
                                 ts=np.array([A[j].ts for j in ev]), labels=np.array(L, dtype=object),
-                                rule=np.array([A[j].rule_id for j in ev], dtype=object), N=N)
+                                rule=np.array([A[j].rule_id for j in ev], dtype=object), N=N,
+                                agent_ip=np.array([A[j].agent_ip for j in ev], dtype=object),
+                                base_levels=np.array([{ip: np.array([A[j].rule_level for j in range(len(A))
+                                                                     if A[j].ts < t_atk and A[j].admissible and A[j].agent_ip == ip])
+                                                       for ip in {A[j].agent_ip for j in ev}}], dtype=object))
         for sysname, f in (("S_seq", lambda x: x), ("hybrid", lambda x: 0.3 * lvl * 100 / 15 + 0.5 * x)):
             aucs, c20, c50, firsts = [], [], [], []
             for sseq in per_seed:

@@ -1,0 +1,470 @@
+{
+ "_meta": {
+  "source": "ait-aecid/alert-data-set alerts_csv (ip -> host); roles and zones per Landauer et al. TDSC 2023 Sec. 3.2.1",
+  "formula": "100*(criticality+exposure)/2",
+  "role_scores": {
+   "intranet_server": [
+    1.0,
+    0.5
+   ],
+   "internal_share": [
+    1.0,
+    0.5
+   ],
+   "inet-firewall": [
+    1.0,
+    1.0
+   ],
+   "vpn": [
+    1.0,
+    1.0
+   ],
+   "mail": [
+    1.0,
+    1.0
+   ],
+   "cloud_share": [
+    1.0,
+    1.0
+   ],
+   "webserver": [
+    0.5,
+    1.0
+   ],
+   "external_mail": [
+    0.0,
+    0.0
+   ],
+   "inet-dns": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "fox": {
+  "10.35.32.1": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "10.35.33.111": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  },
+  "10.35.35.206": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "172.17.129.140": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "172.17.130.196": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "172.17.130.37": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.17.131.81": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "192.168.128.170": {
+   "host": "jonesmorgan_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.128.195": {
+   "host": "taylorcruz_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.129.212": {
+   "host": "miller_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.131.228": {
+   "host": "whittaker_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  }
+ },
+ "harrison": {
+  "10.237.0.166": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "10.237.0.4": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "10.237.1.238": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "10.237.2.255": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "172.28.192.7": {
+   "host": "taylor_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "172.28.192.97": {
+   "host": "smith_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.128.1": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "192.168.131.109": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  },
+  "192.168.131.215": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  }
+ },
+ "russellmitchell": {
+  "10.143.0.103": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  },
+  "10.143.2.4": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "172.19.128.1": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "172.19.130.106": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "172.19.130.4": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "172.19.130.68": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.19.131.174": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "192.168.231.164": {
+   "host": "morris_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.231.254": {
+   "host": "inet-dns",
+   "role": "inet-dns",
+   "s_exp": 0.0
+  },
+  "192.168.231.56": {
+   "host": "davey_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  }
+ },
+ "santos": {
+  "10.229.0.32": {
+   "host": "rogersturnbull_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "10.229.0.4": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "10.229.2.25": {
+   "host": "hayes_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "10.229.255.254": {
+   "host": "inet-dns",
+   "role": "inet-dns",
+   "s_exp": 0.0
+  },
+  "172.21.128.119": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "172.21.128.54": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "172.21.129.224": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.21.131.50": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "192.168.104.155": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "192.168.104.218": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  }
+ },
+ "shaw": {
+  "10.38.242.195": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "10.38.242.230": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "10.38.243.24": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "10.70.32.243": {
+   "host": "smith_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "10.70.33.128": {
+   "host": "butcherrowe_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "10.70.34.215": {
+   "host": "collinsbecker_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "172.24.249.224": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "172.27.180.4": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "172.27.183.254": {
+   "host": "inet-dns",
+   "role": "inet-dns",
+   "s_exp": 0.0
+  },
+  "192.168.188.179": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "192.168.3.116": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  }
+ },
+ "wardbeck": {
+  "10.132.56.1": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "10.132.56.171": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "10.132.56.204": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "10.132.56.81": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "10.132.57.136": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.21.240.214": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  },
+  "172.21.241.88": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "192.168.96.99": {
+   "host": "watkins_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.98.239": {
+   "host": "smith_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.99.0": {
+   "host": "walker_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  }
+ },
+ "wheeler": {
+  "10.38.242.195": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "10.38.242.230": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "10.38.243.125": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "10.38.243.24": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.27.180.4": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "172.27.181.174": {
+   "host": "sanchez_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "172.27.181.253": {
+   "host": "khanwood_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "172.27.182.4": {
+   "host": "williams_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "172.27.183.191": {
+   "host": "fischer_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.2.114": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "192.168.3.116": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  }
+ },
+ "wilson": {
+  "10.182.192.1": {
+   "host": "inet-firewall",
+   "role": "inet-firewall",
+   "s_exp": 100.0
+  },
+  "10.182.193.181": {
+   "host": "mail",
+   "role": "mail",
+   "s_exp": 100.0
+  },
+  "10.182.193.78": {
+   "host": "vpn",
+   "role": "vpn",
+   "s_exp": 100.0
+  },
+  "10.182.194.196": {
+   "host": "cloud_share",
+   "role": "cloud_share",
+   "s_exp": 100.0
+  },
+  "10.182.194.5": {
+   "host": "webserver",
+   "role": "webserver",
+   "s_exp": 75.0
+  },
+  "172.26.240.200": {
+   "host": "internal_share",
+   "role": "internal_share",
+   "s_exp": 75.0
+  },
+  "172.26.243.167": {
+   "host": "intranet_server",
+   "role": "intranet_server",
+   "s_exp": 75.0
+  },
+  "192.168.224.185": {
+   "host": "wilsonahmed_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.226.198": {
+   "host": "lane_mail",
+   "role": "external_mail",
+   "s_exp": 0.0
+  },
+  "192.168.239.254": {
+   "host": "inet-dns",
+   "role": "inet-dns",
+   "s_exp": 0.0
+  }
+ }
+}

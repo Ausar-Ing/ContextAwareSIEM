@@ -248,6 +248,24 @@ def _clean_user(v):
     return u
 
 
+def _rule_identity(rule: dict, data: dict) -> str:
+    """The rule identity the layer reasons about (Deliverable 3, Sec. III-B).
+
+    Wazuh decodes every Suricata alert with ONE rule, 86601, whatever signature
+    fired; all of AIT-ADS's network alerts would otherwise share a single rule
+    id, so novelty, distinct-rule counts, runs and queue groups could not tell a
+    TLS parsing complaint from DNS exfiltration. The Suricata signature id is a
+    detector rule identifier, not log content, so using it keeps the layer
+    content-blind. Measured on shaw: 16,692 Suricata alerts, 10 signatures.
+    """
+    rid = str(rule["id"])
+    if "suricata" in (rule.get("groups") or ()):
+        sid = ((data or {}).get("alert") or {}).get("signature_id")
+        if sid not in (None, ""):
+            return f"suricata:{sid}"
+    return rid
+
+
 def parse_wazuh(line_or_obj, seq: int) -> Alert:
     """Map one raw Wazuh alert dict onto Alert. Entity resolution is
     section 4.1.3: host always, user and srcip when the decoder supplies them.
@@ -296,7 +314,7 @@ def parse_wazuh(line_or_obj, seq: int) -> Alert:
         alert_id=r.get("id", str(seq)),
         ingest_seq=seq,
         ts=ts,
-        rule_id=str(rule["id"]),
+        rule_id=_rule_identity(rule, data),
         rule_level=int(rule["level"]),
         rule_groups=tuple(rule.get("groups", ())),
         techniques=_mitre(rule)[0],
