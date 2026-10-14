@@ -12,7 +12,7 @@ table, from which data, in which environment. All commands run from the reposito
 | `data/ait_ads/labels.csv` | same Zenodo record (`labels.csv`, attack-step time intervals) | `633e09b42772eabbbe5b48598220860eead60b7352efb01973fc45a5034290c0` |
 | `data/ait_ads/alerts_csv.zip` | GitHub `ait-aecid/alert-data-set`, commit `ce927dd`, `alerts_csv/alerts_csv.zip` (per-alert event labels) | `2bf1a81527a3fe15d92079a7834c9d77c5305546e15569657d2097d6294825c3` |
 
-Unzip the labels once: `unzip data/ait_ads/alerts_csv.zip -d data/ait_ads/alerts_csv`
+Unzip the labels once: `unzip data/ait_ads/alerts_csv.zip -d data/ait_ads` (the archive holds an `alerts_csv/` folder)
 (gives `data/ait_ads/alerts_csv/<scenario>_alerts.txt`).
 
 Shorthand used below:
