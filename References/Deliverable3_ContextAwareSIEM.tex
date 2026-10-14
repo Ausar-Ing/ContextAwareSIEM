@@ -350,18 +350,41 @@ wardbeck & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
 \subsection{Protocol and Metrics}
 \label{sec:protocol}
 
-For each scenario, the forest and calibration are fitted on that scenario's activity before its first attack step and frozen; the evaluation period is the remainder. Scenarios are split before any tuning into a tuning set \{harrison, wheeler, russellmitchell, shaw\} and a test set \{fox, wilson, santos, wardbeck\}, each with two large and two small scenarios and one with exfiltration. All weights, $\Delta$, $\theta$ and the novelty and calibration choices are selected on the tuning set; every reported comparison comes from the test set. Ranking is measured over queue items, an item being relevant if it contains an event-labelled alert:
+For each scenario, the forest and calibration are fitted on that scenario's activity before its first attack step and frozen; the evaluation period is the remainder. Scenarios are split before any tuning into a tuning set \{harrison, wheeler, russellmitchell, shaw\} and a test set \{fox, wilson, santos, wardbeck\}, each with two large and two small scenarios and one with exfiltration. All weights, $\Delta$, $\theta$ and the novelty and calibration choices are selected on the tuning set; every reported comparison comes from the test set. Ranking is measured over queue items. Ground truth comes from the event labels, graded by what the attacker's action achieved and fixed before any test result is seen (Table~\ref{tab:grades}): an item's grade is the highest grade among its members' stages, and benign items have grade 0. The grades derive from the attack steps described by the dataset authors and from nothing the layer reads, so no system is favoured by construction, as one would be if items were graded by rule level or by the ATT\&CK tags of the triggering rule.
+
+\begin{table}[t]
+\caption{Relevance grades, fixed before testing}
+\label{tab:grades}
+\centering\footnotesize
+\begin{tabular}{@{}c p{4.1cm} p{2.6cm}@{}}
+\toprule
+\textbf{Grade} & \textbf{Stages (event labels)} & \textbf{Attacker has} \\
+\midrule
+3 & user change, sudo escalation, exfiltration & control or data \\
+2 & online password cracking & a credential attack \\
+1 & service scan, directory scan, WordPress scan & reconnaissance only \\
+0 & benign & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{itemize}
-\item \emph{stage coverage@k}: the fraction of attack stages that raised a Wazuh alert with an item in the top $k$ ($k \in \{10, 20, 50\}$), the primary metric;
-\item \emph{first-item rank} of each stage, and MRR over non-scan stages;
-\item nDCG@k and precision@k over items;
-\item alert-level AUC of non-scan attack alerts against benign alerts, as a secondary, queue-independent measure.
+\item \emph{Graded $\alpha$-nDCG@k}, $k \in \{10, 20, 50\}$, the primary metric. With $g_s$ the grade of stage $s$ and $c_{s,i}$ the number of items above rank $i$ that contain $s$, the gain at rank $i$ is $\sum_{s \in i} g_s (1-\alpha)^{c_{s,i}}$, discounted by $\log_2(i+1)$ and normalized by the greedily computed ideal ordering \cite{ref24}. The factor $(1-\alpha)^{c}$, with $\alpha = 0.5$, credits the first item of a stage fully and each repeat less, so a scan that recurs on five hosts does not count five times.
+\item \emph{First-item rank} of each non-scan stage and their mean reciprocal rank (MRR): how far the analyst scrolls before first meeting each stage that matters.
+\item \emph{Stage coverage@k}, reported separately for non-scan and scan stages, since scans are surfaced by every system and would otherwise dominate.
+\item \emph{Macro-AUC}: the alert-level AUC of each non-scan stage against benign alerts, averaged over stages so that a stage with thousands of alerts does not outweigh one with ten. It is queue-independent and secondary.
 \end{itemize}
-On the workstation, the hold-out is the final week of the frozen baseline. Under stationarity 1\% of benign windows should exceed the 99th baseline percentile; the observed share measures calibration drift, and the number of queue items per awake hour above the B2 threshold that captures half of AIT's attack items measures the analyst load the layer would add.
+Ties are broken by average rank, the expected rank under random tie-breaking; this matters for B0, under which all groups of one rule level tie. Robustness is reported with binary grades and with grades (2, 1, 1), and with $\alpha = 1$, under which only the first item of each stage counts. The tuning objective, for weights, $\Delta$, $\theta$ and the remaining choices, is the mean $\alpha$-nDCG@20 over the tuning scenarios, ties broken by MRR.
+
+\textbf{Statistics.} The test set holds about ten non-scan stage occurrences, so systems are compared \emph{paired} on the same stages: for each stage, the first-item rank under one system against the other, with the number improved and worsened and a Wilcoxon signed-rank test over the pairs. With ten pairs only a near-unanimous difference is significant, and the results are stated in those terms rather than as averaged percentages. Seeded systems are run ten times and enter the tests by their mean rank per stage.
+
+\textbf{Accumulation (B3).} Notables are incidents and are measured as such: the time from the first attack step to the first notable containing an attack alert, the number of stages that notable spans, and on the workstation the number of notables per awake hour.
+
+\textbf{Workstation.} The hold-out is the final week of the frozen baseline. Under stationarity 1\% of benign windows exceed the 99th baseline percentile; the observed share measures calibration drift, with a confidence interval from resampling whole days, since windows within a day are dependent. Analyst load is the number of queue items per awake hour, awake meaning outside detected downtime, whose priority exceeds a threshold fixed per system on the AIT tuning set: the priority above which half of the non-scan stages' first items fall.
 
 \subsection{Threats to Validity}
 
-AIT's users and attacks are simulated, its baselines are short (no weekly cycle) and its hosts are Ubuntu servers \cite{ref22}; the workstation supplies realistic benign activity but no attacks, so no single corpus provides both. Only 6--14 non-scan attack alerts exist per scenario, so per-stage ranks are reported for every scenario rather than averaged away. The scan stages are easy for every system and are reported separately. The workstation baseline spans an examination period with reduced use, and its agent was re-enrolled once, handled by the alias table.
+AIT's users and attacks are simulated, its baselines are short (no weekly cycle) and its hosts are Ubuntu servers \cite{ref22}; the workstation supplies realistic benign activity but no attacks, so no single corpus provides both. Only 6--14 non-scan attack alerts exist per scenario, so per-stage ranks are reported for every scenario rather than averaged away. The scan stages are easy for every system and are reported separately. The workstation baseline spans an examination period with reduced use, and its agent was re-enrolled once, handled by the alias table. The queue is ranked over the whole evaluation period at once, whereas an analyst works a live queue in which an item from one day never competes with one from another; per-day ranking is reported as a check.
 
 \subsection{Scope and Future Work}
 
@@ -520,6 +543,8 @@ entries, $N{=}20$ & maximum & 19.3 & 34.8 & .074 & 1.0 & 17.0 \\
 \bibitem{ref22} M. Landauer, F. Skopik, M. Frank, W. Hotwagner, M. Wurzenberger, and A. Rauber, ``Maintainable Log Datasets for Evaluation of Intrusion Detection Systems,'' IEEE Transactions on Dependable and Secure Computing, vol. 20, no. 4, pp. 3466--3482, Jul.--Aug. 2023, doi: 10.1109/TDSC.2022.3201582.
 
 \bibitem{ref23} M. Mozaffari, A. Yazdinejad, and A. Dehghantanha, ``Windows-APT 2025: A Dataset for APT-Inspired Attack Scenarios on Windows Systems,'' Data in Brief, vol. 65, Art. no. 112569, 2026, doi: 10.1016/j.dib.2026.112569.
+
+\bibitem{ref24} C. L. A. Clarke, M. Kolla, G. V. Cormack, O. Vechtomova, A. Ashkan, S. B\"uttcher, and I. MacKinnon, ``Novelty and diversity in information retrieval evaluation,'' in Proc. 31st ACM SIGIR Conference on Research and Development in Information Retrieval, 2008, pp. 659--666, doi: 10.1145/1390334.1390446.
 
 \end{thebibliography}
 \end{document}
