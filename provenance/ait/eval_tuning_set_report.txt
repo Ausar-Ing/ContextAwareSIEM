@@ -1,0 +1,32 @@
+scenarios: harrison, russellmitchell, shaw, wheeler
+system     aNDCG@10           @20     @50     MRR  macroAUC
+B0            0.187   0.198         0.262   0.016     0.516
+B0_rank       0.316   0.331         0.387   0.067     0.825
+B1            0.187   0.213         0.286   0.023     0.383
+B2_nov        0.264   0.351         0.458   0.038     0.929
+B2'           0.279   0.380         0.458   0.131     0.959
+B2_def        0.198   0.282±0.015   0.420   0.075       -  
+B2_alert      0.179   0.285±0.009   0.373   0.082     0.987
+B2            0.271   0.395±0.018   0.478   0.178     0.980
+B3            0.498   0.576±0.014   0.651   0.309       -  
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
+  B2   vs B0_rank : n= 9  B2 better  7, B0_rank better  2, tied  0, Wilcoxon p=0.039
+  B2   vs B1      : n= 9  B2 better  8, B1 better  1, tied  0, Wilcoxon p=0.008
+  B2   vs B2'     : n= 9  B2 better  3, B2' better  6, tied  0, Wilcoxon p=0.156
+  B2   vs B2_nov  : n= 9  B2 better  8, B2_nov better  1, tied  0, Wilcoxon p=0.027
+  B2   vs B2_alert: n= 9  B2 better  6, B2_alert better  3, tied  0, Wilcoxon p=0.359
+  B3   vs B2      : n= 9  B3 better  3, B2 better  4, tied  2, Wilcoxon p=0.578
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  harrison         2 / 2 / 0   0.4113888888888889   max stages 3
+  russellmitchell  1 / 0 / 1   -   max stages 0
+  shaw             2 / 2 / 0   17.520833333333332   max stages 2
+  wheeler          1 / 1 / 0   26.24361111111111   max stages 3
+
+training windows after stride (entries):
+  harrison         {'host': 4323, 'srcip': 1465, 'user': 7}
+  russellmitchell  {'host': 1840, 'srcip': 583, 'user': 5}
+  shaw             {'host': 2865, 'srcip': 808, 'user': 26}
+  wheeler          {'host': 6885, 'srcip': 3874, 'user': 14}

@@ -216,7 +216,7 @@ s(\mathbf{v}) = 2^{-\mathbb{E}[\ell(\mathbf{v})] / c(\psi)} .
 
 \textbf{Model scope and training set.} One forest is fitted per entity type, since host windows (dense, mixed) and address or user windows (sparse) follow different distributions. Successive windows of an entity share almost all of their entries, so the training set is the baseline windows subsampled at stride $s = 10$\meas{}, which in simulation also improved ranking by giving quiet periods proportionate weight. Where several hosts feed one forest, the training set is stratified so that each host contributes an equal share up to its available windows, preventing the most active machine from defining normal for all. Inputs are the fourteen model features of Table~\ref{tab:features}, with no further scaling.
 
-\textbf{Hyperparameters.} $t = 200$ and $\psi = \min(4096, n)$\meas{}. The original setting $\psi = 256$ assumes anomalies form a dense cluster, which attack windows do not; in a simulation over ten seeds, $\psi = 256$ ranked attacks at AUC 0.926, below a Mahalanobis comparator (0.965), while $\psi = 4096$ reached 0.991. The training target is 8{,}000 windows after striding, with a floor of 4{,}000\meas{}: below about 2{,}000 the variance across seeds exceeded the effect the ablation is meant to measure. Each seed is an independent replica, forest and calibration both; metrics are computed per seed and reported as mean $\pm$ standard deviation over ten seeds, never on scores averaged across seeds, which would amount to a larger forest and hide the variance.
+\textbf{Hyperparameters.} $t = 200$ and $\psi = \min(4096, n)$\meas{}. The original setting $\psi = 256$ assumes anomalies form a dense cluster, which attack windows do not; in a simulation over ten seeds, $\psi = 256$ ranked attacks at AUC 0.926, below a Mahalanobis comparator (0.965), while $\psi = 4096$ reached 0.991. On the workstation the training target is 8{,}000 windows after striding, with a floor of 4{,}000\meas{}: in simulation, below about 2{,}000 the variance across seeds exceeded the effect the ablation is meant to measure. An AIT scenario's pre-attack period is fixed, so its training set is whatever that period provides: on the tuning scenarios 1{,}840--6{,}885 host and 583--3{,}874 source-address windows, all below the target and most below the floor. There the spread across seeds is reported rather than assumed; on the tuning set it was at most 0.025 in $\alpha$-nDCG@20. A forest is fitted only for an entity type with at least 200 training windows, which excludes AIT's user entities (5--26). Each seed is an independent replica, forest and calibration both; metrics are computed per seed and reported as mean $\pm$ standard deviation over ten seeds, never on scores averaged across seeds, which would amount to a larger forest and hide the variance.
 
 \textbf{Per-host calibration.} Raw scores concentrate near 0.5, so a linear rescale would make the sequence term nearly constant. Scores are instead mapped through the empirical distribution of each host's own baseline windows,
 \begin{equation}
@@ -229,6 +229,7 @@ where $\hat F_{h,k}$ is fitted on the \emph{held-out} baseline windows of host $
 \textbf{Attribution.} For an alert an analyst opens, each feature $j$ is replaced by its baseline median and the drop in $S_\mathrm{seq}$ is reported; the three largest drops are shown.
 
 \subsection{Hybrid Priority Score (C4, C7)}
+\label{sec:hybrid}
 
 Component 4 attaches attributes that do not depend on history, giving an exposure score $S_\mathrm{exp} \in [0,100]$ from asset role. In AIT-ADS the dataset authors name the host behind every agent, and the AIT-LDS description places each role in a network zone \cite{ref22}; we set
 \begin{equation}
@@ -263,9 +264,9 @@ Component 8 keeps a decaying risk total per entity so that a campaign of individ
 The accumulator is
 \begin{multline}
 R_e(t) = \sum_{g \in \mathcal{G}_e} v_g\,(1 + \ln k_g)\, 2^{-(t - t^{\mathrm{last}}_g)/h} \\
-+ w_s \max_{a :\, t - \tau(a) < T} q(a, e)\, 2^{-(t - \tau(a))/h},
++ a_s \max_{a :\, t - \tau(a) < T} q(a, e)\, 2^{-(t - \tau(a))/h},
 \end{multline}
-with $v_g = w_r S_\mathrm{rule} + w_c S_\mathrm{exp}$ of the group's first member, $t^{\mathrm{last}}_g$ its most recent member, and half-life $h = 4$\,h\prov{}. Decaying from the most recent member, and splitting groups at gaps longer than $T$, keeps a burst today from being absorbed into a group that began weeks earlier, which would otherwise make any repeat of a known rule contribute nothing.
+with $v_g = a_r S_\mathrm{rule} + a_c S_\mathrm{exp}$ of the group's first member, $t^{\mathrm{last}}_g$ its most recent member, and half-life $h = 4$\,h\prov{}. The accumulator keeps its own weights, $(a_r, a_c, a_s) = (0.3, 0.2, 0.5)$\prov{}, separate from the queue's: the tuned queue weights give the static terms zero weight (Section~\ref{sec:hybrid}), which would leave the accumulator no group evidence at all. Decaying from the most recent member, and splitting groups at gaps longer than $T$, keeps a burst today from being absorbed into a group that began weeks earlier, which would otherwise make any repeat of a known rule contribute nothing.
 
 The window term uses a surprise score rather than $S_\mathrm{seq}$ itself. Because $S_\mathrm{seq}$ is uniform on benign data, the maximum over many windows approaches 100 for any busy entity: a host producing hundreds of windows an hour would hold a near-constant window term. With $u = S_\mathrm{seq}(a,e)/100$ and $n_e$ the effective number of independent windows the entity produced in the preceding $T$,
 \begin{equation}
@@ -374,7 +375,7 @@ For each scenario, the forest and calibration are fitted on that scenario's acti
 \end{table}
 
 \begin{itemize}
-\item \emph{Graded $\alpha$-nDCG@k}, $k \in \{10, 20, 50\}$, the primary metric. With $g_s$ the grade of stage $s$ and $c_{s,i}$ the number of items above rank $i$ that contain $s$, the gain at rank $i$ is $\sum_{s \in i} g_s (1-\alpha)^{c_{s,i}}$, discounted by $\log_2(i+1)$ and normalized by the greedily computed ideal ordering \cite{ref24}. The factor $(1-\alpha)^{c}$, with $\alpha = 0.5$, credits the first item of a stage fully and each repeat less, so a scan that recurs on five hosts does not count five times.
+\item \emph{Graded $\alpha$-nDCG@k}, $k \in \{10, 20, 50\}$, the primary metric. With $g_s$ the grade of stage $s$ and $c_{s,i}$ the number of items above rank $i$ that contain $s$, the gain at rank $i$ is $\sum_{s \in i} g_s (1-\alpha)^{c_{s,i}}$, discounted by $\log_2(i+1)$ and normalized by the greedily computed ideal ordering \cite{ref24}. The factor $(1-\alpha)^{c}$, with $\alpha = 0.5$, credits the first item of a stage fully and each repeat less, so a scan that recurs on five hosts does not count five times. An item that bundles several stages earns each stage's gain at its rank, so risk notables, which absorb groups, gain from bundling as well as from position; first-item ranks are reported beside $\alpha$-nDCG for that reason.
 \item \emph{First-item rank} of each non-scan stage and their mean reciprocal rank (MRR): how far the analyst scrolls before first meeting each stage that matters.
 \item \emph{Stage coverage@k}, reported separately for non-scan and scan stages, since scans are surfaced by every system and would otherwise dominate.
 \item \emph{Macro-AUC}: the alert-level AUC of each non-scan stage against benign alerts, averaged over stages so that a stage with thousands of alerts does not outweigh one with ten. It is queue-independent and secondary.
@@ -490,6 +491,30 @@ B0$_\mathrm{rank}$ & level rarity & \textbf{.316} & .331 & .387 & .067 \\
 \end{tabular}
 \end{table}
 
+\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results. Temporal context beats both static baselines on the queue: B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$) and earlier than the rarity baseline B0$_\mathrm{rank}$ for seven (p = 0.039). Two comparisons are not in the method's favour. The robust z-score B2$'$ comes within 0.015 of the forest in $\alpha$-nDCG@20 and places six of the nine stages earlier ($p = 0.16$), so on the tuning set the forest has not shown that it earns its place over a simpler scorer. And the 5-alert window, behind on $\alpha$-nDCG, wins three of nine stages ($p = 0.36$). Accumulation raises $\alpha$-nDCG@20 from 0.395 to 0.576, with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes from bundling: notables gather several stages into one top item, while the first-item ranks of the non-scan stages are not improved (three better, four worse, two tied).
+
+\begin{table}[t]
+\caption{All systems on the tuning scenarios (five seeds, not results): graded $\alpha$-nDCG@k, MRR and macro-AUC of non-scan stages, means over scenarios}
+\label{tab:tuneall}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l ccccc@{}}
+\toprule
+\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} \\
+\midrule
+B0 & .187 & .198 & .262 & .016 & .516 \\
+B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 \\
+B1 & .187 & .213 & .286 & .023 & .383 \\
+B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 \\
+B2$'$ & .279 & .380 & .458 & .131 & .959 \\
+B2, default weights & .198 & .282 & .420 & .075 & --- \\
+B2$_\mathrm{alert}$ & .179 & .285 & .373 & .082 & .987 \\
+\textbf{B2} & .271 & .395 & .478 & .178 & .980 \\
+\textbf{B3} & \textbf{.498} & \textbf{.576} & \textbf{.651} & \textbf{.309} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Open Points for Discussion}
 
 \begin{enumerate}
@@ -500,6 +525,7 @@ B0$_\mathrm{rank}$ & level rarity & \textbf{.316} & .331 & .387 & .067 \\
 \item Is the tuning/test split of scenarios, fixed before tuning, sufficient to address tuning on the test set, given that the preliminary check above used all eight?
 \item With Suricata signatures and the protocol objective, entries lead the alert windows on the tuning set (Table~\ref{tab:queue}), while alert-level AUC differs little (0.986 for 5 alerts, 0.980 for entries). Entries are adopted and the 5-alert window is kept as the ablation arm; is that acceptable?
 \item How a risk notable is ranked against repeat groups has no measured basis yet. The working assumption (Section~\ref{sec:accum}) absorbs its contributing groups and places it by the baseline percentile of $R_e$; is that an acceptable default until the tuning scenarios decide?
+\item On the tuning set a robust z-score comes within 0.015 of the Isolation Forest (Table~\ref{tab:tuneall}). If the test set confirms it, should the paper present the simpler scorer as the method, with the forest as the comparator?
 \item Harrison and santos have about half of their baselines poisoned by design. Is reporting them as recorded, alongside an oracle-cleaned retraining, the right treatment, or should they be separated from the main comparison?
 \end{enumerate}
 
