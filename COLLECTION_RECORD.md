@@ -66,8 +66,8 @@ Run both, today, immediately after the audit-policy change:
 | Manager, T0 | `provenance/raw/T0_manager_20260912T131341.txt` | 2026-09-12 13:13 |
 | Manager, T0 (superseded) | `provenance/raw/T0_manager_20260912T121421.txt` — four `sudo` bugs left config hashes, rotated-file listing, log sizes and rule-ID mappings blank. Kept for the audit trail; **use the 13:13 file.** | 2026-09-12 12:14 |
 | Endpoint, T0 | `provenance/raw/T0_endpoint_20260912T121433.txt` | 2026-09-12 12:14 |
-| Manager, T1 | | |
-| Endpoint, T1 | | |
+| Manager, T1 | `provenance/raw/T1_manager_20261017T231628.txt`. vs T0: manager `ossec.conf` `77826ff6…`, ruleset aggregate `a3852101…`, no local rules, `log_alert_level` 3, `logall` no: **all unchanged**. Indexer and dashboard inactive (C.2, 12–13 Oct). `/var/ossec/queue` 7.4 → 14 GB (WSL disk 924 GB free) | 2026-10-17 23:16 |
+| Endpoint, T1 | `provenance/raw/T1_endpoint_20261017T231656.txt`. utc_offset 7; `ProcessCreationIncludeCmdLine_Enabled` not set; audit policy as T0; agent `ossec.conf` `278DBA62…`, Sysmon config `055FEBC6…`: **unchanged**. Security log maxSize 1 GB (raised at T0, A.3). Mixed UTF-16 encoding from Sysmon output; read with `strings -el` | 2026-10-17 23:16 |
 
 Raw snapshots are gitignored (they contain hostnames and usernames). Before
 submission, copy the redacted headline values into `provenance/redacted/`.
@@ -363,7 +363,7 @@ routine overnight sleep. Log anything that is not that.
 
 | Timestamp (+07) | Duration | What | Cause | Action taken |
 |---|---|---|---|---|
-| | | | | |
+| **2026-10-14 ~17:43 → 2026-10-15 00:34** | ~6.9 h | **No host (`002`) alerts while the host was on and in use** (System log: no 6005/6006/1074 between the 14 Oct boot and the 15 Oct 00:34 shutdown sequence; researcher confirms no sleep). The gate counts it as downtime (24.3 h interval ending 15 Oct 18:03), so the awake-hour rate is not biased, but the hold-out week loses those hours, including the Patch Tuesday install phase (C.3) | **Not determined; CAUSE-CHECK PENDING.** WSL journal retained only from 15 Oct 21:09 and the manager has no `ossec-14.log.gz`, so neither side recorded it. Circumstantial: WSL had already died once that day (NUL block before the 16:22:34 agent-start alert, Part E), and two VirtualBox VMs (Kali + Windows) ran on the host that evening (C.2), so a WSL failure under memory pressure is the leading explanation | Recorded at the freeze; not recoverable |
 
 The weekly `baseline_check.py` run prints detected downtime intervals. Anything
 longer than an overnight, or on a day you know you were using the machine, is a
@@ -389,6 +389,7 @@ sideloaded software, remote-access sessions.
 | 2026-10-02 21:04:58 +07 | **Host: scheduled task `Start CASIEM VM` registered**: at logon of the host user, +1 min delay, runs `VBoxManage startvm vm-win11-target --type headless`; principal = the host user, LogonType Interactive, **RunLevel Limited** (non-elevated, same as every other VirtualBox command used); 5 min execution limit. | permanent through Session B | Starts the baseline VM on every host boot (auto-sign-in → logon trigger). Host software configuration, not a Part B item. Paired with `tools/vm_safe_shutdown.ps1` at shutdown (G.1 row 11). |
 | 2026-10-12 ~19:50 +07 | **Host: VM stopped and its autostart disabled.** Guest shut down from its own Start menu (clean); `Disable-ScheduledTask -TaskName "Start CASIEM VM"` (task kept, not deleted). Follows the 11 Oct decision to pause the VM baseline (Part G status). | permanent until resumed | **From here on the host stream has no VirtualBox process activity** (no `VBoxHeadless`/`VBoxSVC` start at logon). This change falls in the **hold-out week** (the final week before the 17 Oct freeze), so a small drop in VirtualBox-related process-creation alerts from 12 Oct is expected and is not drift. Reason: free ~4 GB of host RAM |
 | 2026-10-12 19:56:02–03 +07 | **Manager side: `wazuh-dashboard` and `wazuh-indexer` stopped** (`systemctl stop`). **Then disabled on 2026-10-13, by ~11:35 +07** (`systemctl disable`, researcher), so they stay off across WSL restarts until re-enabled; re-enable planned on the 17 Oct freeze day, after the freeze steps. `wazuh-manager` verified `active` after the stop. | 12 Oct → 17 Oct (planned) | **No effect on alert generation or the corpus:** nothing in the pipeline reads the indexer (PHASE0_RUNBOOK §7a); the corpus comes from the manager's `alerts.json` archives. Filebeat retries and catches up when the indexer returns. The freeze-day provenance snapshot will show both as inactive if they are stopped then. Reason: host RAM |
+| 2026-10-14 evening (researcher, not fully certain of the date) | **Host: two VirtualBox VMs for another course, Kali Linux and a Windows VM, testing a reverse TCP shell between them only** (researcher's report: no interaction with the host or anything else) | a few hours | Pentest tooling ran **inside guests**; the host agent sees only VirtualBox process activity, not guest traffic. Most of the evening falls inside the C.1 outage (no host alerts after ~17:43), so little or none of it is in the corpus. Contamination bound unaffected (§3.5: ≤ 7% attack-like windows is harmless) |
 
 ## C.3 Uptime continuity
 
@@ -420,10 +421,10 @@ fraction anyway — it is a reported dataset statistic, not a pass/fail gate.
 | **Awake night 1 — a weekday** | **Wed 7 → Thu 8 Oct 2026** | ☑ | Host on from the 7 Oct 16:25 cold boot until the scripted shutdown at 07:39 on 8 Oct. Host agent `002` alerts per hour (manager `ossec-alerts-07/08.json.gz`, raw, not admission-filtered): 7 Oct 16h 1,073 (boot), 17h 252, 18h 142, 19h 197, 20h 349, 21h 238, 22h 145, 23h 77; 8 Oct 00h 294, 01h 85, 02h 79, 03h 98, **04h 688**, 05h 92, 06h 84, 07h 168. **No empty hour.** The Start-menu shutdown clicked and cancelled at ~00:04 (G.4b #6) did not interrupt it: 00h has 294 alerts and every later hour is populated. Unattended 01–06h excluding 04h: 79–98/h, matching the weekend night (3→4 Oct, ~84/h). **04h 688 is an unexplained spike** (≈8× its neighbours; the weekend night had 85 at 04h), probably a scheduled job (maintenance, Defender, FIM/SCA scan); check its rule ids before reading it as anomalous. 3 nights is the measured sufficient number |
 | **Awake night 2 — a weekend** | **Sat 3 → Sun 4 Oct 2026** | ☑ | Done first in calendar order (the weekday night is still to come). Host left on overnight; the researcher ran the morning checks on 4 Oct and all passed. Host agent `002` alerts per hour on 4 Oct (manager `alerts.json`): 00h 185, 01h 98, 02h 246, 03h 102, 04h 85, 05h 75, 06h 73. **No empty hour.** The researcher used the PC until about 02:00, so 00–02h are partly interactive. **03:00–06:59 is genuinely unattended: 335 alerts, ≈84/h**, the idle-night background this night was for (against ≈389/h awake and in use). The earlier 01:00–05:59 total of 606 mixed both. The VM ran through the night too (VM T0 2026-10-03 14:56, G.3), its first night after the sleep fix (G.4 #2). |
 | **Awake night 3 — 13/14 Oct** | 13 Oct 2026 | — | **Downgraded 2026-10-12 to optional (researcher's decision with Claude):** the workstation is now the secondary, benign-only corpus (AIT-ADS is primary), `night_fraction` is dropped (+0.002 AUC from extra nights, inside the spread, `night_coverage_note.md`), and Windows Update installs whenever the host is next on, so the Patch Tuesday mode is shifted, not missed (the −0.208 figure was for withholding the mode entirely). **What is still required:** the host on for a normal day on 13 or 14 Oct with the cumulative update allowed to install and reboot, and its KB and install time recorded. It lands in the hold-out week; if the training weeks contain no cumulative update, report the resulting calibration drift rather than hide it |
-| Dirty shutdowns (6008) stopped after `powercfg /h off` | week 1 | ☐ | 6 in the 4 weeks to 11 Sep; indexer + WSL vhdx corruption risk |
+| Dirty shutdowns (6008) stopped after `powercfg /h off` | week 1 | ☒ | **WSL is still stopped uncleanly at host shutdown:** 8 corrupt lines in the frozen corpus (Part E), each followed by an agent-start alert at the next boot (17 Sep … 17 Oct). Windows itself (`6008`) not re-checked. Cost: < 10 alerts. Original note: | 6 in the 4 weeks to 11 Sep; indexer + WSL vhdx corruption risk |
 | Unattended-reboot test passed (WSL starts with nobody logged in) | 2026-09-12 | ☑ | **PASS** — see A.7 |
 | `night_fraction` confirmed non-constant | 14 or 18 Sep reading | ☐ | it was dead before; verify it is alive |
-| **Patch Tuesday burst captured, install + reboot** | 13/14 Oct 2026 | ☐ | −0.208 AUC to miss; the only fixed date |
+| **Patch Tuesday burst captured, install + reboot** | 13/14 Oct 2026 | ◐ | **Partly.** KB5127647/5127648/5127690 installed during the 15 Oct 00:34–00:37 shutdown (three TrustedInstaller restarts, `1074`/`6005`/`6006`). The install-at-shutdown phase fell inside the C.1 outage and is **not** in the corpus; the first boot after the update (15 Oct 18:02) is. Original note: | −0.208 AUC to miss; the only fixed date |
 | Any deliberate shutdown (travel, maintenance) | | | log in C.1 |
 
 Planned power/uptime changes go here. They alter *how much* you collect, not what
@@ -433,12 +434,12 @@ generates it, so they are **not** segment boundaries and do not belong in Part B
 
 | | |
 |---|---|
-| Weekdays covered | |
-| Weekend days covered | |
-| Patch cycles fully inside the window | |
-| Uptime fraction over the window (target ~100%) | |
-| Unplanned outages: count and total hours | |
-| Public holidays / travel / atypical weeks | |
+| Weekdays covered | **25 of 25**, Mon 14 Sep – Fri 16 Oct (each has ≥ 30 min of awake time, computed from the downtime list in `provenance/gate/freeze.json`) |
+| Weekend days covered | **11 of 11** (Sat 12 Sep … Sat 17 Oct) |
+| Patch cycles fully inside the window | **One Patch Tuesday** (13 Oct: KB5127647, KB5127648, KB5127690, installed by TrustedInstaller during the 15 Oct 00:34–00:37 shutdown) plus one optional update (KB5124009, 25 Sep). The September Patch Tuesday (8 Sep) predates T0 |
+| Uptime fraction over the window (target ~100%) | **42.7%** (363.6 awake h of 851 h). The ~100% target was withdrawn on 12 Sep (duty cycle, C.3); the active-time correction handles the nightly gaps |
+| Unplanned outages: count and total hours | **1 known: 14 Oct ~17:43 → 15 Oct 00:34, ~6.9 h** with the host in use (C.1). Plus repeated dirty WSL stops at host shutdown, visible as 8 corrupt lines (Part E) |
+| Public holidays / travel / atypical weeks | Examination period with reduced use (Deliverable 3, Threats). 1–12 Oct: VirtualBox VM builds and runs on the host (C.2, Part G) |
 
 ---
 
@@ -465,7 +466,7 @@ is free.
 | wk3 | | | | | | |
 | wk4 | | | | | | |
 | wk5 | | | | | | |
-| Freeze | 17 Oct | | | | | |
+| Freeze | 17 Oct 23:15 | 352.5 | 3,614 | 12,815 (user 7,475) | none | `GO_WITH_FLOOR` printed by the projection rule; moot at the freeze: the pool exceeds the 8,000 target. 128,162 admitted of 134,092 (5,922 excluded, 5,384 of them scan-timed FIM); 363.6 awake h of 851 h; user resolution 58.4%; 64 rule ids. `provenance/gate/freeze.json` |
 
 **The gate**: ≤35 projected days → GO. 35–70 → GO WITH THE FLOOR (4,000 windows,
 report seed variance bands). >70 → STOP AND REDESIGN. The redesign options, in
@@ -740,13 +741,13 @@ changes afterwards, the calibration no longer corresponds to anything.
 
 | | |
 |---|---|
-| T1 (freeze timestamp) | |
-| Frozen corpus filename | |
-| **SHA-256 of the frozen corpus** | |
-| Bytes / line count | |
-| Train / calibration split rule | (state it once, here) |
-| Random seeds used | |
-| `provenance/raw/T1_*` snapshots taken | ☐ manager ☐ endpoint |
+| T1 (freeze timestamp) | **2026-10-17 23:15 +07:00** (= 16:15 Z). Frozen with `tools/freeze_baseline.sh 2026-10-17T23:15` (commit `676fab7`) at ~23:30 |
+| Frozen corpus filename | `baseline_frozen_20261017T2315.json` in WSL `~/` (read-only) and `~/baseline_archive/frozen/`. Contents: host agents `001` + `002` (re-enrollment, B #2), T0 ≤ timestamp < T1, raw Wazuh lines; admission filtering stays in the analysis code |
+| **SHA-256 of the frozen corpus** | **`a68af6502fca6eb04b999c49b4e6e95a3a0bd75e86a2cd2e03cd3c985e19e32b`** (re-read and matched by `baseline_check.py`, `provenance/gate/freeze.json`). *Superseded first attempt, same T1, kept as `….v1-superseded.json`:* `8c27b4db0085fb86c81861b3b321becd93050849ec1d5b6f00235efdf9b350f7`, 134,084 lines; it silently dropped the 8 complete alerts hidden in corrupt lines (see below) |
+| Bytes / line count | **395,618,613 B / 134,092 lines.** Raw assembly had 155,381 lines: 13,596 other agents (000, 003), 7,693 outside [T0, T1). **8 corrupt lines** (2 NUL-filled blocks, 6 half-written alerts with the next alert appended to the same line), all from WSL being killed mid-write at host shutdown; one complete alert recovered from each (six `503 Wazuh agent started` on 17 Sep, 26 Sep, 29 Sep, 1 Oct, 10 Oct, 14 Oct; two `67027` at the 19 Sep and 17 Oct day starts). Unrecoverable: 6 alert fragments plus the two NUL blocks (636 and 73 B), **< 10 alerts lost in total** |
+| Train / calibration split rule | Per entity type, forest training set = baseline windows at stride 10 (`idx % 10 == 0`, `tools/seq_scoring.py`); per-host calibration on the held-out windows the stride leaves out (Deliverable 3, Per-host calibration). Workstation drift hold-out = **the final week, [2026-10-10 23:15, 2026-10-17 23:15)**, with forest and calibration fitted on the windows before it (Deliverable 3, Protocol) |
+| Random seeds used | Workstation analysis not yet run. Protocol: seeds 0–9 as independent replicas (`ait_eval.py --seeds 10`, `range(seeds)`); record the actual seeds here when the workstation run is made |
+| `provenance/raw/T1_*` snapshots taken | ☑ manager `T1_manager_20261017T231628.txt` ☑ endpoint `T1_endpoint_20261017T231656.txt` |
 
 After freezing, `git tag baseline-frozen` on the repo so the code that produced
 the features is pinned alongside the data that is not in the repo.
