@@ -6,7 +6,9 @@
 #
 # Writes ~/baseline_frozen_<T1>.json: the host agents' alerts (001, and 002 after
 # the 27 Sep re-enrollment) with T0 <= timestamp < T1, each line byte-for-byte as
-# Wazuh wrote it, in assembly order. Nothing else is filtered here: admission
+# Wazuh wrote it, in assembly order (except complete alerts recovered from
+# lines corrupted by dirty WSL shutdowns, written without the NULs/fragments
+# around them; each one is printed). Nothing else is filtered here: admission
 # (compliance groups, scan-timed FIM) stays in the analysis code, so the frozen
 # file is the raw input the paper's numbers are computed from. The file is made
 # read-only, copied into the offline archive, hashed, and gated with --until.
@@ -57,30 +59,51 @@ tz = dt.timezone(dt.timedelta(hours=7))
 lo = dt.datetime.strptime(t0, "%Y-%m-%dT%H:%M").replace(tzinfo=tz).timestamp()
 hi = dt.datetime.strptime(t1, "%Y-%m-%dT%H:%M").replace(tzinfo=tz).timestamp()
 keep = set(agents.split(","))
-n = kept = bad = other_agent = outside = 0
+n = kept = bad = recovered = unusable = other_agent = outside = 0
+START = re.compile(rb'\{"timestamp":')
 first = last = None
 with open(raw, "rb") as fi, open(out, "xb") as fo:
     for line in fi:
         n += 1
         try:
-            r = json.loads(line)
-            s = r.get("timestamp") or r["@timestamp"]
-            s = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", s.replace("Z", "+00:00"))
-            ts = dt.datetime.fromisoformat(s).timestamp()
-            ag = str(r["agent"]["id"])
+            items = [(line.rstrip(b"\r\n"), json.loads(line))]
         except Exception:
+            # A dirty WSL shutdown leaves NUL-filled blocks and half-written
+            # lines in alerts.json; the manager then appends the next alert to
+            # the same line. Recover every complete alert inside the line;
+            # the fragments themselves are lost for good.
             bad += 1
-            continue
-        if ag not in keep:
-            other_agent += 1; continue
-        if not (lo <= ts < hi):
-            outside += 1; continue
-        fo.write(line if line.endswith(b"\n") else line + b"\n")
-        kept += 1
-        first = ts if first is None else min(first, ts)
-        last = ts if last is None else max(last, ts)
+            seg = line.replace(b"\x00", b"").rstrip(b"\r\n")
+            starts = [m.start() for m in START.finditer(seg)]
+            items = []
+            for k, st in enumerate(starts):
+                chunk = seg[st:(starts[k + 1] if k + 1 < len(starts) else len(seg))]
+                try:
+                    items.append((chunk, json.loads(chunk)))
+                except Exception:
+                    pass
+            desc = ", ".join(f"{(r.get('timestamp') or '?')[:19]} agent {r.get('agent', {}).get('id', '?')} rule {r.get('rule', {}).get('id', '?')}" for _, r in items) or "none"
+            print(f"  corrupt line {n}: {len(line)} B, {line.count(0)} NUL, {len(starts)} alert start(s), recovered: {desc}")
+            recovered += len(items)
+        for chunk, r in items:
+            try:
+                s = r.get("timestamp") or r["@timestamp"]
+                s = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", s.replace("Z", "+00:00"))
+                ts = dt.datetime.fromisoformat(s).timestamp()
+                ag = str(r["agent"]["id"])
+            except Exception:
+                unusable += 1
+                continue
+            if ag not in keep:
+                other_agent += 1; continue
+            if not (lo <= ts < hi):
+                outside += 1; continue
+            fo.write(chunk + b"\n")
+            kept += 1
+            first = ts if first is None else min(first, ts)
+            last = ts if last is None else max(last, ts)
 f = lambda t: dt.datetime.fromtimestamp(t, tz).isoformat(timespec="seconds") if t else "-"
-print(f"  raw lines {n}; kept {kept}; other agents {other_agent}; outside [T0,T1) {outside}; unparseable {bad}")
+print(f"  raw lines {n}; corrupt lines {bad} (alerts recovered from them {recovered}); kept {kept}; other agents {other_agent}; outside [T0,T1) {outside}; unusable {unusable}")
 print(f"  first kept alert {f(first)}   last kept alert {f(last)}")
 if kept == 0:
     sys.exit("nothing kept -- do not use this file")
