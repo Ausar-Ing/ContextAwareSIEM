@@ -1,0 +1,65 @@
+harrison         V0 pooled, fallback 500        aNDCG@20 0.605 MRR 0.454 | benign top-20 quiet 3.2 other 6.4
+    benign host windows above S 99, by role: external_mail 2.2%, inet-firewall 0.1%, intranet_server 100.0%, mail 0.4%, vpn 0.0%, webserver 3.8%
+    calibration source (host windows held out): cloud_share pooled 25, external_mail own 4586, external_mail own 9679, inet-firewall own 5658, internal_share pooled 116, intranet_server pooled 87, mail own 9953, vpn own 4677, webserver own 4134
+harrison         V1 equal-share, fallback 500   aNDCG@20 0.536 MRR 0.318 | benign top-20 quiet 3.0 other 6.4
+    benign host windows above S 99, by role: external_mail 2.0%, inet-firewall 0.3%, intranet_server 100.0%, mail 0.5%, vpn 0.0%, webserver 4.7%
+    calibration source (host windows held out): cloud_share pooled 25, external_mail own 4608, external_mail own 10265, inet-firewall own 5802, internal_share pooled 116, intranet_server pooled 87, mail own 10596, vpn own 4733, webserver own 4134
+harrison         V2 equal-share, fallback 100   aNDCG@20 0.536 MRR 0.321 | benign top-20 quiet 3.0 other 6.4
+    benign host windows above S 99, by role: external_mail 2.0%, inet-firewall 0.3%, intranet_server 100.0%, mail 0.5%, vpn 0.0%, webserver 4.7%
+    calibration source (host windows held out): cloud_share pooled 25, external_mail own 4608, external_mail own 10265, inet-firewall own 5802, internal_share own 116, intranet_server pooled 87, mail own 10596, vpn own 4733, webserver own 4134
+harrison         V3 pooled, fallback 100        aNDCG@20 0.605 MRR 0.454 | benign top-20 quiet 3.2 other 6.4
+    benign host windows above S 99, by role: external_mail 2.2%, inet-firewall 0.1%, intranet_server 100.0%, mail 0.4%, vpn 0.0%, webserver 3.8%
+    calibration source (host windows held out): cloud_share pooled 25, external_mail own 4586, external_mail own 9679, inet-firewall own 5658, internal_share own 116, intranet_server pooled 87, mail own 9953, vpn own 4677, webserver own 4134
+harrison         V4 equal-share, under 100 unscored aNDCG@20 0.185 MRR 0.035 | benign top-20 quiet 0.0 other 12.6
+    benign host windows above S 99, by role: external_mail 2.0%, inet-firewall 0.3%, mail 0.5%, vpn 0.0%, webserver 4.7%
+    calibration source (host windows held out): cloud_share pooled 25, external_mail own 4608, external_mail own 10265, inet-firewall own 5802, internal_share own 116, intranet_server pooled 87, mail own 10596, vpn own 4733, webserver own 4134
+russellmitchell  V0 pooled, fallback 500        aNDCG@20 0.216 MRR 0.057 | benign top-20 quiet 3.0 other 8.2
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 15.5%, inet-firewall 14.5%, internal_share 100.0%, intranet_server 100.0%, mail 9.7%, vpn 42.5%, webserver 5.2%
+    calibration source (host windows held out): cloud_share pooled 17, external_mail own 1430, external_mail own 3235, inet-firewall own 3649, internal_share pooled 22, intranet_server pooled 32, mail own 5620, vpn own 1306, webserver own 1251
+russellmitchell  V1 equal-share, fallback 500   aNDCG@20 0.317 MRR 0.132 | benign top-20 quiet 2.8 other 8.4
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 15.2%, inet-firewall 14.5%, internal_share 100.0%, intranet_server 100.0%, mail 8.1%, vpn 42.5%, webserver 6.0%
+    calibration source (host windows held out): cloud_share pooled 17, external_mail own 1430, external_mail own 3371, inet-firewall own 3817, internal_share pooled 22, intranet_server pooled 32, mail own 6019, vpn own 1306, webserver own 1251
+russellmitchell  V2 equal-share, fallback 100   aNDCG@20 0.317 MRR 0.132 | benign top-20 quiet 2.8 other 8.4
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 15.2%, inet-firewall 14.5%, internal_share 100.0%, intranet_server 100.0%, mail 8.1%, vpn 42.5%, webserver 6.0%
+    calibration source (host windows held out): cloud_share pooled 17, external_mail own 1430, external_mail own 3371, inet-firewall own 3817, internal_share pooled 22, intranet_server pooled 32, mail own 6019, vpn own 1306, webserver own 1251
+russellmitchell  V3 pooled, fallback 100        aNDCG@20 0.216 MRR 0.057 | benign top-20 quiet 3.0 other 8.2
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 15.5%, inet-firewall 14.5%, internal_share 100.0%, intranet_server 100.0%, mail 9.7%, vpn 42.5%, webserver 5.2%
+    calibration source (host windows held out): cloud_share pooled 17, external_mail own 1430, external_mail own 3235, inet-firewall own 3649, internal_share pooled 22, intranet_server pooled 32, mail own 5620, vpn own 1306, webserver own 1251
+russellmitchell  V4 equal-share, under 100 unscored aNDCG@20 0.062 MRR 0.017 | benign top-20 quiet 0.0 other 15.8
+    benign host windows above S 99, by role: external_mail 15.2%, inet-firewall 14.5%, mail 8.1%, vpn 42.5%, webserver 6.0%
+    calibration source (host windows held out): cloud_share pooled 17, external_mail own 1430, external_mail own 3371, inet-firewall own 3817, internal_share pooled 22, intranet_server pooled 32, mail own 6019, vpn own 1306, webserver own 1251
+wheeler          V0 pooled, fallback 500        aNDCG@20 0.247 MRR 0.063 | benign top-20 quiet 3.0 other 8.2
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 4.0%, inet-firewall 1.8%, internal_share 100.0%, intranet_server 42.1%, mail 0.0%, vpn 0.1%, webserver 1.7%
+    calibration source (host windows held out): cloud_share pooled 22, external_mail own 2399, external_mail own 3296, external_mail own 1529, external_mail own 6251, inet-firewall own 8753, internal_share pooled 32, intranet_server pooled 111, mail own 11833, vpn own 12799, webserver own 14945
+wheeler          V1 equal-share, fallback 500   aNDCG@20 0.219 MRR 0.055 | benign top-20 quiet 2.4 other 8.6
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 4.6%, inet-firewall 1.9%, internal_share 100.0%, intranet_server 36.9%, mail 0.0%, vpn 0.1%, webserver 1.8%
+    calibration source (host windows held out): cloud_share pooled 22, external_mail own 2399, external_mail own 3296, external_mail own 1529, external_mail own 6298, inet-firewall own 9097, internal_share pooled 32, intranet_server pooled 111, mail own 12517, vpn own 13609, webserver own 15984
+wheeler          V2 equal-share, fallback 100   aNDCG@20 0.208 MRR 0.053 | benign top-20 quiet 2.4 other 7.2
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 4.6%, inet-firewall 1.9%, internal_share 100.0%, intranet_server 1.0%, mail 0.0%, vpn 0.1%, webserver 1.8%
+    calibration source (host windows held out): cloud_share pooled 22, external_mail own 2399, external_mail own 3296, external_mail own 1529, external_mail own 6298, inet-firewall own 9097, internal_share pooled 32, intranet_server own 111, mail own 12517, vpn own 13609, webserver own 15984
+wheeler          V3 pooled, fallback 100        aNDCG@20 0.229 MRR 0.086 | benign top-20 quiet 3.6 other 7.4
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 4.0%, inet-firewall 1.8%, internal_share 100.0%, intranet_server 4.5%, mail 0.0%, vpn 0.1%, webserver 1.7%
+    calibration source (host windows held out): cloud_share pooled 22, external_mail own 2399, external_mail own 3296, external_mail own 1529, external_mail own 6251, inet-firewall own 8753, internal_share pooled 32, intranet_server own 111, mail own 11833, vpn own 12799, webserver own 14945
+wheeler          V4 equal-share, under 100 unscored aNDCG@20 0.257 MRR 0.067 | benign top-20 quiet 0.0 other 8.4
+    benign host windows above S 99, by role: external_mail 4.6%, inet-firewall 1.9%, intranet_server 1.0%, mail 0.0%, vpn 0.1%, webserver 1.8%
+    calibration source (host windows held out): cloud_share pooled 22, external_mail own 2399, external_mail own 3296, external_mail own 1529, external_mail own 6298, inet-firewall own 9097, internal_share pooled 32, intranet_server own 111, mail own 12517, vpn own 13609, webserver own 15984
+shaw             V0 pooled, fallback 500        aNDCG@20 0.512 MRR 0.136 | benign top-20 quiet 6.0 other 5.0
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 2.2%, inet-firewall 4.2%, internal_share 100.0%, intranet_server 81.3%, mail 0.2%, vpn 0.0%, webserver 100.0%
+    calibration source (host windows held out): cloud_share pooled 35, external_mail own 7003, external_mail pooled 82, external_mail pooled 80, inet-firewall own 5940, internal_share pooled 41, intranet_server pooled 27, mail own 10078, vpn own 2466, webserver pooled 37
+shaw             V1 equal-share, fallback 500   aNDCG@20 0.526 MRR 0.144 | benign top-20 quiet 6.6 other 3.8
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 1.7%, inet-firewall 3.3%, internal_share 45.7%, intranet_server 60.0%, mail 0.1%, vpn 0.0%, webserver 100.0%
+    calibration source (host windows held out): cloud_share pooled 35, external_mail own 7497, external_mail pooled 82, external_mail pooled 80, inet-firewall own 6308, internal_share pooled 41, intranet_server pooled 27, mail own 10910, vpn own 2466, webserver pooled 37
+shaw             V2 equal-share, fallback 100   aNDCG@20 0.517 MRR 0.135 | benign top-20 quiet 6.6 other 3.8
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 1.7%, inet-firewall 3.3%, internal_share 45.7%, intranet_server 60.0%, mail 0.1%, vpn 0.0%, webserver 100.0%
+    calibration source (host windows held out): cloud_share pooled 35, external_mail own 7497, external_mail pooled 82, external_mail pooled 80, inet-firewall own 6308, internal_share pooled 41, intranet_server pooled 27, mail own 10910, vpn own 2466, webserver pooled 37
+shaw             V3 pooled, fallback 100        aNDCG@20 0.513 MRR 0.136 | benign top-20 quiet 6.0 other 5.0
+    benign host windows above S 99, by role: cloud_share 100.0%, external_mail 2.2%, inet-firewall 4.2%, internal_share 100.0%, intranet_server 81.3%, mail 0.2%, vpn 0.0%, webserver 100.0%
+    calibration source (host windows held out): cloud_share pooled 35, external_mail own 7003, external_mail pooled 82, external_mail pooled 80, inet-firewall own 5940, internal_share pooled 41, intranet_server pooled 27, mail own 10078, vpn own 2466, webserver pooled 37
+shaw             V4 equal-share, under 100 unscored aNDCG@20 0.000 MRR 0.016 | benign top-20 quiet 0.0 other 20.0
+    benign host windows above S 99, by role: external_mail 1.7%, inet-firewall 3.3%, mail 0.1%, vpn 0.0%
+    calibration source (host windows held out): cloud_share pooled 35, external_mail own 7497, external_mail pooled 82, external_mail pooled 80, inet-firewall own 6308, internal_share pooled 41, intranet_server pooled 27, mail own 10910, vpn own 2466, webserver pooled 37
+harrison         host rarity: aNDCG@20 0.517  MRR 0.076
+russellmitchell  host rarity: aNDCG@20 0.391  MRR 0.067
+wheeler          host rarity: aNDCG@20 0.256  MRR 0.040
+shaw             host rarity: aNDCG@20 0.520  MRR 0.091
+mean             aNDCG@20 0.421  MRR 0.068

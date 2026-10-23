@@ -12,7 +12,7 @@ table, from which data, in which environment. All commands run from the reposito
 | `data/ait_ads/labels.csv` | same Zenodo record (`labels.csv`, attack-step time intervals) | `633e09b42772eabbbe5b48598220860eead60b7352efb01973fc45a5034290c0` |
 | `data/ait_ads/alerts_csv.zip` | GitHub `ait-aecid/alert-data-set`, commit `ce927dd`, `alerts_csv/alerts_csv.zip` (per-alert event labels) | `2bf1a81527a3fe15d92079a7834c9d77c5305546e15569657d2097d6294825c3` |
 
-Unzip the labels once: `unzip data/ait_ads/alerts_csv.zip -d data/ait_ads` (the archive holds an `alerts_csv/` folder)
+Unzip the labels once: `unzip data/ait_ads/alerts_csv.zip -d data/ait_ads/alerts_csv`
 (gives `data/ait_ads/alerts_csv/<scenario>_alerts.txt`).
 
 Shorthand used below:
@@ -53,6 +53,8 @@ Results produced before 2026-10-14 collapsed every Suricata alert into Wazuh rul
 | Host roles and S_exp (Sec. III-F) | `python3 $T/exposure.py build $C $P/host_roles.json` | `host_roles.json` | <1 min |
 | Table IX (tuning under the protocol objective) | `SAVE_DIR=scores2 CONFIGS=alert5,alert20,entry20d60 python3 $T/ait_sweep.py $D/ait_ads.zip $D/labels.csv $C $T s2.json harrison wheeler russellmitchell shaw`, then `python3 $T/ait_tune.py scores2 $P/host_roles.json $T tune.json` | `tuning_objective.json` (Part A in full, Part B top 20 plus the named configurations) | ~25 min + 2 min |
 | Table X (all systems, tuning set) and the paired tests | `python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json ev.json --scenarios harrison russellmitchell wheeler shaw --seeds 5`, then `python3 $T/ait_report.py $T ev.json` | `eval_tuning_set.json`, `eval_tuning_set_report.txt` | ~15 min |
+| Per-host stratification and calibration-fallback check (2026-10-23) | `python3 $T/ait_eval.py ... --scenarios <tuning> --seeds 1` once to create `evalcache_*` files, then `python3 $T/ait_strat.py $P/host_roles.json $T strat.json harrison russellmitchell wheeler shaw` | `stratification_check.json`, `stratification_check_report.txt` | ~25 min |
+| Host-rarity ranking (2026-10-23) | `python3 $T/ait_analyses.py host-rarity $T harrison russellmitchell wheeler shaw` (same caches) | in `stratification_check_report.txt` | <1 min |
 | Calibration on training vs held-out windows (Sec. III-E) | `python3 $T/ait_analyses.py calib-synthetic` | printed | ~3 min |
 
 The test scenarios (fox, santos, wardbeck, wilson) appear only in Table V and the

@@ -18,6 +18,12 @@ directly by the main scripts. Each subcommand reproduces one claim.
       how many scenarios it raised a Wazuh or Suricata alert after admission,
       and which detectors label it at all in the authors' CSVs (AMiner too).
 
+  host-rarity <wb_dir> <scenario> [...]
+      The host-rarity ranking (2026-10-23): queue groups ranked only by how
+      rarely their host alerted in the baseline, no temporal context at all.
+      Needs evalcache_<scenario>_clean_sid1.pkl from ait_eval.py in the
+      current directory. Tuning scenarios only.
+
 usage: ait_analyses.py <subcommand> [args]
 """
 import sys, json, csv, glob, collections, os
@@ -86,6 +92,36 @@ def step_coverage(stats_path, labels_path, csv_dir):
         print(f"{st:22s} {len(scs):8d} {len(hit):34d}   {dets}")
 
 
+def host_rarity(wb_dir, scenarios):
+    import pickle
+    sys.path.insert(0, wb_dir)
+    import eval_metrics as M
+    assert not set(scenarios) & {"fox", "santos", "wardbeck", "wilson"}, "tuning scenarios only"
+    res = []
+    for sc in scenarios:
+        A, L, t = pickle.load(open(f"evalcache_{sc}_clean_sid1.pkl", "rb"))
+        host = lambda a: next(v for k, v in a.entities if k == "host")
+        base = collections.Counter(host(a) for a in A if a.ts < t and a.admissible)
+        ev = [j for j, a in enumerate(A) if a.ts >= t and a.admissible]
+        Lv = np.array([L[j] for j in ev], dtype=object)
+        gid, last, cur, nxt = [], {}, {}, 0
+        for j in ev:
+            key = (host(A[j]), A[j].rule_id)
+            if key not in last or A[j].ts - last[key] > 3600:
+                cur[key] = nxt; nxt += 1
+            last[key] = A[j].ts; gid.append(cur[key])
+        gid = np.array(gid); G = nxt; st = M.item_stages(gid, Lv, G)
+        gh = np.empty(G, dtype=object)
+        for i, j in enumerate(ev):
+            gh[gid[i]] = host(A[j])
+        tot = sum(base.values())
+        prio = np.array([100 * (1 - base.get(h, 0) / tot) for h in gh])
+        f = M.first_item_ranks(prio, st)
+        r = (M.alpha_ndcg(prio, st, 20), M.mrr_nonscan(f)); res.append(r)
+        print(f"{sc:16s} host rarity: aNDCG@20 {r[0]:.3f}  MRR {r[1]:.3f}")
+    print(f"mean             aNDCG@20 {np.mean([r[0] for r in res]):.3f}  MRR {np.mean([r[1] for r in res]):.3f}")
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -94,6 +130,8 @@ if __name__ == "__main__":
         calib_synthetic()
     elif cmd == "sweep-ranks":
         sweep_ranks(sys.argv[2])
+    elif cmd == "host-rarity":
+        host_rarity(sys.argv[2], sys.argv[3:])
     elif cmd == "step-coverage":
         step_coverage(*sys.argv[2:5])
     else:

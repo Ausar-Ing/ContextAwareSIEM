@@ -35,12 +35,40 @@ NIGHT = W.FEATURE_NAMES.index("night_fraction")
 class TypeModel:
     """Forest + calibration for one entity type, one seed."""
 
-    def __init__(self, seed: int):
+    def __init__(self, seed: int, stratify: bool = False, min_host_cal: int = MIN_HOST_CAL,
+                 fallback: str = "pooled"):
+        """fallback: what a host with fewer than min_host_cal held-out windows is
+        calibrated against -- "pooled" (the entity type's held-out distribution)
+        or "none" (left unscored: -1, which callers treat as no temporal evidence)."""
+        self.fallback = fallback
         self.seed = seed
+        self.stratify = stratify
+        self.min_host_cal = min_host_cal
         self.forest = None
         self.cal_host: dict = {}          # host -> sorted held-out raw scores
         self.cal_type = None              # pooled held-out raw scores
         self.n_train = 0
+        self.train_share: dict = {}       # host -> windows in the training set
+        self.cal_source: dict = {}        # host -> ("own" | "pooled", held-out windows)
+
+    def _train_mask(self, n: int, hosts: np.ndarray) -> np.ndarray:
+        """Every STRIDE-th baseline window; with stratify, each host then keeps at
+        most an equal quota (the stride budget divided by the number of hosts),
+        taken evenly over its own baseline so the period stays covered. Hosts
+        with fewer windows than the quota keep all of theirs. Windows dropped by
+        the quota were never seen by the trees and join the calibration set."""
+        tr = np.arange(n) % STRIDE == 0
+        if not self.stratify:
+            return tr
+        hs = sorted(set(hosts[tr]))
+        quota = int(np.ceil(tr.sum() / max(1, len(hs))))
+        out = np.zeros(n, bool)
+        for h in hs:
+            idx = np.flatnonzero(tr & (hosts == h))
+            if len(idx) > quota:
+                idx = idx[np.linspace(0, len(idx) - 1, quota).round().astype(int)]
+            out[idx] = True
+        return out
 
     @staticmethod
     def prep(F: np.ndarray, entries: bool) -> np.ndarray:
@@ -51,30 +79,34 @@ class TypeModel:
         """F_base: baseline feature rows in stream order; hosts_base: host of
         each row (the host of the alert that produced the window)."""
         X = self.prep(F_base, entries)
-        idx = np.arange(len(X))
-        tr = idx % STRIDE == 0
+        hosts = np.asarray(hosts_base, dtype=object)
+        tr = self._train_mask(len(X), hosts)
         self.n_train = int(tr.sum())
         if self.n_train < MIN_TRAIN:
             return False
+        self.train_share = {h: int((tr & (hosts == h)).sum()) for h in set(hosts)}
         self.forest = IsolationForest(n_estimators=N_TREES,
                                       max_samples=min(PSI_MAX, self.n_train),
                                       random_state=self.seed).fit(X[tr])
         raw = -self.forest.score_samples(X[~tr])
-        hb = np.asarray(hosts_base, dtype=object)[~tr]
+        hb = hosts[~tr]
         self.cal_type = np.sort(raw)
-        for h in set(hb):
+        for h in set(hosts):
             v = raw[hb == h]
-            if len(v) >= MIN_HOST_CAL:
+            if len(v) >= self.min_host_cal:
                 self.cal_host[h] = np.sort(v)
+            self.cal_source[h] = ("own" if len(v) >= self.min_host_cal else "pooled", int(len(v)))
         return True
 
     def score(self, F: np.ndarray, hosts: list, entries: bool) -> np.ndarray:
-        """S_seq in [0, 100] for each row."""
+        """S_seq in [0, 100] for each row (-1 where fallback="none" leaves a host unscored)."""
         raw = -self.forest.score_samples(self.prep(F, entries))
         out = np.empty(len(raw))
         hs = np.asarray(hosts, dtype=object)
         for h in set(hs):
             m = hs == h
+            if h not in self.cal_host and self.fallback == "none":
+                out[m] = -1.0; continue
             ref = self.cal_host.get(h, self.cal_type)
             out[m] = 100.0 * np.searchsorted(ref, raw[m], side="right") / len(ref)
         return out
