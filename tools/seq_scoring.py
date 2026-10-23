@@ -28,11 +28,13 @@ STRIDE = 10
 N_TREES = 200
 PSI_MAX = 4096
 MIN_HOST_CAL = 500                    # Sec. III-E fallback threshold (provisional)
+# Sensitivity runs override it with CONTEXTSIEM_MIN_HOST_CAL (2026-10-23: 100 tested).
 # Per-host equal-share training (Sec. III-E) is the method from 2026-10-23.
 # CONTEXTSIEM_STRATIFY=0 restores the pooled (volume-weighted) training that every
 # earlier result was produced with.
 import os as _os
 STRATIFY = _os.environ.get("CONTEXTSIEM_STRATIFY", "1") != "0"
+MIN_HOST_CAL = int(_os.environ.get("CONTEXTSIEM_MIN_HOST_CAL", MIN_HOST_CAL))
 MIN_TRAIN = 200                       # below this no forest is fitted for the type
 NIGHT = W.FEATURE_NAMES.index("night_fraction")
 
@@ -40,7 +42,7 @@ NIGHT = W.FEATURE_NAMES.index("night_fraction")
 class TypeModel:
     """Forest + calibration for one entity type, one seed."""
 
-    def __init__(self, seed: int, stratify: bool | None = None, min_host_cal: int = MIN_HOST_CAL,
+    def __init__(self, seed: int, stratify: bool | None = None, min_host_cal: int | None = None,
                  fallback: str = "pooled"):
         """fallback: what a host with fewer than min_host_cal held-out windows is
         calibrated against -- "pooled" (the entity type's held-out distribution)
@@ -48,7 +50,7 @@ class TypeModel:
         self.fallback = fallback
         self.seed = seed
         self.stratify = STRATIFY if stratify is None else stratify
-        self.min_host_cal = min_host_cal
+        self.min_host_cal = MIN_HOST_CAL if min_host_cal is None else min_host_cal
         self.forest = None
         self.cal_host: dict = {}          # host -> sorted held-out raw scores
         self.cal_type = None              # pooled held-out raw scores

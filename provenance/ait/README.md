@@ -60,6 +60,7 @@ regenerated with stratification on 2026-10-23 (earlier versions are in git histo
 | Table X (all systems, tuning set) and the paired tests | `python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json ev.json --scenarios harrison russellmitchell wheeler shaw --seeds 5`, then `python3 $T/ait_report.py $T ev.json` | `eval_tuning_set.json`, `eval_tuning_set_report.txt` | ~15 min |
 | Per-host stratification and calibration-fallback check (2026-10-23) | `python3 $T/ait_eval.py ... --scenarios <tuning> --seeds 1` once to create `evalcache_*` files, then `python3 $T/ait_strat.py $P/host_roles.json $T strat.json harrison russellmitchell wheeler shaw` | `stratification_check.json`, `stratification_check_report.txt` | ~25 min |
 | Host-rarity ranking (2026-10-23) | `python3 $T/ait_analyses.py host-rarity $T harrison russellmitchell wheeler shaw` (same caches) | in `stratification_check_report.txt` | <1 min |
+| Calibration threshold 100 instead of 500 (sensitivity, 2026-10-23) | `CONTEXTSIEM_MIN_HOST_CAL=100 python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json ev100.json --scenarios harrison russellmitchell wheeler shaw --seeds 5`, then `python3 $T/ait_report.py $T ev100.json` | `eval_tuning_set_cal100.json`, `eval_tuning_set_cal100_report.txt` | ~15 min |
 | Calibration on training vs held-out windows (Sec. III-E) | `python3 $T/ait_analyses.py calib-synthetic` | printed | ~3 min |
 
 The test scenarios (fox, santos, wardbeck, wilson) appear only in Table V and the
