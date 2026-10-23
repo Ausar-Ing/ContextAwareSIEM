@@ -40,6 +40,11 @@ Results produced before 2026-10-14 collapsed every Suricata alert into Wazuh rul
 `window_builder.py` now uses the Suricata signature as the rule identity; set
 `CONTEXTSIEM_SURICATA_ID=0` to reproduce the earlier results. Caches are keyed by the switch.
 
+Per-host equal-share training (Sec. III-E) is the method from 2026-10-23 (`seq_scoring.STRATIFY`).
+Results produced before that date used volume-weighted training; set `CONTEXTSIEM_STRATIFY=0`
+to reproduce them. Tables IX and X and `tuning_objective.json` / `eval_tuning_set.json` were
+regenerated with stratification on 2026-10-23 (earlier versions are in git history at `db4d5c2`).
+
 ## 4. Table / claim → command → output
 
 | D3 item | Command | Output in `provenance/ait/` | Time |
@@ -51,7 +56,7 @@ Results produced before 2026-10-14 collapsed every Suricata alert into Wazuh rul
 | Table VII (window sweep, Suricata collapsed) | `CONTEXTSIEM_SURICATA_ID=0 SEEDS=5 python3 $T/ait_sweep.py $D/ait_ads.zip $D/labels.csv $C $T $P/window_sweep.json harrison wheeler russellmitchell shaw`; rank columns: `python3 $T/ait_analyses.py sweep-ranks $P/window_sweep.json` | `window_sweep.json` | ~45 min |
 | First group-score study (superseded) | `CONTEXTSIEM_SURICATA_ID=0 SAVE_DIR=scores CONFIGS=alert5,alert20,entry20d60 python3 $T/ait_sweep.py ... harrison wheeler russellmitchell shaw`, then `python3 $T/ait_queue.py scores alert5 alert20 entry20d60` | `queue_variants.json` | ~20 min |
 | Host roles and S_exp (Sec. III-F) | `python3 $T/exposure.py build $C $P/host_roles.json` | `host_roles.json` | <1 min |
-| Table IX (tuning under the protocol objective) | `SAVE_DIR=scores2 CONFIGS=alert5,alert20,entry20d60 python3 $T/ait_sweep.py $D/ait_ads.zip $D/labels.csv $C $T s2.json harrison wheeler russellmitchell shaw`, then `python3 $T/ait_tune.py scores2 $P/host_roles.json $T tune.json` | `tuning_objective.json` (Part A in full, Part B top 20 plus the named configurations) | ~25 min + 2 min |
+| Table IX (tuning under the protocol objective) | `SAVE_DIR=scores3 CONFIGS=alert5,alert20,entry20d60 python3 $T/ait_sweep.py $D/ait_ads.zip $D/labels.csv $C $T s2.json harrison wheeler russellmitchell shaw`, then `python3 $T/ait_tune.py scores3 $P/host_roles.json $T tune.json` | `tuning_objective.json` (Part A in full, Part B top 20 plus the named configurations) | ~25 min + 2 min |
 | Table X (all systems, tuning set) and the paired tests | `python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json ev.json --scenarios harrison russellmitchell wheeler shaw --seeds 5`, then `python3 $T/ait_report.py $T ev.json` | `eval_tuning_set.json`, `eval_tuning_set_report.txt` | ~15 min |
 | Per-host stratification and calibration-fallback check (2026-10-23) | `python3 $T/ait_eval.py ... --scenarios <tuning> --seeds 1` once to create `evalcache_*` files, then `python3 $T/ait_strat.py $P/host_roles.json $T strat.json harrison russellmitchell wheeler shaw` | `stratification_check.json`, `stratification_check_report.txt` | ~25 min |
 | Host-rarity ranking (2026-10-23) | `python3 $T/ait_analyses.py host-rarity $T harrison russellmitchell wheeler shaw` (same caches) | in `stratification_check_report.txt` | <1 min |

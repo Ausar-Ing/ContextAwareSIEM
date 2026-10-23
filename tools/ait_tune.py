@@ -55,8 +55,11 @@ def load(sc, cfg):
         mx = gmax(s)
         mean = np.bincount(gid, weights=s, minlength=G) / k
         seeds.append({"max": mx, "mean": mean, "pi": surprise(mx / 100, k)})
+    # host rarity (B0_host): 100 * (1 - host's share of baseline admitted alerts)
+    cnt = {h: len(v) for h, v in base.items()}; tot = max(1, sum(cnt.values()))
+    s_hostr = np.array([100 * (1 - cnt.get(h, 0) / tot) for h in ip])
     return dict(G=G, stages=stages, rule_lin=gmax(s_rule_lin), rule_rank=gmax(s_rule_rank),
-                exp=gmax(s_exp), seeds=seeds, L=L, sseq=z["sseq"])
+                exp=gmax(s_exp), hostr=gmax(s_hostr), seeds=seeds, L=L, sseq=z["sseq"])
 
 
 def score_queue(item_scores, stages):
@@ -111,7 +114,11 @@ for c in cfgs:
     res.sort(key=lambda r: (-r["andcg20"], -r["mrr"]))
     OUT["B"][c] = res
     pick = lambda w, rv="lin", lam=4: next(r for r in res if r["w"] == w and r["rule"] == rv and r["lam"] == lam)
+    hr = [score_queue(D[(sc, c)]["hostr"], D[(sc, c)]["stages"]) | {"seed": 0, "sc": sc} for sc in TUNING]
+    OUT.setdefault("B0_host", summarise(hr))
     print(f"\n-- window {c}")
+    print(f"  {'B0_host host rarity':24s} aNDCG@20 {OUT['B0_host']['andcg20']:.3f} (@10 {OUT['B0_host']['andcg10']:.3f}, "
+          f"@50 {OUT['B0_host']['andcg50']:.3f}) MRR {OUT['B0_host']['mrr']:.3f}")
     for name, r in [("best", res[0]), ("2nd", res[1]), ("3rd", res[2]),
                     ("B0 rule only", pick((1.0, 0.0, 0.0))), ("B1 rule+exp (0.6,0.4,0)", pick((0.6, 0.4, 0.0))),
                     ("S_seq only", pick((0.0, 0.0, 1.0))), ("default (0.3,0.2,0.5)", pick((0.3, 0.2, 0.5)))]:

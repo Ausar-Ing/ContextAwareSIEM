@@ -15,7 +15,7 @@ R = {}
 for p in sys.argv[2:]:
     R.update(json.load(open(p)))
 scs = sorted(R)
-systems = ["B0", "B0_rank", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2", "B3"]
+systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2", "B3"]
 
 
 def per_scenario(sc, name):
@@ -52,11 +52,26 @@ def firsts(name):
     return out
 
 print("\npaired first-item ranks of non-scan stages (a better = earlier)")
-for a, b in [("B2", "B0"), ("B2", "B0_rank"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_alert"),
+for a, b in [("B2", "B0"), ("B2", "B0_rank"), ("B2", "B0_host"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_alert"),
              ("B3", "B2")]:
     p = M.paired_ranks(firsts(a), firsts(b))
     print(f"  {a:4s} vs {b:8s}: n={p['n']:2d}  {a} better {p['a_better']:2d}, {b} better {p['b_better']:2d}, "
           f"tied {p['tied']:2d}, Wilcoxon p={p['wilcoxon_p']:.3f}")
+
+def split(fdict, calibrated):
+    return {k: v for k, v in fdict.items()
+            if R[k[0]]["meta"].get("stage_calibration", {}).get(k[1], {}).get("calibrated") == calibrated}
+
+print("\npaired first-item ranks, split by whether the stage's host has its own calibration")
+for cal in (True, False):
+    for a, b in [("B2", "B0_host"), ("B2", "B0_rank"), ("B2", "B0")]:
+        p = M.paired_ranks(split(firsts(a), cal), split(firsts(b), cal))
+        print(f"  {'calibrated  ' if cal else 'uncalibrated'} {a} vs {b:8s}: n={p['n']:2d}  {a} better {p['a_better']:2d}, "
+              f"{b} better {p['b_better']:2d}, tied {p['tied']:2d}, Wilcoxon p={p['wilcoxon_p']:.3f}")
+print("\nstage hosts and calibration:")
+for sc in scs:
+    print(f"  {sc:16s} " + "; ".join(f"{st}: {'/'.join(v['hosts'])} ({'own' if v['calibrated'] else 'pooled'})"
+                                      for st, v in R[sc]["meta"].get("stage_calibration", {}).items()))
 
 print("\nB3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages")
 for sc in scs:

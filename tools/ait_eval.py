@@ -6,6 +6,7 @@ Systems (group priority in the repeat-group queue; S_rule and S_exp are constant
 within a group because its members share host and rule):
   B0        S_rule (100 * level / 15)
   B0_rank   S_rule as the mid-rank percentile of the level among the host's baseline alerts
+  B0_host   host rarity: 100 * (1 - host's share of baseline alerts); no temporal context
   B1        0.8 S_rule + 0.2 S_exp          (best static weights on the tuning set)
   B2        sequence term 100 min(1, pi(g)/8), entries N=20 delta=60 s   (tuned: w_r = w_c = 0)
   B2_def    0.3 S_rule + 0.2 S_exp + 0.5 * sequence term                 (former default weights)
@@ -105,8 +106,9 @@ def host_of(a):
     return next(v for t, v in a.entities if t == "host")
 
 
-def score_types(rows, A, t_atk, model_cls, seed, entries):
-    """{etype: S array aligned with rows[etype]} (-1 where unscoreable or no model)."""
+def score_types(rows, A, t_atk, model_cls, seed, entries, info=None):
+    """{etype: S array aligned with rows[etype]} (-1 where unscoreable or no model).
+    If `info` is a dict, info[etype] receives the model's per-host calibration source."""
     out = {}
     for et, d in rows.items():
         s = np.full(len(d["j"]), -1.0)
@@ -118,6 +120,8 @@ def score_types(rows, A, t_atk, model_cls, seed, entries):
             if m.fit(d["F"][base], [h for h, b in zip(hosts, base) if b], entries):
                 okm = d["ok"]
                 s[okm] = m.score(d["F"][okm], [h for h, o in zip(hosts, okm) if o], entries)
+                if info is not None:
+                    info[et] = dict(m.cal_source)
         out[et] = s
     return out
 
@@ -189,7 +193,13 @@ for sc in args.scenarios:
     g_rule, g_rank, g_exp = group_max(gid, G, s_rule), group_max(gid, G, s_rank), group_max(gid, G, s_exp)
     res = {"meta": {"alerts": n, "eval_admitted": int(len(ev)), "queue_items": int(G),
                     "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds}}
+    # B0_host: host rarity -- groups ranked by how rarely their host alerted in the baseline
+    base_host = collections.Counter(host_of(a) for a in A if a.ts < t_atk and a.admissible)
+    tot_host = max(1, sum(base_host.values()))
+    s_hostr = np.array([100 * (1 - base_host.get(host_of(A[j]), 0) / tot_host) for j in ev])
+    g_hostr = group_max(gid, G, s_hostr)
     det = {"B0": queue_metrics(g_rule, stages, s_rule, L), "B0_rank": queue_metrics(g_rank, stages, s_rank, L),
+           "B0_host": queue_metrics(g_hostr, stages, s_hostr, L),
            "B1": queue_metrics(0.8 * g_rule + 0.2 * g_exp, stages, 0.8 * s_rule + 0.2 * s_exp, L)}
     res["deterministic"] = det
     # windows
@@ -209,7 +219,21 @@ for sc in args.scenarios:
     # seeded systems
     per_seed = collections.defaultdict(list)
     for seed in range(args.seeds):
-        Se = score_types(rows_e, A, t_atk, C6.TypeModel, seed, True)
+        cal_info = {}
+        Se = score_types(rows_e, A, t_atk, C6.TypeModel, seed, True, cal_info)
+        if seed == 0:
+            # which non-scan stages sit on hosts the model could calibrate against their own baseline
+            hc = cal_info.get("host", {})
+            st_hosts = collections.defaultdict(set)
+            for j, l in zip(ev, L):
+                if l not in M.BENIGN and l not in M.SCANS:
+                    st_hosts[l].add(host_of(A[j]))
+            ip_of = {host_of(a): a.agent_ip for a in A}
+            res["meta"]["stage_calibration"] = {
+                st: {"hosts": sorted(ROLES[sc][ip_of[h]]["role"] for h in hs),
+                     "calibrated": all(hc.get(h, ("pooled", 0))[0] == "own" for h in hs)}
+                for st, hs in st_hosts.items()}
+            res["meta"]["host_calibration"] = {ROLES[sc][ip_of[h]]["role"] + f"[{h}]": v for h, v in hc.items()}
         Sa = score_types(rows_a, A, t_atk, C6.TypeModel, seed, False)
         se_all = alert_max(rows_e, Se, n); se = se_all[ev]
         sa = alert_max(rows_a, Sa, n)[ev]
