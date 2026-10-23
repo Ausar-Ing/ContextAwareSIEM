@@ -35,6 +35,15 @@ MIN_HOST_CAL = 500                    # Sec. III-E fallback threshold (provision
 import os as _os
 STRATIFY = _os.environ.get("CONTEXTSIEM_STRATIFY", "1") != "0"
 MIN_HOST_CAL = int(_os.environ.get("CONTEXTSIEM_MIN_HOST_CAL", MIN_HOST_CAL))
+# Calibration mode (2026-10-23 study of hosts with small baselines):
+#   own_pooled  host's own held-out CDF if it has >= MIN_HOST_CAL windows, else the pooled CDF
+#   locscale    raw scores standardised by the host's own median and robust spread, then
+#               converted to a percentile of the pooled STANDARDISED distribution, so the
+#               host sets the centre and scale and the pool supplies the tail
+#   shrink      w * own CDF + (1 - w) * pooled CDF, w = n_h / (n_h + SHRINK_N0)
+CALIB = _os.environ.get("CONTEXTSIEM_CALIB", "own_pooled")
+MIN_LOC = 20                          # windows needed to estimate a host's centre and spread
+SHRINK_N0 = 100                       # held-out windows at which own and pooled weigh equally
 MIN_TRAIN = 200                       # below this no forest is fitted for the type
 NIGHT = W.FEATURE_NAMES.index("night_fraction")
 
@@ -95,28 +104,72 @@ class TypeModel:
         self.forest = IsolationForest(n_estimators=N_TREES,
                                       max_samples=min(PSI_MAX, self.n_train),
                                       random_state=self.seed).fit(X[tr])
-        raw = -self.forest.score_samples(X[~tr])
-        hb = hosts[~tr]
-        self.cal_type = np.sort(raw)
-        for h in set(hosts):
-            v = raw[hb == h]
-            if len(v) >= self.min_host_cal:
-                self.cal_host[h] = np.sort(v)
-            self.cal_source[h] = ("own" if len(v) >= self.min_host_cal else "pooled", int(len(v)))
+        self._calibrate(-self.forest.score_samples(X[~tr]), hosts[~tr], set(hosts))
         return True
 
-    def score(self, F: np.ndarray, hosts: list, entries: bool) -> np.ndarray:
-        """S_seq in [0, 100] for each row (-1 where fallback="none" leaves a host unscored)."""
-        raw = -self.forest.score_samples(self.prep(F, entries))
+    def _raw_scores(self, F, entries):
+        return -self.forest.score_samples(self.prep(F, entries))
+
+    @staticmethod
+    def _loc_scale(v):
+        med = float(np.median(v))
+        sc = 1.4826 * float(np.median(np.abs(v - med)))
+        if sc <= 0:
+            q75, q25 = np.percentile(v, [75, 25]); sc = float(q75 - q25) / 1.349
+        if sc <= 0:
+            sc = float(np.std(v))
+        return med, (sc if sc > 0 else 1e-9)
+
+    def _calibrate(self, raw, hb, all_hosts):
+        """Fit the per-host calibration from held-out raw scores `raw` of hosts `hb`."""
+        self.calib = CALIB
+        self.cal_type = np.sort(raw)
+        self.held = {h: np.sort(raw[hb == h]) for h in all_hosts}
+        for h in all_hosts:
+            v = self.held[h]
+            if len(v) >= self.min_host_cal:
+                self.cal_host[h] = v
+        if self.calib == "locscale":
+            self.glob = self._loc_scale(raw)
+            self.ls = {h: self._loc_scale(v) for h, v in self.held.items() if len(v) >= MIN_LOC}
+            z = np.concatenate([(v - self.ls.get(h, self.glob)[0]) / self.ls.get(h, self.glob)[1]
+                                for h, v in self.held.items() if len(v)])
+            self.ref_z = np.sort(z)
+        for h in all_hosts:
+            n = len(self.held[h])
+            if self.calib == "locscale":
+                src = "own" if n >= MIN_LOC else "pooled"
+            elif self.calib == "shrink":
+                src = "own" if n >= SHRINK_N0 else "pooled"      # own weight >= 0.5
+            else:
+                src = "own" if n >= self.min_host_cal else "pooled"
+            self.cal_source[h] = (src, int(n))
+
+    def _to_percent(self, raw, hosts):
         out = np.empty(len(raw))
         hs = np.asarray(hosts, dtype=object)
         for h in set(hs):
             m = hs == h
+            if self.calib == "locscale":
+                med, sc = self.ls.get(h, self.glob)
+                out[m] = 100.0 * np.searchsorted(self.ref_z, (raw[m] - med) / sc, side="right") / len(self.ref_z)
+                continue
+            if self.calib == "shrink":
+                v = self.held.get(h, np.empty(0)); n = len(v)
+                pool = np.searchsorted(self.cal_type, raw[m], side="right") / len(self.cal_type)
+                own = np.searchsorted(v, raw[m], side="right") / n if n else 0.0
+                w = n / (n + SHRINK_N0)
+                out[m] = 100.0 * (w * own + (1 - w) * pool)
+                continue
             if h not in self.cal_host and self.fallback == "none":
                 out[m] = -1.0; continue
             ref = self.cal_host.get(h, self.cal_type)
             out[m] = 100.0 * np.searchsorted(ref, raw[m], side="right") / len(ref)
         return out
+
+    def score(self, F: np.ndarray, hosts: list, entries: bool) -> np.ndarray:
+        """S_seq in [0, 100] for each row (-1 where fallback="none" leaves a host unscored)."""
+        return self._to_percent(self._raw_scores(F, entries), hosts)
 
 
 class RobustZModel(TypeModel):
@@ -147,25 +200,11 @@ class RobustZModel(TypeModel):
         sd = X[tr].std(axis=0)
         self.mad = np.where(mad > 0, mad, np.where(meanad > 0, meanad, np.where(sd > 0, sd, 1.0)))
         self.forest = True
-        raw = self._raw(X[~tr])
-        hb = hosts[~tr]
-        self.cal_type = np.sort(raw)
-        for h in set(hosts):
-            v = raw[hb == h]
-            if len(v) >= self.min_host_cal:
-                self.cal_host[h] = np.sort(v)
-            self.cal_source[h] = ("own" if len(v) >= self.min_host_cal else "pooled", int(len(v)))
+        self._calibrate(self._raw(X[~tr]), hosts[~tr], set(hosts))
         return True
 
     def _raw(self, X):
         return np.max(np.abs(X - self.med) / self.mad, axis=1)
 
-    def score(self, F, hosts, entries):
-        raw = self._raw(self.prep(F, entries))
-        out = np.empty(len(raw))
-        hs = np.asarray(hosts, dtype=object)
-        for h in set(hs):
-            m = hs == h
-            ref = self.cal_host.get(h, self.cal_type)
-            out[m] = 100.0 * np.searchsorted(ref, raw[m], side="right") / len(ref)
-        return out
+    def _raw_scores(self, F, entries):
+        return self._raw(self.prep(F, entries))

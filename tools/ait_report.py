@@ -73,6 +73,12 @@ for sc in scs:
     print(f"  {sc:16s} " + "; ".join(f"{st}: {'/'.join(v['hosts'])} ({'own' if v['calibrated'] else 'pooled'})"
                                       for st, v in R[sc]["meta"].get("stage_calibration", {}).items()))
 
+print("\ncalibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0")
+for sc in scs:
+    cc = R[sc]["meta"].get("calib_check", {})
+    print(f"  {sc:16s} [{R[sc]['meta'].get('calib_mode', 'own_pooled')}] " +
+          ", ".join(f"{k.split('[')[0]} {100*v[0]:.0f}%" for k, v in sorted(cc.items(), key=lambda kv: -kv[1][0])))
+
 print("\nB3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages")
 for sc in scs:
     r = R[sc]["seeded"]["B3"][0]

@@ -234,6 +234,15 @@ for sc in args.scenarios:
                      "calibrated": all(hc.get(h, ("pooled", 0))[0] == "own" for h in hs)}
                 for st, hs in st_hosts.items()}
             res["meta"]["host_calibration"] = {ROLES[sc][ip_of[h]]["role"] + f"[{h}]": v for h, v in hc.items()}
+            # calibration check: share of BENIGN evaluation-period host windows above S_seq 99, per host
+            # (about 1% for every host if the calibration holds and behaviour is stationary)
+            dh = rows_e["host"]; sh = Se["host"]
+            chk = collections.defaultdict(list)
+            for i, j in enumerate(dh["j"]):
+                if A[j].ts >= t_atk and sh[i] >= 0 and labels[j] in M.BENIGN:
+                    chk[ROLES[sc][A[j].agent_ip]["role"] + f"[{host_of(A[j])}]"].append(sh[i] > 99)
+            res["meta"]["calib_check"] = {k: [float(np.mean(v)), len(v)] for k, v in chk.items()}
+            res["meta"]["calib_mode"] = C6.CALIB
         Sa = score_types(rows_a, A, t_atk, C6.TypeModel, seed, False)
         se_all = alert_max(rows_e, Se, n); se = se_all[ev]
         sa = alert_max(rows_a, Sa, n)[ev]
