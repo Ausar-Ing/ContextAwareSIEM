@@ -242,7 +242,8 @@ for sc in args.scenarios:
                 if A[j].ts >= t_atk and sh[i] >= 0 and labels[j] in M.BENIGN:
                     chk[ROLES[sc][A[j].agent_ip]["role"] + f"[{host_of(A[j])}]"].append(sh[i] > 99)
             res["meta"]["calib_check"] = {k: [float(np.mean(v)), len(v)] for k, v in chk.items()}
-            res["meta"]["calib_mode"] = C6.CALIB
+            res["meta"]["calib_mode"] = C6.CALIB + (f" n0={C6.SHRINK_N0}" if C6.CALIB == "shrink" else
+                                                    f" min_host_cal={C6.MIN_HOST_CAL}" if C6.CALIB == "own_pooled" else "")
         Sa = score_types(rows_a, A, t_atk, C6.TypeModel, seed, False)
         se_all = alert_max(rows_e, Se, n); se = se_all[ev]
         sa = alert_max(rows_a, Sa, n)[ev]

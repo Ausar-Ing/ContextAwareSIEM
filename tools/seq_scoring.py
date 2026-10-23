@@ -3,9 +3,11 @@
 Component 6 (Sequence Anomaly Scoring) as specified in Deliverable 3, Sec. III-E.
 
 One Isolation Forest per entity type, fitted on every STRIDE-th baseline window;
-raw scores turned into S_seq by the empirical CDF of the host's own HELD-OUT
-baseline windows (the ones the stride left out), falling back to the type-level
-held-out CDF when the host has fewer than MIN_HOST_CAL of them. Each seed is a
+raw scores turned into S_seq by a mixture of two empirical CDFs of HELD-OUT
+baseline windows (the ones the stride left out): the host's own and the
+entity type's pooled one, weighted w = n_h / (n_h + SHRINK_N0) by the host's
+held-out count n_h (method from 2026-10-23; CONTEXTSIEM_CALIB=own_pooled
+restores the earlier own-CDF-or-pooled-fallback rule at MIN_HOST_CAL). Each seed is a
 complete, independent replica: callers get one score vector per seed and report
 the spread, rather than averaging scores (which would only make a bigger forest
 and hide the seed variance the protocol is meant to show).
@@ -41,9 +43,9 @@ MIN_HOST_CAL = int(_os.environ.get("CONTEXTSIEM_MIN_HOST_CAL", MIN_HOST_CAL))
 #               converted to a percentile of the pooled STANDARDISED distribution, so the
 #               host sets the centre and scale and the pool supplies the tail
 #   shrink      w * own CDF + (1 - w) * pooled CDF, w = n_h / (n_h + SHRINK_N0)
-CALIB = _os.environ.get("CONTEXTSIEM_CALIB", "own_pooled")
+CALIB = _os.environ.get("CONTEXTSIEM_CALIB", "shrink")    # shrink adopted 2026-10-23
 MIN_LOC = 20                          # windows needed to estimate a host's centre and spread
-SHRINK_N0 = 100                       # held-out windows at which own and pooled weigh equally
+SHRINK_N0 = int(_os.environ.get("CONTEXTSIEM_SHRINK_N0", 100))   # held-out windows at which own and pooled weigh equally
 MIN_TRAIN = 200                       # below this no forest is fitted for the type
 NIGHT = W.FEATURE_NAMES.index("night_fraction")
 

@@ -1,0 +1,54 @@
+scenarios: harrison, russellmitchell, shaw, wheeler
+system     aNDCG@10           @20     @50     MRR  macroAUC
+B0            0.187   0.198         0.262   0.016     0.516
+B0_rank       0.316   0.331         0.387   0.067     0.825
+B0_host       0.265   0.421         0.474   0.068     0.981
+B1            0.187   0.213         0.286   0.023     0.383
+B2_nov        0.264   0.351         0.458   0.038     0.929
+B2'           0.279   0.376         0.452   0.130     0.866
+B2_def        0.303   0.378±0.023   0.413   0.130       -  
+B2_alert      0.239   0.340±0.017   0.416   0.157     0.958
+B2            0.376   0.434±0.022   0.480   0.225     0.941
+B3            0.560   0.592±0.009   0.632   0.328       -  
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
+  B2   vs B0_rank : n= 9  B2 better  8, B0_rank better  1, tied  0, Wilcoxon p=0.055
+  B2   vs B0_host : n= 9  B2 better  5, B0_host better  4, tied  0, Wilcoxon p=0.793
+  B2   vs B1      : n= 9  B2 better  7, B1 better  2, tied  0, Wilcoxon p=0.039
+  B2   vs B2'     : n= 9  B2 better  6, B2' better  3, tied  0, Wilcoxon p=0.883
+  B2   vs B2_nov  : n= 9  B2 better  6, B2_nov better  3, tied  0, Wilcoxon p=0.480
+  B2   vs B2_alert: n= 9  B2 better  6, B2_alert better  3, tied  0, Wilcoxon p=0.359
+  B3   vs B2      : n= 9  B3 better  7, B2 better  2, tied  0, Wilcoxon p=0.152
+
+paired first-item ranks, split by whether the stage's host has its own calibration
+  calibrated   B2 vs B0_host : n= 7  B2 better  3, B0_host better  4, tied  0, Wilcoxon p=0.438
+  calibrated   B2 vs B0_rank : n= 7  B2 better  6, B0_rank better  1, tied  0, Wilcoxon p=0.156
+  calibrated   B2 vs B0      : n= 7  B2 better  7, B0 better  0, tied  0, Wilcoxon p=0.016
+  uncalibrated B2 vs B0_host : n= 2  B2 better  2, B0_host better  0, tied  0, Wilcoxon p=0.500
+  uncalibrated B2 vs B0_rank : n= 2  B2 better  2, B0_rank better  0, tied  0, Wilcoxon p=0.500
+  uncalibrated B2 vs B0      : n= 2  B2 better  2, B0 better  0, tied  0, Wilcoxon p=0.500
+
+stage hosts and calibration:
+  harrison         dnsteal: inet-firewall/internal_share (own); attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+  russellmitchell  attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+  shaw             attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  wheeler          attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+
+calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
+  harrison         [shrink n0=30] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
+  russellmitchell  [shrink n0=30] intranet_server 100%, internal_share 100%, vpn 42%, cloud_share 21%, inet-firewall 15%, external_mail 14%, external_mail 13%, mail 10%, webserver 4%
+  shaw             [shrink n0=30] intranet_server 27%, cloud_share 3%, external_mail 2%, mail 0%, inet-firewall 0%, external_mail 0%, external_mail 0%, internal_share 0%, vpn 0%, webserver 0%
+  wheeler          [shrink n0=30] external_mail 12%, internal_share 10%, external_mail 6%, inet-firewall 2%, webserver 2%, external_mail 1%, external_mail 0%, vpn 0%, intranet_server 0%, mail 0%, cloud_share 0%
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  harrison         2 / 2 / 0   0.4113888888888889   max stages 3
+  russellmitchell  1 / 0 / 1   -   max stages 0
+  shaw             2 / 2 / 0   17.520833333333332   max stages 2
+  wheeler          1 / 1 / 0   26.24361111111111   max stages 3
+
+training windows after stride (entries):
+  harrison         {'host': 4323, 'srcip': 1465, 'user': 7}
+  russellmitchell  {'host': 1840, 'srcip': 583, 'user': 5}
+  shaw             {'host': 2865, 'srcip': 808, 'user': 26}
+  wheeler          {'host': 6885, 'srcip': 3874, 'user': 14}
