@@ -1,0 +1,75 @@
+wheeler: intranet server = host 32; baseline windows 119, held-out for calibration 111 (own), training 8 of 3962
+evaluation windows on it: 9 attack (privilege escalation), 58 benign
+
+feature                    baseline median [p10, p90]      attack windows (values; percentile in baseline)
+  window_entries             19.00 [  5.00,  20.00]   20.00 (100), 20.00 (100), 20.00 (100), 20.00 (100), 20.00 (100), 20.00 (100) ...
+  window_duration_s          11.20 [  6.95,  11.35]   10.51 (33), 10.51 (33), 10.50 (33), 10.48 (32), 10.48 (32), 10.48 (32) ...
+  distinct_rule_count         2.00 [  2.00,   6.00]   6.00 (100), 6.00 (100), 7.00 (100), 8.00 (100), 8.00 (100), 8.00 (100) ...
+  volume_share_max            0.19 [  0.14,   0.38]   0.71 (100), 0.28 (64), 0.28 (64), 0.29 (69), 0.28 (64), 0.28 (64) ...
+  rule_level_max              3.00 [  3.00,   3.00]   8.00 (100), 8.00 (100), 8.00 (100), 8.00 (100), 8.00 (100), 8.00 (100) ...
+  rule_level_mean             3.00 [  3.00,   3.00]   3.65 (100), 3.55 (100), 3.50 (100), 3.40 (100), 3.40 (100), 3.30 (100) ...
+  rule_level_trend            0.00 [  0.00,   0.00]   -0.13 (0), -0.12 (0), -0.09 (0), -0.07 (0), -0.07 (0), -0.05 (0) ...
+  distinct_technique_count    0.00 [  0.00,   3.00]   4.00 (100), 3.00 (100), 4.00 (100), 4.00 (100), 4.00 (100), 4.00 (100) ...
+  distinct_tactic_count       0.00 [  0.00,   6.00]   5.00 (79), 5.00 (79), 5.00 (79), 5.00 (79), 5.00 (79), 5.00 (79) ...
+  tactic_progression          0.00 [  0.00,   0.87]   0.00 (79), -0.89 (0), -0.63 (0), -0.48 (0), -0.48 (0), -0.48 (0) ...
+  inter_arrival_mean_s        8.26 [  5.82,   8.47]   7.56 (25), 7.56 (25), 7.56 (25), 7.54 (24), 7.54 (24), 7.54 (24) ...
+  inter_arrival_min_s         5.27 [  0.00,   6.46]   0.00 (34), 0.00 (34), 0.00 (34), 0.00 (34), 0.00 (34), 0.00 (34) ...
+  current_run_length          0.69 [  0.69,   1.61]   0.69 (54), 0.69 (54), 0.69 (54), 0.69 (54), 1.10 (76), 0.69 (54) ...
+  novel_rule_flag             0.00 [  0.00,   0.00]   0.00 (96), 1.00 (100), 1.00 (100), 1.00 (100), 0.00 (96), 1.00 (100) ...
+
+attack windows: raw score, percentile vs own baseline / vs pooled, benign eval windows of this host scoring higher
+  01-30 17:51:52 rule   5501 lvl 3 [attacker_change_user] raw 0.695 | own  95.5 pooled  99.9 | benign eval windows above: 17/58
+      window rules (oldest->newest): ['30306', '31122', '31122', '31122', '31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501']  counts [75, 1, 2, 1, 9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1]
+  01-30 17:51:52 rule   5304 lvl 3 [attacker_change_user] raw 0.736 | own  95.5 pooled 100.0 | benign eval windows above: 0/58
+      window rules (oldest->newest): ['31122', '31122', '31122', '31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304']  counts [1, 2, 1, 9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  01-30 17:52:07 rule   5403 lvl 4 [escalated_sudo_command] raw 0.733 | own  95.5 pooled 100.0 | benign eval windows above: 1/58
+      window rules (oldest->newest): ['31122', '31122', '31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403']  counts [2, 1, 9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  01-30 17:52:10 rule   5402 lvl 3 [escalated_sudo_command] raw 0.724 | own  95.5 pooled 100.0 | benign eval windows above: 5/58
+      window rules (oldest->newest): ['31122', '31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402']  counts [1, 9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  01-30 17:52:10 rule   5501 lvl 3 [escalated_sudo_command] raw 0.665 | own  71.2 pooled  99.6 | benign eval windows above: 17/58
+      window rules (oldest->newest): ['31122', '31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402']  counts [1, 9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1]
+  01-30 17:52:10 rule   5502 lvl 3 [escalated_sudo_command] raw 0.715 | own  95.5 pooled 100.0 | benign eval windows above: 6/58
+      window rules (oldest->newest): ['31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402', '5502']  counts [9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1]
+  01-30 17:52:13 rule   5502 lvl 3 [escalated_sudo_command] raw 0.711 | own  95.5 pooled  99.9 | benign eval windows above: 7/58
+      window rules (oldest->newest): ['31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402', '5502']  counts [9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2]
+  01-30 17:52:13 rule   5402 lvl 3 [escalated_sudo_command] raw 0.710 | own  95.5 pooled  99.9 | benign eval windows above: 7/58
+      window rules (oldest->newest): ['31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402', '5502']  counts [9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2]
+  01-30 17:52:13 rule   5501 lvl 3 [escalated_sudo_command] raw 0.646 | own  69.4 pooled  99.3 | benign eval windows above: 20/58
+      window rules (oldest->newest): ['31509', '31510', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', 'suricata:2027863', '5501', '5304', '5403', '5402', '5502']  counts [9, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 2]
+
+attribution for the attack windows (mean change in raw score when the feature is set to the baseline median; positive = the feature made the window MORE anomalous)
+  novel_rule_flag          +0.0383
+  rule_level_max           +0.0116
+  tactic_progression       +0.0100
+  inter_arrival_mean_s     -0.0073
+  rule_level_trend         +0.0054
+  distinct_tactic_count    -0.0053
+  distinct_rule_count      -0.0046
+  inter_arrival_min_s      -0.0044
+  window_entries           -0.0039
+  distinct_technique_count +0.0032
+  rule_level_mean          -0.0009
+  current_run_length       -0.0008
+  window_duration_s        +0.0002
+  volume_share_max         +0.0001
+
+the intranet server's held-out baseline windows with the highest raw scores (they set the calibration ceiling)
+  01-26 06:46:37 rule            31509 lvl 3 raw 0.764 [-]
+  01-26 06:46:30 rule suricata:2027863 lvl 3 raw 0.750 [-]
+  01-26 06:43:42 rule suricata:2013504 lvl 3 raw 0.746 [-]
+  01-26 06:40:47 rule            80730 lvl 3 raw 0.745 [-]
+  01-26 06:29:12 rule             5501 lvl 3 raw 0.741 [-]
+  01-26 07:40:26 rule suricata:2027863 lvl 3 raw 0.689 [-]
+
+rules on the intranet server: baseline vs evaluation (benign) vs attack
+  rule suricata:2027863: baseline    85  eval benign    52  attack   0
+  rule suricata:2013504: baseline    27  eval benign     5  attack   0
+  rule            80730: baseline     4  eval benign     0  attack   0
+  rule             5501: baseline     1  eval benign     0  attack   3
+  rule             5502: baseline     0  eval benign     0  attack   2
+  rule             5402: baseline     0  eval benign     0  attack   2
+  rule            31509: baseline     1  eval benign     0  attack   0
+  rule suricata:2221010: baseline     1  eval benign     0  attack   0
+  rule             5706: baseline     0  eval benign     1  attack   0
+  rule             5403: baseline     0  eval benign     0  attack   1
+  rule             5304: baseline     0  eval benign     0  attack   1
