@@ -15,7 +15,7 @@ R = {}
 for p in sys.argv[2:]:
     R.update(json.load(open(p)))
 scs = sorted(R)
-systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2", "B3"]
+systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2_pi", "B2_max", "B2", "B3"]
 
 
 def per_scenario(sc, name):
@@ -27,6 +27,8 @@ def per_scenario(sc, name):
 print(f"scenarios: {', '.join(scs)}")
 print(f"{'system':9s} {'aNDCG@10':>9s} {'@20':>13s} {'@50':>7s} {'MRR':>7s} {'macroAUC':>9s} {'withinAUC':>9s}")
 for name in systems:
+    if not all(name in R[sc]["seeded"] or name in R[sc]["deterministic"] for sc in scs):
+        continue
     vals = {m: [] for m in ("andcg10", "andcg20", "andcg50", "mrr", "macro_auc", "within_auc")}
     seeds = max(len(per_scenario(sc, name)) for sc in scs)
     by_seed20 = []
@@ -53,7 +55,9 @@ def firsts(name):
 
 print("\npaired first-item ranks of non-scan stages (a better = earlier)")
 for a, b in [("B2", "B0"), ("B2", "B0_rank"), ("B2", "B0_host"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_alert"),
-             ("B3", "B2")]:
+             ("B2", "B2_pi"), ("B2", "B2_max"), ("B3", "B2")]:
+    if not all(b in R[sc]["seeded"] or b in R[sc]["deterministic"] for sc in scs):
+        continue
     p = M.paired_ranks(firsts(a), firsts(b))
     print(f"  {a:4s} vs {b:8s}: n={p['n']:2d}  {a} better {p['a_better']:2d}, {b} better {p['b_better']:2d}, "
           f"tied {p['tied']:2d}, Wilcoxon p={p['wilcoxon_p']:.3f}")

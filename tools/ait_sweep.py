@@ -5,7 +5,8 @@ Compares the D2 alert window (last N alerts within T) with entry windows (last N
 collapsed runs within T, runs split at gaps > delta) at several N. Component 6
 as specified (seq_scoring.py): per-entity-type forest, psi = min(4096, n),
 stride 10, per-host calibration on HELD-OUT baseline windows with type-level
-fallback, S_seq = max over entities. Each seed is an independent replica;
+fallback, S_seq = max over the entity types in seq_scoring.SEQ_ENTITIES (host windows
+from 2026-10-24; CONTEXTSIEM_SEQ_ENTITIES=all for earlier results). Each seed is an independent replica;
 metrics are computed per seed and reported as mean and sd (SEEDS, default 5). The baseline is oracle-cleaned (CLEAN semantics of ait_smoke.py) so
 AIT-ADS's designed exfiltration contamination does not decide the comparison.
 
@@ -134,6 +135,8 @@ for sc in scenarios:
                 by_type[et] = (np.array([r[2] for r in base]), [host_j(r[0]) for r in base],
                                np.array([r[2] for r in evalr]), [host_j(r[0]) for r in evalr],
                                [r[0] for r in evalr])
+        if C6.SEQ_ENTITIES != "all":          # sequence term from these entity types only
+            by_type = {et: v for et, v in by_type.items() if et in C6.SEQ_ENTITIES.split(",")}
         evpos = {j: i for i, j in enumerate(ev)}
         per_seed = []
         for seed in range(SEEDS):

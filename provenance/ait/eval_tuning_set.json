@@ -6,7 +6,8 @@
    "queue_items": 90,
    "baseline": "oracle-cleaned",
    "seeds": 5,
-   "seq_entities": "all",
+   "seq_entities": "host",
+   "group_score": "pi",
    "training_windows": {
     "host": 4323,
     "srcip": 1465,
@@ -34,41 +35,41 @@
     }
    },
    "host_calibration": {
-    "webserver[24]": [
-     "own",
-     4134
-    ],
-    "cloud_share[19]": [
-     "pooled",
-     25
-    ],
-    "internal_share[16]": [
-     "own",
-     116
-    ],
     "inet-firewall[27]": [
      "own",
      5802
     ],
-    "mail[22]": [
+    "webserver[24]": [
      "own",
-     10596
+     4134
     ],
     "external_mail[11]": [
      "own",
      4608
     ],
-    "vpn[12]": [
-     "own",
-     4733
+    "cloud_share[19]": [
+     "pooled",
+     25
     ],
     "intranet_server[21]": [
      "pooled",
      87
     ],
+    "internal_share[16]": [
+     "own",
+     116
+    ],
     "external_mail[6]": [
      "own",
      10265
+    ],
+    "vpn[12]": [
+     "own",
+     4733
+    ],
+    "mail[22]": [
+     "own",
+     10596
     ]
    },
    "calib_check": {
@@ -102,7 +103,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 412
+   "seconds": 327
   },
   "deterministic": {
    "B0": {
@@ -123,8 +124,8 @@
     "first": {
      "dnsteal": 60.5,
      "service_scan": 17.5,
-     "wpscan": 1.0,
      "dirb": 1.0,
+     "wpscan": 1.0,
      "attacker_change_user": 60.5,
      "escalated_sudo_command": 30.0
     },
@@ -162,8 +163,8 @@
     "first": {
      "dnsteal": 48.5,
      "service_scan": 5.5,
-     "wpscan": 5.5,
      "dirb": 5.5,
+     "wpscan": 5.5,
      "attacker_change_user": 48.5,
      "escalated_sudo_command": 5.5
     },
@@ -201,8 +202,8 @@
     "first": {
      "dnsteal": 22.0,
      "service_scan": 11.0,
-     "wpscan": 11.0,
      "dirb": 11.0,
+     "wpscan": 11.0,
      "attacker_change_user": 11.0,
      "escalated_sudo_command": 11.0
     },
@@ -240,8 +241,8 @@
     "first": {
      "dnsteal": 32.5,
      "service_scan": 11.5,
-     "wpscan": 1.0,
      "dirb": 1.0,
+     "wpscan": 1.0,
      "attacker_change_user": 58.5,
      "escalated_sudo_command": 15.0
     },
@@ -279,8 +280,8 @@
     "first": {
      "dnsteal": 19.5,
      "service_scan": 19.5,
-     "wpscan": 19.5,
      "dirb": 19.5,
+     "wpscan": 19.5,
      "attacker_change_user": 19.5,
      "escalated_sudo_command": 19.5
     },
@@ -303,8 +304,8 @@
    "B2'": {
     "andcg10": 0.31253598067865523,
     "andcg20": 0.40403738781015813,
-    "andcg50": 0.5261236373254892,
-    "mrr": 0.13146853146853146,
+    "andcg50": 0.5289308343743866,
+    "mrr": 0.1325115562403698,
     "cov20": {
      "nonscan": [
       2.0,
@@ -316,10 +317,10 @@
      ]
     },
     "first": {
-     "dnsteal": 32.5,
+     "dnsteal": 29.5,
      "service_scan": 5.5,
-     "wpscan": 20.5,
      "dirb": 20.5,
+     "wpscan": 20.5,
      "attacker_change_user": 5.5,
      "escalated_sudo_command": 5.5
     },
@@ -343,127 +344,10 @@
   "seeded": {
    "B2": [
     {
-     "andcg10": 0.6181195761407099,
-     "andcg20": 0.6210012579062353,
-     "andcg50": 0.6526766534692711,
-     "mrr": 0.45073375262054505,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 53.0,
-      "service_scan": 9.0,
-      "wpscan": 8.0,
-      "dirb": 8.0,
-      "attacker_change_user": 1.5,
-      "escalated_sudo_command": 1.5
-     },
-     "items": 90,
-     "macro_auc": 0.989640830573728,
-     "within_auc": 0.9956404320987654,
-     "within_hosts": {
-      "21": [
-       1.0,
-       13,
-       27
-      ],
-      "27": [
-       0.9912808641975308,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.748689821039185,
-     "andcg20": 0.7351171091999699,
-     "andcg50": 0.8160049480259852,
-     "mrr": 0.6774193548387096,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 31.0,
-      "service_scan": 7.0,
-      "wpscan": 6.0,
-      "dirb": 6.0,
-      "attacker_change_user": 1.0,
-      "escalated_sudo_command": 1.0
-     },
-     "items": 90,
-     "macro_auc": 0.9895062088827968,
-     "within_auc": 0.9707967080073562,
-     "within_hosts": {
-      "21": [
-       0.9572649572649573,
-       13,
-       27
-      ],
-      "27": [
-       0.984328458749755,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.6651077226951888,
-     "andcg20": 0.6553556175591466,
-     "andcg50": 0.6872223946011311,
-     "mrr": 0.45073375262054505,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 53.0,
-      "service_scan": 8.0,
-      "wpscan": 7.0,
-      "dirb": 7.0,
-      "attacker_change_user": 1.5,
-      "escalated_sudo_command": 1.5
-     },
-     "items": 90,
-     "macro_auc": 0.9909036236482782,
-     "within_auc": 0.9948676023907506,
-     "within_hosts": {
-      "21": [
-       1.0,
-       13,
-       27
-      ],
-      "27": [
-       0.9897352047815011,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.6841435359694192,
-     "andcg20": 0.6725335218018705,
-     "andcg50": 0.7479118682442796,
-     "mrr": 0.5066666666666667,
+     "andcg10": 0.5930720939765801,
+     "andcg20": 0.6378432472224143,
+     "andcg50": 0.6952866966843426,
+     "mrr": 0.4511111111111111,
      "cov20": {
       "nonscan": [
        2.0,
@@ -476,54 +360,15 @@
      },
      "first": {
       "dnsteal": 50.0,
-      "service_scan": 7.0,
-      "wpscan": 5.0,
-      "dirb": 5.0,
-      "attacker_change_user": 1.0,
-      "escalated_sudo_command": 2.0
-     },
-     "items": 90,
-     "macro_auc": 0.9872727470518555,
-     "within_auc": 0.9530515609219313,
-     "within_hosts": {
-      "21": [
-       0.9273504273504274,
-       13,
-       27
-      ],
-      "27": [
-       0.9787526944934353,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.6372611369366806,
-     "andcg20": 0.6397893664505383,
-     "andcg50": 0.72024803806863,
-     "mrr": 0.4551971326164874,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 31.0,
-      "service_scan": 9.0,
-      "wpscan": 7.0,
-      "dirb": 7.0,
+      "service_scan": 11.0,
+      "dirb": 8.0,
+      "wpscan": 8.0,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
      "items": 90,
-     "macro_auc": 0.9901274313820938,
-     "within_auc": 0.9883245762296688,
+     "macro_auc": 0.975318832396601,
+     "within_auc": 0.998723177542622,
      "within_hosts": {
       "21": [
        1.0,
@@ -531,19 +376,17 @@
        27
       ],
       "27": [
-       0.9766491524593377,
+       0.9974463550852439,
        486,
        1680
       ]
      }
-    }
-   ],
-   "B2_def": [
+    },
     {
-     "andcg10": 0.42977672402119316,
-     "andcg20": 0.4853950732235738,
-     "andcg50": 0.5468416524458001,
-     "mrr": 0.258130081300813,
+     "andcg10": 0.7363892863973691,
+     "andcg20": 0.7334968073785268,
+     "andcg50": 0.816441699423061,
+     "mrr": 0.6781609195402298,
      "cov20": {
       "nonscan": [
        2.0,
@@ -555,20 +398,330 @@
       ]
      },
      "first": {
-      "dnsteal": 41.0,
-      "service_scan": 5.0,
-      "wpscan": 6.0,
+      "dnsteal": 29.0,
+      "service_scan": 7.0,
       "dirb": 6.0,
+      "wpscan": 6.0,
+      "attacker_change_user": 1.0,
+      "escalated_sudo_command": 1.0
+     },
+     "items": 90,
+     "macro_auc": 0.9871169155226527,
+     "within_auc": 0.9754744098494099,
+     "within_hosts": {
+      "21": [
+       0.9572649572649573,
+       13,
+       27
+      ],
+      "27": [
+       0.9936838624338624,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.6263354316728716,
+     "andcg20": 0.6693186964615648,
+     "andcg50": 0.7278615061228036,
+     "mrr": 0.4511111111111111,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 50.0,
+      "service_scan": 11.0,
+      "dirb": 7.0,
+      "wpscan": 7.0,
+      "attacker_change_user": 1.5,
+      "escalated_sudo_command": 1.5
+     },
+     "items": 90,
+     "macro_auc": 0.9899030291305807,
+     "within_auc": 0.9973673574368018,
+     "within_hosts": {
+      "21": [
+       1.0,
+       13,
+       27
+      ],
+      "27": [
+       0.9947347148736038,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.6705063731708003,
+     "andcg20": 0.6900757898593853,
+     "andcg50": 0.7476899512071092,
+     "mrr": 0.5069444444444444,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 48.0,
+      "service_scan": 8.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
+      "attacker_change_user": 1.0,
+      "escalated_sudo_command": 2.0
+     },
+     "items": 90,
+     "macro_auc": 0.9908702377310604,
+     "within_auc": 0.9524658147922037,
+     "within_hosts": {
+      "21": [
+       0.9273504273504274,
+       13,
+       27
+      ],
+      "27": [
+       0.97758120223398,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.6362655638373088,
+     "andcg20": 0.6573879359312359,
+     "andcg50": 0.7438065099910591,
+     "mrr": 0.4567901234567901,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 27.0,
+      "service_scan": 10.0,
+      "dirb": 7.0,
+      "wpscan": 7.0,
+      "attacker_change_user": 1.5,
+      "escalated_sudo_command": 1.5
+     },
+     "items": 90,
+     "macro_auc": 0.99491404592623,
+     "within_auc": 0.9946743949637469,
+     "within_hosts": {
+      "21": [
+       1.0,
+       13,
+       27
+      ],
+      "27": [
+       0.9893487899274936,
+       486,
+       1680
+      ]
+     }
+    }
+   ],
+   "B2_max": [
+    {
+     "andcg10": 0.6214615365724968,
+     "andcg20": 0.6958747808185588,
+     "andcg50": 0.7045295459659079,
+     "mrr": 0.11923076923076924,
+     "cov20": {
+      "nonscan": [
+       3.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 20.0,
+      "service_scan": 6.5,
+      "dirb": 6.5,
+      "wpscan": 6.5,
+      "attacker_change_user": 6.5,
+      "escalated_sudo_command": 6.5
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.6845548141222298,
+     "andcg20": 0.7354603750567108,
+     "andcg50": 0.7661968761601379,
+     "mrr": 0.4545454545454546,
+     "cov20": {
+      "nonscan": [
+       3.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 1.0,
+      "service_scan": 5.5,
+      "dirb": 5.5,
+      "wpscan": 5.5,
+      "attacker_change_user": 5.5,
+      "escalated_sudo_command": 5.5
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.6107986586909471,
+     "andcg20": 0.6877091390239879,
+     "andcg50": 0.7188756581559018,
+     "mrr": 0.14204545454545456,
+     "cov20": {
+      "nonscan": [
+       3.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 16.0,
+      "service_scan": 5.5,
+      "dirb": 5.5,
+      "wpscan": 5.5,
+      "attacker_change_user": 5.5,
+      "escalated_sudo_command": 5.5
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.5482875562681191,
+     "andcg20": 0.6015670637475425,
+     "andcg50": 0.6860298453881836,
+     "mrr": 0.164021164021164,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 21.0,
+      "service_scan": 4.5,
+      "dirb": 4.5,
+      "wpscan": 4.5,
+      "attacker_change_user": 4.5,
+      "escalated_sudo_command": 4.5
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.7245787747918022,
+     "andcg20": 0.7618253866736384,
+     "andcg50": 0.7931277290681004,
+     "mrr": 0.4222222222222222,
+     "cov20": {
+      "nonscan": [
+       3.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 1.0,
+      "service_scan": 7.5,
+      "dirb": 7.5,
+      "wpscan": 7.5,
+      "attacker_change_user": 7.5,
+      "escalated_sudo_command": 7.5
+     },
+     "items": 90
+    }
+   ],
+   "B2_def": [
+    {
+     "andcg10": 0.43340433782282317,
+     "andcg20": 0.5032420113957596,
+     "andcg50": 0.5558541889967499,
+     "mrr": 0.2587719298245614,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 38.0,
+      "service_scan": 8.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
       "attacker_change_user": 4.0,
       "escalated_sudo_command": 2.0
      },
      "items": 90
     },
     {
-     "andcg10": 0.39628080664840226,
-     "andcg20": 0.42453583590034827,
-     "andcg50": 0.5052572148395837,
-     "mrr": 0.11172161172161171,
+     "andcg10": 0.43816266615091115,
+     "andcg20": 0.4669704813034299,
+     "andcg50": 0.5497811743553173,
+     "mrr": 0.15952380952380954,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 35.0,
+      "service_scan": 8.0,
+      "dirb": 3.0,
+      "wpscan": 3.0,
+      "attacker_change_user": 5.0,
+      "escalated_sudo_command": 4.0
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.5728445698527307,
+     "andcg20": 0.6034867638571986,
+     "andcg50": 0.6580096063226469,
+     "mrr": 0.452991452991453,
      "cov20": {
       "nonscan": [
        2.0,
@@ -581,18 +734,267 @@
      },
      "first": {
       "dnsteal": 39.0,
-      "service_scan": 3.0,
-      "wpscan": 4.0,
-      "dirb": 4.0,
-      "attacker_change_user": 7.0,
-      "escalated_sudo_command": 6.0
+      "service_scan": 7.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
+      "attacker_change_user": 3.0,
+      "escalated_sudo_command": 1.0
      },
      "items": 90
     },
     {
-     "andcg10": 0.48442897785627126,
-     "andcg20": 0.5900116785402083,
-     "andcg50": 0.6467119098446956,
+     "andcg10": 0.4116925956926355,
+     "andcg20": 0.46403171278825694,
+     "andcg50": 0.515948293874191,
+     "mrr": 0.18611111111111112,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 40.0,
+      "service_scan": 6.5,
+      "dirb": 4.0,
+      "wpscan": 4.0,
+      "attacker_change_user": 5.0,
+      "escalated_sudo_command": 3.0
+     },
+     "items": 90
+    },
+    {
+     "andcg10": 0.5238319879771395,
+     "andcg20": 0.5900134970867343,
+     "andcg50": 0.6672941094878514,
+     "mrr": 0.42676767676767674,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 33.0,
+      "service_scan": 9.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
+      "attacker_change_user": 4.0,
+      "escalated_sudo_command": 1.0
+     },
+     "items": 90
+    }
+   ],
+   "B2_alert": [
+    {
+     "andcg10": 0.3536492684924678,
+     "andcg20": 0.38711665849913723,
+     "andcg50": 0.47274431139677764,
+     "mrr": 0.10416666666666667,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 48.0,
+      "service_scan": 1.5,
+      "dirb": 10.0,
+      "wpscan": 10.0,
+      "attacker_change_user": 6.0,
+      "escalated_sudo_command": 8.0
+     },
+     "items": 90,
+     "macro_auc": 0.9865925970488539,
+     "within_auc": 0.9170053626072144,
+     "within_hosts": {
+      "21": [
+       0.8347578347578347,
+       13,
+       27
+      ],
+      "27": [
+       0.9992528904565942,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.33213843684779154,
+     "andcg20": 0.39394200965965503,
+     "andcg50": 0.46830821582465304,
+     "mrr": 0.09722222222222221,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 42.0,
+      "service_scan": 1.5,
+      "dirb": 11.0,
+      "wpscan": 11.0,
+      "attacker_change_user": 8.0,
+      "escalated_sudo_command": 7.0
+     },
+     "items": 90,
+     "macro_auc": 0.9922064149455667,
+     "within_auc": 0.9326904940909571,
+     "within_hosts": {
+      "21": [
+       0.8660968660968661,
+       13,
+       27
+      ],
+      "27": [
+       0.999284122085048,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.33189080171270624,
+     "andcg20": 0.35684229282858976,
+     "andcg50": 0.4559050482633735,
+     "mrr": 0.10997732426303854,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       2.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 49.0,
+      "service_scan": 2.0,
+      "dirb": 17.0,
+      "wpscan": 21.0,
+      "attacker_change_user": 6.0,
+      "escalated_sudo_command": 7.0
+     },
+     "items": 90,
+     "macro_auc": 0.992503061058383,
+     "within_auc": 0.9312442530035123,
+     "within_hosts": {
+      "21": [
+       0.8632478632478633,
+       13,
+       27
+      ],
+      "27": [
+       0.9992406427591612,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.3574432803573697,
+     "andcg20": 0.41476471025620193,
+     "andcg50": 0.4894274121955407,
+     "mrr": 0.1322463768115942,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 46.0,
+      "service_scan": 1.5,
+      "dirb": 13.0,
+      "wpscan": 13.0,
+      "attacker_change_user": 4.0,
+      "escalated_sudo_command": 8.0
+     },
+     "items": 90,
+     "macro_auc": 0.9960058463528253,
+     "within_auc": 0.9440825249853028,
+     "within_hosts": {
+      "21": [
+       0.8888888888888888,
+       13,
+       27
+      ],
+      "27": [
+       0.9992761610817167,
+       486,
+       1680
+      ]
+     }
+    },
+    {
+     "andcg10": 0.27326423593086796,
+     "andcg20": 0.3445659972956615,
+     "andcg50": 0.4291926588172303,
+     "mrr": 0.08564814814814814,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       3
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "dnsteal": 48.0,
+      "service_scan": 3.0,
+      "dirb": 10.0,
+      "wpscan": 10.0,
+      "attacker_change_user": 8.0,
+      "escalated_sudo_command": 9.0
+     },
+     "items": 90,
+     "macro_auc": 0.9912333411186841,
+     "within_auc": 0.9340846824643121,
+     "within_hosts": {
+      "21": [
+       0.8689458689458689,
+       13,
+       27
+      ],
+      "27": [
+       0.9992234959827553,
+       486,
+       1680
+      ]
+     }
+    }
+   ],
+   "B3": [
+    {
+     "andcg10": 0.7662476858779939,
+     "andcg20": 0.7808590592075533,
+     "andcg50": 0.8296030284816518,
      "mrr": 0.4523809523809524,
      "cov20": {
       "nonscan": [
@@ -606,283 +1008,9 @@
      },
      "first": {
       "dnsteal": 42.0,
-      "service_scan": 5.0,
-      "wpscan": 6.0,
-      "dirb": 6.0,
-      "attacker_change_user": 3.0,
-      "escalated_sudo_command": 1.0
-     },
-     "items": 90
-    },
-    {
-     "andcg10": 0.3276127266902909,
-     "andcg20": 0.43024602190749983,
-     "andcg50": 0.4920829017958266,
-     "mrr": 0.16706349206349205,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 40.0,
-      "service_scan": 4.0,
-      "wpscan": 5.0,
-      "dirb": 5.0,
-      "attacker_change_user": 7.0,
-      "escalated_sudo_command": 3.0
-     },
-     "items": 90
-    },
-    {
-     "andcg10": 0.521903228501318,
-     "andcg20": 0.5553889888438035,
-     "andcg50": 0.6585673686647071,
-     "mrr": 0.42567567567567566,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 37.0,
-      "service_scan": 5.0,
-      "wpscan": 6.0,
-      "dirb": 6.0,
-      "attacker_change_user": 4.0,
-      "escalated_sudo_command": 1.0
-     },
-     "items": 90
-    }
-   ],
-   "B2_alert": [
-    {
-     "andcg10": 0.3536492684924678,
-     "andcg20": 0.37759691901796605,
-     "andcg50": 0.4279117869035668,
-     "mrr": 0.10363247863247864,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 52.0,
       "service_scan": 1.5,
-      "wpscan": 10.0,
-      "dirb": 10.0,
-      "attacker_change_user": 6.0,
-      "escalated_sudo_command": 8.0
-     },
-     "items": 90,
-     "macro_auc": 0.9812431632430783,
-     "within_auc": 0.8955955866835497,
-     "within_hosts": {
-      "21": [
-       0.792022792022792,
-       13,
-       27
-      ],
-      "27": [
-       0.9991683813443073,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.33213843684779154,
-     "andcg20": 0.38302551758358133,
-     "andcg50": 0.4629086294238962,
-     "mrr": 0.09686147186147187,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 44.0,
-      "service_scan": 1.5,
-      "wpscan": 12.0,
-      "dirb": 12.0,
-      "attacker_change_user": 8.0,
-      "escalated_sudo_command": 7.0
-     },
-     "items": 90,
-     "macro_auc": 0.9886607053685106,
-     "within_auc": 0.9198509973394233,
-     "within_hosts": {
-      "21": [
-       0.8404558404558404,
-       13,
-       27
-      ],
-      "27": [
-       0.9992461542230061,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.33189080171270624,
-     "andcg20": 0.35505516775041235,
-     "andcg50": 0.40672390467526043,
-     "mrr": 0.10946391135070381,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       2.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 53.0,
-      "service_scan": 2.0,
-      "wpscan": 24.0,
-      "dirb": 20.0,
-      "attacker_change_user": 6.0,
-      "escalated_sudo_command": 7.0
-     },
-     "items": 90,
-     "macro_auc": 0.9889083522658909,
-     "within_auc": 0.9112375450338414,
-     "within_hosts": {
-      "21": [
-       0.8233618233618234,
-       13,
-       27
-      ],
-      "27": [
-       0.9991132667058593,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.3574432803573697,
-     "andcg20": 0.4090877738414633,
-     "andcg50": 0.48302657724634057,
-     "mrr": 0.13166666666666668,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 50.0,
-      "service_scan": 1.5,
-      "wpscan": 16.0,
-      "dirb": 16.0,
-      "attacker_change_user": 4.0,
-      "escalated_sudo_command": 8.0
-     },
-     "items": 90,
-     "macro_auc": 0.9944572561959727,
-     "within_auc": 0.9298185268092676,
-     "within_hosts": {
-      "21": [
-       0.8603988603988604,
-       13,
-       27
-      ],
-      "27": [
-       0.9992381932196747,
-       486,
-       1680
-      ]
-     }
-    },
-    {
-     "andcg10": 0.27326423593086796,
-     "andcg20": 0.34456599729566145,
-     "andcg50": 0.3858144875390855,
-     "mrr": 0.085239651416122,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 51.0,
-      "service_scan": 3.0,
-      "wpscan": 10.0,
-      "dirb": 10.0,
-      "attacker_change_user": 8.0,
-      "escalated_sudo_command": 9.0
-     },
-     "items": 90,
-     "macro_auc": 0.9871169024160015,
-     "within_auc": 0.9225239395378284,
-     "within_hosts": {
-      "21": [
-       0.8461538461538461,
-       13,
-       27
-      ],
-      "27": [
-       0.9988940329218107,
-       486,
-       1680
-      ]
-     }
-    }
-   ],
-   "B3": [
-    {
-     "andcg10": 0.7704164437283125,
-     "andcg20": 0.7809751942151686,
-     "andcg50": 0.8285606320598853,
-     "mrr": 0.4518518518518519,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       3
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "dnsteal": 45.0,
-      "service_scan": 1.5,
-      "wpscan": 1.5,
       "dirb": 1.5,
+      "wpscan": 1.5,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
@@ -899,10 +1027,10 @@
      }
     },
     {
-     "andcg10": 0.7585287740573474,
-     "andcg20": 0.7692920683169545,
-     "andcg50": 0.8512970018107143,
-     "mrr": 0.4577777777777778,
+     "andcg10": 0.7609875481938133,
+     "andcg20": 0.7716863352347773,
+     "andcg50": 0.8530579771368894,
+     "mrr": 0.45893719806763283,
      "cov20": {
       "nonscan": [
        2.0,
@@ -914,10 +1042,10 @@
       ]
      },
      "first": {
-      "dnsteal": 25.0,
+      "dnsteal": 23.0,
       "service_scan": 1.5,
-      "wpscan": 1.5,
       "dirb": 1.5,
+      "wpscan": 1.5,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
@@ -934,10 +1062,10 @@
      }
     },
     {
-     "andcg10": 0.7708079153556621,
-     "andcg20": 0.7792216870270596,
-     "andcg50": 0.8292490908470189,
-     "mrr": 0.4518518518518519,
+     "andcg10": 0.7662476858779939,
+     "andcg20": 0.781537971207148,
+     "andcg50": 0.830279892346336,
+     "mrr": 0.4523809523809524,
      "cov20": {
       "nonscan": [
        2.0,
@@ -949,10 +1077,10 @@
       ]
      },
      "first": {
-      "dnsteal": 45.0,
+      "dnsteal": 42.0,
       "service_scan": 1.5,
-      "wpscan": 1.5,
       "dirb": 1.5,
+      "wpscan": 1.5,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
@@ -969,10 +1097,10 @@
      }
     },
     {
-     "andcg10": 0.7676414225568402,
-     "andcg20": 0.7788535923564727,
-     "andcg50": 0.8297288809888711,
-     "mrr": 0.4523809523809524,
+     "andcg10": 0.7701001966933062,
+     "andcg20": 0.7816933715477371,
+     "andcg50": 0.8310416838394744,
+     "mrr": 0.4527777777777778,
      "cov20": {
       "nonscan": [
        2.0,
@@ -984,10 +1112,10 @@
       ]
      },
      "first": {
-      "dnsteal": 42.0,
+      "dnsteal": 40.0,
       "service_scan": 1.5,
-      "wpscan": 1.5,
       "dirb": 1.5,
+      "wpscan": 1.5,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
@@ -1004,10 +1132,10 @@
      }
     },
     {
-     "andcg10": 0.7728795738256165,
-     "andcg20": 0.7836442693230073,
-     "andcg50": 0.8622797013103692,
-     "mrr": 0.45726495726495725,
+     "andcg10": 0.7724881021982668,
+     "andcg20": 0.783853497481219,
+     "andcg50": 0.8661462269569928,
+     "mrr": 0.45959595959595956,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1019,10 +1147,10 @@
       ]
      },
      "first": {
-      "dnsteal": 26.0,
+      "dnsteal": 22.0,
       "service_scan": 1.5,
-      "wpscan": 1.5,
       "dirb": 1.5,
+      "wpscan": 1.5,
       "attacker_change_user": 1.5,
       "escalated_sudo_command": 1.5
      },
@@ -1048,7 +1176,8 @@
    "queue_items": 105,
    "baseline": "oracle-cleaned",
    "seeds": 5,
-   "seq_entities": "all",
+   "seq_entities": "host",
+   "group_score": "pi",
    "training_windows": {
     "host": 1840,
     "srcip": 583,
@@ -1069,6 +1198,10 @@
     }
    },
    "host_calibration": {
+    "external_mail[8]": [
+     "own",
+     3371
+    ],
     "mail[19]": [
      "own",
      6019
@@ -1077,13 +1210,9 @@
      "pooled",
      22
     ],
-    "vpn[9]": [
+    "webserver[6]": [
      "own",
-     1306
-    ],
-    "cloud_share[5]": [
-     "pooled",
-     17
+     1251
     ],
     "inet-firewall[22]": [
      "own",
@@ -1093,17 +1222,17 @@
      "pooled",
      32
     ],
-    "external_mail[8]": [
-     "own",
-     3371
-    ],
     "external_mail[7]": [
      "own",
      1430
     ],
-    "webserver[6]": [
+    "vpn[9]": [
      "own",
-     1251
+     1306
+    ],
+    "cloud_share[5]": [
+     "pooled",
+     17
     ]
    },
    "calib_check": {
@@ -1145,7 +1274,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 24
+   "seconds": 23
   },
   "deterministic": {
    "B0": {
@@ -1165,8 +1294,8 @@
     },
     "first": {
      "service_scan": 24.5,
-     "wpscan": 2.5,
      "dirb": 2.5,
+     "wpscan": 2.5,
      "attacker_change_user": 69.0,
      "escalated_sudo_command": 69.0
     },
@@ -1192,8 +1321,8 @@
     },
     "first": {
      "service_scan": 11.5,
-     "wpscan": 11.5,
      "dirb": 11.5,
+     "wpscan": 11.5,
      "attacker_change_user": 59.0,
      "escalated_sudo_command": 59.0
     },
@@ -1219,8 +1348,8 @@
     },
     "first": {
      "service_scan": 5.0,
-     "wpscan": 15.0,
      "dirb": 15.0,
+     "wpscan": 15.0,
      "attacker_change_user": 15.0,
      "escalated_sudo_command": 15.0
     },
@@ -1246,8 +1375,8 @@
     },
     "first": {
      "service_scan": 24.5,
-     "wpscan": 3.5,
      "dirb": 3.5,
+     "wpscan": 3.5,
      "attacker_change_user": 88.5,
      "escalated_sudo_command": 88.5
     },
@@ -1273,8 +1402,8 @@
     },
     "first": {
      "service_scan": 34.5,
-     "wpscan": 34.5,
      "dirb": 34.5,
+     "wpscan": 34.5,
      "attacker_change_user": 34.5,
      "escalated_sudo_command": 34.5
     },
@@ -1284,10 +1413,10 @@
     "within_hosts": {}
    },
    "B2'": {
-    "andcg10": 0.1670003832115947,
-    "andcg20": 0.21527100300267335,
-    "andcg50": 0.32445821393169433,
-    "mrr": 0.06347826086956522,
+    "andcg10": 0.18098042918732624,
+    "andcg20": 0.2364353483341593,
+    "andcg50": 0.36740177017520553,
+    "mrr": 0.06984126984126984,
     "cov20": {
      "nonscan": [
       1.0,
@@ -1299,14 +1428,14 @@
      ]
     },
     "first": {
-     "service_scan": 11.5,
-     "wpscan": 11.5,
-     "dirb": 25.0,
-     "attacker_change_user": 11.5,
-     "escalated_sudo_command": 25.0
+     "service_scan": 10.5,
+     "dirb": 22.5,
+     "wpscan": 10.5,
+     "attacker_change_user": 10.5,
+     "escalated_sudo_command": 22.5
     },
     "items": 105,
-    "macro_auc": 0.8732644494672264,
+    "macro_auc": 0.9051501453019051,
     "within_auc": NaN,
     "within_hosts": {}
    }
@@ -1315,9 +1444,9 @@
    "B2": [
     {
      "andcg10": 0.3176492374275895,
-     "andcg20": 0.4182204746209209,
-     "andcg50": 0.49499875485131334,
-     "mrr": 0.19791666666666666,
+     "andcg20": 0.40334572715405664,
+     "andcg50": 0.4989049084023426,
+     "mrr": 0.19999999999999998,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1330,21 +1459,21 @@
      },
      "first": {
       "service_scan": 7.0,
-      "wpscan": 3.0,
       "dirb": 6.0,
+      "wpscan": 3.0,
       "attacker_change_user": 3.0,
-      "escalated_sudo_command": 16.0
+      "escalated_sudo_command": 15.0
      },
      "items": 105,
-     "macro_auc": 0.9473280594123346,
+     "macro_auc": 0.9603648692282855,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
      "andcg10": 0.24939399071955531,
-     "andcg20": 0.28719072572511434,
-     "andcg50": 0.41187303632296346,
-     "mrr": 0.13598901098901098,
+     "andcg20": 0.28338656313690364,
+     "andcg50": 0.41657083997356814,
+     "mrr": 0.13765822784810128,
      "cov20": {
       "nonscan": [
        1.0,
@@ -1357,20 +1486,20 @@
      },
      "first": {
       "service_scan": 10.0,
-      "wpscan": 4.0,
       "dirb": 9.0,
+      "wpscan": 4.0,
       "attacker_change_user": 4.0,
-      "escalated_sudo_command": 45.5
+      "escalated_sudo_command": 39.5
      },
      "items": 105,
-     "macro_auc": 0.9012148853729416,
+     "macro_auc": 0.9112851146270584,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
-     "andcg10": 0.4485943842310032,
-     "andcg20": 0.48670410975524164,
-     "andcg50": 0.5635654882892241,
+     "andcg10": 0.4765615372091617,
+     "andcg20": 0.4807066914141555,
+     "andcg50": 0.5640982715906703,
      "mrr": 0.2909090909090909,
      "cov20": {
       "nonscan": [
@@ -1383,22 +1512,22 @@
       ]
      },
      "first": {
-      "service_scan": 11.0,
-      "wpscan": 2.5,
+      "service_scan": 10.0,
       "dirb": 5.5,
+      "wpscan": 2.5,
       "attacker_change_user": 2.5,
       "escalated_sudo_command": 5.5
      },
      "items": 105,
-     "macro_auc": 0.9425452050371328,
+     "macro_auc": 0.9508597029383274,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
-     "andcg10": 0.3065322376561893,
-     "andcg20": 0.364301323431828,
-     "andcg50": 0.441276605801543,
-     "mrr": 0.17763157894736842,
+     "andcg10": 0.3116502291851384,
+     "andcg20": 0.36405505570249785,
+     "andcg50": 0.4475659999546938,
+     "mrr": 0.18382352941176472,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1410,21 +1539,21 @@
       ]
      },
      "first": {
-      "service_scan": 12.0,
+      "service_scan": 11.0,
+      "dirb": 8.5,
       "wpscan": 4.0,
-      "dirb": 9.5,
       "attacker_change_user": 4.0,
-      "escalated_sudo_command": 9.5
+      "escalated_sudo_command": 8.5
      },
      "items": 105,
-     "macro_auc": 0.9389933806909914,
+     "macro_auc": 0.9456126896997095,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
-     "andcg10": 0.4570891173233318,
-     "andcg20": 0.4879355152149032,
-     "andcg50": 0.5647986238578541,
+     "andcg10": 0.47107269381241124,
+     "andcg20": 0.48783382445008505,
+     "andcg50": 0.5668877219524745,
      "mrr": 0.2909090909090909,
      "cov20": {
       "nonscan": [
@@ -1438,23 +1567,23 @@
      },
      "first": {
       "service_scan": 7.0,
-      "wpscan": 2.5,
       "dirb": 5.5,
+      "wpscan": 2.5,
       "attacker_change_user": 2.5,
       "escalated_sudo_command": 5.5
      },
      "items": 105,
-     "macro_auc": 0.9423837584759445,
+     "macro_auc": 0.9509807878592187,
      "within_auc": NaN,
      "within_hosts": {}
     }
    ],
-   "B2_def": [
+   "B2_max": [
     {
-     "andcg10": 0.18717861067647054,
-     "andcg20": 0.3056966147086516,
-     "andcg50": 0.3157937841568429,
-     "mrr": 0.07941176470588235,
+     "andcg10": 0.35762828324558993,
+     "andcg20": 0.4443826820092233,
+     "andcg50": 0.5182053538448073,
+     "mrr": 0.10633484162895929,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1466,19 +1595,19 @@
       ]
      },
      "first": {
-      "service_scan": 13.0,
+      "service_scan": 6.5,
+      "dirb": 6.5,
       "wpscan": 6.5,
-      "dirb": 5.0,
-      "attacker_change_user": 10.0,
+      "attacker_change_user": 6.5,
       "escalated_sudo_command": 17.0
      },
      "items": 105
     },
     {
-     "andcg10": 0.12771370054953624,
-     "andcg20": 0.25494271722774015,
-     "andcg50": 0.2573720788184309,
-     "mrr": 0.054001554001554,
+     "andcg10": 0.3801220957676204,
+     "andcg20": 0.420405312682267,
+     "andcg50": 0.533678573465928,
+     "mrr": 0.06086956521739131,
      "cov20": {
       "nonscan": [
        1.0,
@@ -1490,19 +1619,19 @@
       ]
      },
      "first": {
-      "service_scan": 12.0,
-      "wpscan": 5.5,
-      "dirb": 4.0,
-      "attacker_change_user": 11.0,
-      "escalated_sudo_command": 58.5
+      "service_scan": 2.0,
+      "dirb": 2.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 46.0
      },
      "items": 105
     },
     {
-     "andcg10": 0.30873584005721155,
-     "andcg20": 0.35064560382298715,
-     "andcg50": 0.36090993466793236,
-     "mrr": 0.1125,
+     "andcg10": 0.5286224199329603,
+     "andcg20": 0.5344795832615822,
+     "andcg50": 0.5446018732530504,
+     "mrr": 0.18181818181818182,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1514,19 +1643,141 @@
       ]
      },
      "first": {
-      "service_scan": 13.0,
-      "wpscan": 4.5,
+      "service_scan": 5.5,
+      "dirb": 5.5,
+      "wpscan": 5.5,
+      "attacker_change_user": 5.5,
+      "escalated_sudo_command": 5.5
+     },
+     "items": 105
+    },
+    {
+     "andcg10": 0.3903278174974551,
+     "andcg20": 0.4992404044176222,
+     "andcg50": 0.5042102913887545,
+     "mrr": 0.08695652173913043,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 2.0,
+      "dirb": 2.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 11.5,
+      "escalated_sudo_command": 11.5
+     },
+     "items": 105
+    },
+    {
+     "andcg10": 0.4792009445809211,
+     "andcg20": 0.5085026323884265,
+     "andcg50": 0.5185319844008565,
+     "mrr": 0.15384615384615385,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 6.5,
+      "dirb": 6.5,
+      "wpscan": 6.5,
+      "attacker_change_user": 6.5,
+      "escalated_sudo_command": 6.5
+     },
+     "items": 105
+    }
+   ],
+   "B2_def": [
+    {
+     "andcg10": 0.20681916948856371,
+     "andcg20": 0.3090879654689004,
+     "andcg50": 0.32969677013591,
+     "mrr": 0.08680555555555555,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 12.0,
+      "dirb": 4.0,
+      "wpscan": 5.5,
+      "attacker_change_user": 9.0,
+      "escalated_sudo_command": 16.0
+     },
+     "items": 105
+    },
+    {
+     "andcg10": 0.22601560898861944,
+     "andcg20": 0.26752044166325795,
+     "andcg50": 0.2722651732893,
+     "mrr": 0.05917431192660551,
+     "cov20": {
+      "nonscan": [
+       1.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 14.0,
       "dirb": 3.0,
-      "attacker_change_user": 8.0,
+      "wpscan": 4.5,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 54.5
+     },
+     "items": 105
+    },
+    {
+     "andcg10": 0.3368992440064207,
+     "andcg20": 0.37632630572749526,
+     "andcg50": 0.3864963842528764,
+     "mrr": 0.12142857142857143,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 16.0,
+      "dirb": 2.0,
+      "wpscan": 3.5,
+      "attacker_change_user": 7.0,
       "escalated_sudo_command": 10.0
      },
      "items": 105
     },
     {
-     "andcg10": 0.11783954601007238,
-     "andcg20": 0.30614939192897145,
-     "andcg50": 0.31650915120955164,
-     "mrr": 0.075,
+     "andcg10": 0.12615101926829586,
+     "andcg20": 0.31476934140065027,
+     "andcg50": 0.32494237281090466,
+     "mrr": 0.08116883116883117,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1538,19 +1789,19 @@
       ]
      },
      "first": {
-      "service_scan": 11.0,
-      "wpscan": 6.5,
-      "dirb": 5.0,
-      "attacker_change_user": 12.0,
-      "escalated_sudo_command": 15.0
+      "service_scan": 16.0,
+      "dirb": 4.0,
+      "wpscan": 5.5,
+      "attacker_change_user": 11.0,
+      "escalated_sudo_command": 14.0
      },
      "items": 105
     },
     {
-     "andcg10": 0.19549008393469403,
-     "andcg20": 0.3229238747030643,
-     "andcg50": 0.33322541237917697,
-     "mrr": 0.09166666666666667,
+     "andcg10": 0.21924870049716882,
+     "andcg20": 0.33019238861787265,
+     "andcg50": 0.35106816716313766,
+     "mrr": 0.10101010101010101,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1563,10 +1814,10 @@
      },
      "first": {
       "service_scan": 13.0,
-      "wpscan": 5.5,
-      "dirb": 4.0,
-      "attacker_change_user": 10.0,
-      "escalated_sudo_command": 12.0
+      "dirb": 3.0,
+      "wpscan": 4.5,
+      "attacker_change_user": 9.0,
+      "escalated_sudo_command": 11.0
      },
      "items": 105
     }
@@ -1589,20 +1840,20 @@
      },
      "first": {
       "service_scan": 2.0,
-      "wpscan": 21.5,
       "dirb": 24.0,
+      "wpscan": 21.5,
       "attacker_change_user": 20.0,
       "escalated_sudo_command": 26.0
      },
      "items": 105,
-     "macro_auc": 0.9466822731675815,
+     "macro_auc": 0.9568937681627381,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
      "andcg10": 0.11692471173365561,
      "andcg20": 0.20471342437369475,
-     "andcg50": 0.34913607956854326,
+     "andcg50": 0.35754374583124837,
      "mrr": 0.04563492063492063,
      "cov20": {
       "nonscan": [
@@ -1616,13 +1867,13 @@
      },
      "first": {
       "service_scan": 1.5,
-      "wpscan": 19.0,
       "dirb": 31.0,
+      "wpscan": 19.0,
       "attacker_change_user": 18.0,
       "escalated_sudo_command": 28.0
      },
      "items": 105,
-     "macro_auc": 0.9525750726509525,
+     "macro_auc": 0.9622618663222473,
      "within_auc": NaN,
      "within_hosts": {}
     },
@@ -1643,20 +1894,20 @@
      },
      "first": {
       "service_scan": 1.5,
-      "wpscan": 18.5,
       "dirb": 25.0,
+      "wpscan": 18.5,
       "attacker_change_user": 18.5,
       "escalated_sudo_command": 16.0
      },
      "items": 105,
-     "macro_auc": 0.9526557959315467,
+     "macro_auc": 0.9619389731998709,
      "within_auc": NaN,
      "within_hosts": {}
     },
     {
      "andcg10": 0.1354054364957149,
-     "andcg20": 0.32360247817327104,
-     "andcg50": 0.40038643208617025,
+     "andcg20": 0.323602478173271,
+     "andcg50": 0.4003864320861702,
      "mrr": 0.06944444444444445,
      "cov20": {
       "nonscan": [
@@ -1670,13 +1921,13 @@
      },
      "first": {
       "service_scan": 1.0,
-      "wpscan": 19.0,
       "dirb": 16.0,
+      "wpscan": 19.0,
       "attacker_change_user": 18.0,
       "escalated_sudo_command": 12.0
      },
      "items": 105,
-     "macro_auc": 0.9386503067484663,
+     "macro_auc": 0.9502542783338714,
      "within_auc": NaN,
      "within_hosts": {}
     },
@@ -1697,13 +1948,13 @@
      },
      "first": {
       "service_scan": 2.0,
-      "wpscan": 19.5,
       "dirb": 29.0,
+      "wpscan": 19.5,
       "attacker_change_user": 19.5,
       "escalated_sudo_command": 23.0
      },
      "items": 105,
-     "macro_auc": 0.9478527607361963,
+     "macro_auc": 0.9573781078463028,
      "within_auc": NaN,
      "within_hosts": {}
     }
@@ -1711,9 +1962,9 @@
    "B3": [
     {
      "andcg10": 0.27031261615058777,
-     "andcg20": 0.3641152290493316,
-     "andcg50": 0.4457523882905181,
-     "mrr": 0.15441176470588236,
+     "andcg20": 0.35468389595264554,
+     "andcg50": 0.44943985585425805,
+     "mrr": 0.15625,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1726,10 +1977,10 @@
      },
      "first": {
       "service_scan": 8.0,
-      "wpscan": 4.0,
       "dirb": 7.0,
+      "wpscan": 4.0,
       "attacker_change_user": 4.0,
-      "escalated_sudo_command": 17.0
+      "escalated_sudo_command": 16.0
      },
      "items": 102,
      "incidents": 1,
@@ -1744,9 +1995,9 @@
     },
     {
      "andcg10": 0.200298353131406,
-     "andcg20": 0.2630718223693032,
-     "andcg50": 0.38836533963355274,
-     "mrr": 0.11075268817204302,
+     "andcg20": 0.2606235751154777,
+     "andcg50": 0.39286527071157773,
+     "mrr": 0.11234567901234568,
      "cov20": {
       "nonscan": [
        1.0,
@@ -1759,10 +2010,10 @@
      },
      "first": {
       "service_scan": 11.0,
-      "wpscan": 5.0,
       "dirb": 10.0,
+      "wpscan": 5.0,
       "attacker_change_user": 5.0,
-      "escalated_sudo_command": 46.5
+      "escalated_sudo_command": 40.5
      },
      "items": 102,
      "incidents": 1,
@@ -1777,8 +2028,8 @@
     },
     {
      "andcg10": 0.3741383165953854,
-     "andcg20": 0.41208629202132935,
-     "andcg50": 0.48847308735399636,
+     "andcg20": 0.3954755294286743,
+     "andcg50": 0.4889732854347605,
      "mrr": 0.21978021978021978,
      "cov20": {
       "nonscan": [
@@ -1791,9 +2042,9 @@
       ]
      },
      "first": {
-      "service_scan": 12.0,
-      "wpscan": 3.5,
+      "service_scan": 11.0,
       "dirb": 6.5,
+      "wpscan": 3.5,
       "attacker_change_user": 3.5,
       "escalated_sudo_command": 6.5
      },
@@ -1809,10 +2060,10 @@
      }
     },
     {
-     "andcg10": 0.2271468199904383,
-     "andcg20": 0.3387630198120623,
-     "andcg50": 0.4154514748144841,
-     "mrr": 0.14761904761904762,
+     "andcg10": 0.2864687777595557,
+     "andcg20": 0.33769965719487965,
+     "andcg50": 0.4208301171856042,
+     "mrr": 0.15263157894736842,
      "cov20": {
       "nonscan": [
        2.0,
@@ -1824,11 +2075,11 @@
       ]
      },
      "first": {
-      "service_scan": 13.0,
+      "service_scan": 12.0,
+      "dirb": 9.5,
       "wpscan": 5.0,
-      "dirb": 10.5,
       "attacker_change_user": 5.0,
-      "escalated_sudo_command": 10.5
+      "escalated_sudo_command": 9.5
      },
      "items": 102,
      "incidents": 1,
@@ -1843,8 +2094,8 @@
     },
     {
      "andcg10": 0.3821178043753251,
-     "andcg20": 0.41307293461563027,
-     "andcg50": 0.48945839968321375,
+     "andcg20": 0.4129476330602165,
+     "andcg50": 0.4914479657410491,
      "mrr": 0.21978021978021978,
      "cov20": {
       "nonscan": [
@@ -1858,8 +2109,8 @@
      },
      "first": {
       "service_scan": 8.0,
-      "wpscan": 3.5,
       "dirb": 6.5,
+      "wpscan": 3.5,
       "attacker_change_user": 3.5,
       "escalated_sudo_command": 6.5
      },
@@ -1884,7 +2135,8 @@
    "queue_items": 191,
    "baseline": "oracle-cleaned",
    "seeds": 5,
-   "seq_entities": "all",
+   "seq_entities": "host",
+   "group_score": "pi",
    "training_windows": {
     "host": 6885,
     "srcip": 3874,
@@ -1905,26 +2157,6 @@
     }
    },
    "host_calibration": {
-    "webserver[12]": [
-     "own",
-     15984
-    ],
-    "internal_share[18]": [
-     "pooled",
-     32
-    ],
-    "external_mail[26]": [
-     "own",
-     3296
-    ],
-    "cloud_share[34]": [
-     "pooled",
-     22
-    ],
-    "mail[31]": [
-     "own",
-     12517
-    ],
     "inet-firewall[36]": [
      "own",
      9097
@@ -1933,21 +2165,41 @@
      "own",
      6298
     ],
-    "external_mail[1]": [
+    "webserver[12]": [
      "own",
-     2399
+     15984
     ],
-    "intranet_server[32]": [
+    "vpn[30]": [
      "own",
-     111
+     13609
+    ],
+    "internal_share[18]": [
+     "pooled",
+     32
+    ],
+    "mail[31]": [
+     "own",
+     12517
     ],
     "external_mail[27]": [
      "own",
      1529
     ],
-    "vpn[30]": [
+    "external_mail[26]": [
      "own",
-     13609
+     3296
+    ],
+    "external_mail[1]": [
+     "own",
+     2399
+    ],
+    "cloud_share[34]": [
+     "pooled",
+     22
+    ],
+    "intranet_server[32]": [
+     "own",
+     111
     ]
    },
    "calib_check": {
@@ -1997,7 +2249,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 455
+   "seconds": 373
   },
   "deterministic": {
    "B0": {
@@ -2019,8 +2271,8 @@
      "service_scan": 37.0,
      "dirb": 2.0,
      "wpscan": 2.0,
-     "escalated_sudo_command": 62.0,
-     "attacker_change_user": 127.0
+     "attacker_change_user": 127.0,
+     "escalated_sudo_command": 62.0
     },
     "items": 191,
     "macro_auc": 0.5336079535104018,
@@ -2052,8 +2304,8 @@
      "service_scan": 9.0,
      "dirb": 9.0,
      "wpscan": 9.0,
-     "escalated_sudo_command": 9.0,
-     "attacker_change_user": 98.5
+     "attacker_change_user": 98.5,
+     "escalated_sudo_command": 9.0
     },
     "items": 191,
     "macro_auc": 0.8367953085340232,
@@ -2085,8 +2337,8 @@
      "service_scan": 3.5,
      "dirb": 25.0,
      "wpscan": 25.0,
-     "escalated_sudo_command": 25.0,
-     "attacker_change_user": 25.0
+     "attacker_change_user": 25.0,
+     "escalated_sudo_command": 25.0
     },
     "items": 191,
     "macro_auc": 0.9988098274249766,
@@ -2118,8 +2370,8 @@
      "service_scan": 26.0,
      "dirb": 2.5,
      "wpscan": 2.5,
-     "escalated_sudo_command": 30.0,
-     "attacker_change_user": 107.0
+     "attacker_change_user": 107.0,
+     "escalated_sudo_command": 30.0
     },
     "items": 191,
     "macro_auc": 0.3855233115944669,
@@ -2151,8 +2403,8 @@
      "service_scan": 33.5,
      "dirb": 33.5,
      "wpscan": 33.5,
-     "escalated_sudo_command": 33.5,
-     "attacker_change_user": 33.5
+     "attacker_change_user": 33.5,
+     "escalated_sudo_command": 33.5
     },
     "items": 191,
     "macro_auc": 0.9757502337838987,
@@ -2166,10 +2418,10 @@
     }
    },
    "B2'": {
-    "andcg10": 0.2629649905529712,
-    "andcg20": 0.3841459680482265,
-    "andcg50": 0.43214321972870273,
-    "mrr": 0.125,
+    "andcg10": 0.28345866489095844,
+    "andcg20": 0.3937346690249904,
+    "andcg50": 0.45057749456334883,
+    "mrr": 0.13333333333333333,
     "cov20": {
      "nonscan": [
       2.0,
@@ -2181,18 +2433,18 @@
      ]
     },
     "first": {
-     "service_scan": 8.0,
-     "dirb": 26.0,
-     "wpscan": 8.0,
-     "escalated_sudo_command": 8.0,
-     "attacker_change_user": 8.0
+     "service_scan": 7.5,
+     "dirb": 24.0,
+     "wpscan": 7.5,
+     "attacker_change_user": 7.5,
+     "escalated_sudo_command": 7.5
     },
     "items": 191,
-    "macro_auc": 0.7266922007262482,
-    "within_auc": 0.6724137931034483,
+    "macro_auc": 0.7353923015265784,
+    "within_auc": 0.8850574712643678,
     "within_hosts": {
      "32": [
-      0.6724137931034483,
+      0.8850574712643678,
       9,
       58
      ]
@@ -2202,10 +2454,76 @@
   "seeded": {
    "B2": [
     {
-     "andcg10": 0.15358390092564084,
-     "andcg20": 0.15677710581443582,
-     "andcg50": 0.18534911046564445,
-     "mrr": 0.01835016835016835,
+     "andcg10": 0.182140961956853,
+     "andcg20": 0.21339685316831034,
+     "andcg50": 0.326298055514028,
+     "mrr": 0.02353266888150609,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 6.0,
+      "dirb": 3.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 42.0,
+      "escalated_sudo_command": 43.0
+     },
+     "items": 191,
+     "macro_auc": 0.9536557577634471,
+     "within_auc": 0.8505747126436781,
+     "within_hosts": {
+      "32": [
+       0.8505747126436781,
+       9,
+       58
+      ]
+     }
+    },
+    {
+     "andcg10": 0.3324137980313847,
+     "andcg20": 0.35373040967838276,
+     "andcg50": 0.4151452635058833,
+     "mrr": 0.13719512195121952,
+     "cov20": {
+      "nonscan": [
+       1.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 5.0,
+      "dirb": 3.0,
+      "wpscan": 1.5,
+      "attacker_change_user": 4.0,
+      "escalated_sudo_command": 41.0
+     },
+     "items": 191,
+     "macro_auc": 0.9573499987855382,
+     "within_auc": 0.8601532567049809,
+     "within_hosts": {
+      "32": [
+       0.8601532567049809,
+       9,
+       58
+      ]
+     }
+    },
+    {
+     "andcg10": 0.19308095172139106,
+     "andcg20": 0.21533621566438796,
+     "andcg50": 0.3424190396587506,
+     "mrr": 0.03525264394829612,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2218,27 +2536,119 @@
      },
      "first": {
       "service_scan": 5.0,
-      "dirb": 8.0,
-      "wpscan": 3.0,
-      "escalated_sudo_command": 55.0,
-      "attacker_change_user": 54.0
+      "dirb": 3.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 23.0,
+      "escalated_sudo_command": 37.0
      },
      "items": 191,
-     "macro_auc": 0.9140847967598158,
-     "within_auc": 0.8084291187739464,
+     "macro_auc": 0.9677917137270619,
+     "within_auc": 0.8457854406130269,
      "within_hosts": {
       "32": [
-       0.8084291187739464,
+       0.8457854406130269,
        9,
        58
       ]
      }
     },
     {
-     "andcg10": 0.17781003547154653,
-     "andcg20": 0.25857302040865343,
-     "andcg50": 0.2871077963221774,
-     "mrr": 0.054713804713804715,
+     "andcg10": 0.21034782108723352,
+     "andcg20": 0.23538271989527296,
+     "andcg50": 0.35438338221108073,
+     "mrr": 0.029138513513513514,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 5.0,
+      "dirb": 3.0,
+      "wpscan": 1.5,
+      "attacker_change_user": 32.0,
+      "escalated_sudo_command": 37.0
+     },
+     "items": 191,
+     "macro_auc": 0.9551711783922954,
+     "within_auc": 0.8342911877394636,
+     "within_hosts": {
+      "32": [
+       0.8342911877394636,
+       9,
+       58
+      ]
+     }
+    },
+    {
+     "andcg10": 0.20202779275801813,
+     "andcg20": 0.21367968702767284,
+     "andcg50": 0.3407546541359109,
+     "mrr": 0.03787878787878788,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 6.0,
+      "dirb": 3.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 22.0,
+      "escalated_sudo_command": 33.0
+     },
+     "items": 191,
+     "macro_auc": 0.9645919863737384,
+     "within_auc": 0.867816091954023,
+     "within_hosts": {
+      "32": [
+       0.867816091954023,
+       9,
+       58
+      ]
+     }
+    }
+   ],
+   "B2_max": [
+    {
+     "andcg10": 0.23934611973988915,
+     "andcg20": 0.2578184696416477,
+     "andcg50": 0.25829141612638146,
+     "mrr": 0.01190644932671864,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 5.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
+      "attacker_change_user": 83.0,
+      "escalated_sudo_command": 85.0
+     },
+     "items": 191
+    },
+    {
+     "andcg10": 0.31862769758050097,
+     "andcg20": 0.33664142551712817,
+     "andcg50": 0.3370891427697298,
+     "mrr": 0.055952380952380955,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2250,28 +2660,43 @@
       ]
      },
      "first": {
-      "service_scan": 4.5,
-      "dirb": 10.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 54.0,
-      "attacker_change_user": 11.0
+      "service_scan": 5.5,
+      "dirb": 5.5,
+      "wpscan": 5.5,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 84.0
      },
-     "items": 191,
-     "macro_auc": 0.9258278834359553,
-     "within_auc": 0.8218390804597702,
-     "within_hosts": {
-      "32": [
-       0.8218390804597702,
-       9,
-       58
-      ]
-     }
+     "items": 191
     },
     {
-     "andcg10": 0.14348363499358346,
-     "andcg20": 0.16893667910952417,
-     "andcg50": 0.2367268895433564,
-     "mrr": 0.024509803921568627,
+     "andcg10": 0.3142927159905407,
+     "andcg20": 0.33198555641291705,
+     "andcg50": 0.38234308083741125,
+     "mrr": 0.01661433804290947,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 4.5,
+      "dirb": 4.5,
+      "wpscan": 4.5,
+      "attacker_change_user": 49.0,
+      "escalated_sudo_command": 78.0
+     },
+     "items": 191
+    },
+    {
+     "andcg10": 0.23566134748492945,
+     "andcg20": 0.25466229584459377,
+     "andcg50": 0.2551153712859221,
+     "mrr": 0.014332514332514333,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2284,119 +2709,68 @@
      },
      "first": {
       "service_scan": 5.5,
-      "dirb": 8.0,
-      "wpscan": 3.0,
-      "escalated_sudo_command": 51.0,
-      "attacker_change_user": 34.0
-     },
-     "items": 191,
-     "macro_auc": 0.933556035267971,
-     "within_auc": 0.8113026819923371,
-     "within_hosts": {
-      "32": [
-       0.8113026819923371,
-       9,
-       58
-      ]
-     }
-    },
-    {
-     "andcg10": 0.17781003547154653,
-     "andcg20": 0.19660764080092694,
-     "andcg50": 0.26026552732672104,
-     "mrr": 0.020673486786018755,
-     "cov20": {
-      "nonscan": [
-       0.0,
-       2
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "service_scan": 4.5,
-      "dirb": 10.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 51.0,
-      "attacker_change_user": 46.0
-     },
-     "items": 191,
-     "macro_auc": 0.9166158110783207,
-     "within_auc": 0.7844827586206896,
-     "within_hosts": {
-      "32": [
-       0.7844827586206896,
-       9,
-       58
-      ]
-     }
-    },
-    {
-     "andcg10": 0.1557782273069203,
-     "andcg20": 0.1747885870496294,
-     "andcg50": 0.2931942819485783,
-     "mrr": 0.02557544757033248,
-     "cov20": {
-      "nonscan": [
-       0.0,
-       2
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "service_scan": 3.0,
-      "dirb": 9.0,
-      "wpscan": 4.0,
-      "escalated_sudo_command": 46.0,
-      "attacker_change_user": 34.0
-     },
-     "items": 191,
-     "macro_auc": 0.930693321067269,
-     "within_auc": 0.8486590038314177,
-     "within_hosts": {
-      "32": [
-       0.8486590038314177,
-       9,
-       58
-      ]
-     }
-    }
-   ],
-   "B2_def": [
-    {
-     "andcg10": 0.17079135893591554,
-     "andcg20": 0.20144071760437957,
-     "andcg50": 0.2056328236849983,
-     "mrr": 0.01761642156862745,
-     "cov20": {
-      "nonscan": [
-       0.0,
-       2
-      ],
-      "scan": [
-       3.0,
-       3
-      ]
-     },
-     "first": {
-      "service_scan": 4.0,
-      "dirb": 8.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 51.0,
-      "attacker_change_user": 64.0
+      "dirb": 5.5,
+      "wpscan": 5.5,
+      "attacker_change_user": 66.0,
+      "escalated_sudo_command": 74.0
      },
      "items": 191
     },
     {
-     "andcg10": 0.16952751670200672,
-     "andcg20": 0.2704993629179,
-     "andcg50": 0.2797629039611491,
-     "mrr": 0.051100628930817606,
+     "andcg10": 0.23934611973988915,
+     "andcg20": 0.25757955266194255,
+     "andcg50": 0.30799878433494216,
+     "mrr": 0.01766676819981724,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 5.0,
+      "dirb": 5.0,
+      "wpscan": 5.0,
+      "attacker_change_user": 49.0,
+      "escalated_sudo_command": 67.0
+     },
+     "items": 191
+    }
+   ],
+   "B2_def": [
+    {
+     "andcg10": 0.2147998764224614,
+     "andcg20": 0.23726623648547435,
+     "andcg50": 0.3448788534412886,
+     "mrr": 0.025155279503105588,
+     "cov20": {
+      "nonscan": [
+       0.0,
+       2
+      ],
+      "scan": [
+       3.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 7.0,
+      "dirb": 6.0,
+      "wpscan": 1.0,
+      "attacker_change_user": 46.0,
+      "escalated_sudo_command": 35.0
+     },
+     "items": 191
+    },
+    {
+     "andcg10": 0.2905390580327175,
+     "andcg20": 0.32133749758568037,
+     "andcg50": 0.3804226666232702,
+     "mrr": 0.0763888888888889,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2408,19 +2782,19 @@
       ]
      },
      "first": {
-      "service_scan": 4.5,
-      "dirb": 10.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 53.0,
-      "attacker_change_user": 12.0
+      "service_scan": 7.0,
+      "dirb": 6.0,
+      "wpscan": 1.0,
+      "attacker_change_user": 8.0,
+      "escalated_sudo_command": 36.0
      },
      "items": 191
     },
     {
-     "andcg10": 0.16815189899138258,
-     "andcg20": 0.19872697348384702,
-     "andcg50": 0.30417019770024517,
-     "mrr": 0.021567717996289426,
+     "andcg10": 0.2147998764224614,
+     "andcg20": 0.2345566585498137,
+     "andcg50": 0.35503524722369095,
+     "mrr": 0.03518518518518518,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2432,19 +2806,19 @@
       ]
      },
      "first": {
-      "service_scan": 4.0,
-      "dirb": 8.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 49.0,
-      "attacker_change_user": 44.0
+      "service_scan": 7.0,
+      "dirb": 6.0,
+      "wpscan": 1.0,
+      "attacker_change_user": 27.0,
+      "escalated_sudo_command": 30.0
      },
      "items": 191
     },
     {
-     "andcg10": 0.17179171433138596,
-     "andcg20": 0.20240370640611366,
-     "andcg50": 0.3074954256927766,
-     "mrr": 0.021315192743764172,
+     "andcg10": 0.2147998764224614,
+     "andcg20": 0.23726623648547435,
+     "andcg50": 0.3516079922440284,
+     "mrr": 0.03152709359605911,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2456,19 +2830,19 @@
       ]
      },
      "first": {
-      "service_scan": 4.5,
-      "dirb": 9.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 45.0,
-      "attacker_change_user": 49.0
+      "service_scan": 7.0,
+      "dirb": 6.0,
+      "wpscan": 1.0,
+      "attacker_change_user": 35.0,
+      "escalated_sudo_command": 29.0
      },
      "items": 191
     },
     {
-     "andcg10": 0.17225732493893975,
-     "andcg20": 0.20279900144650514,
-     "andcg50": 0.30896615335338695,
-     "mrr": 0.022233201581027668,
+     "andcg10": 0.2147998764224614,
+     "andcg20": 0.23718161594741846,
+     "andcg50": 0.3538612777111873,
+     "mrr": 0.0339080459770115,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2480,21 +2854,21 @@
       ]
      },
      "first": {
-      "service_scan": 4.0,
-      "dirb": 8.0,
-      "wpscan": 2.0,
-      "escalated_sudo_command": 44.0,
-      "attacker_change_user": 46.0
+      "service_scan": 7.0,
+      "dirb": 6.0,
+      "wpscan": 1.0,
+      "attacker_change_user": 30.0,
+      "escalated_sudo_command": 29.0
      },
      "items": 191
     }
    ],
    "B2_alert": [
     {
-     "andcg10": 0.0790200107219803,
-     "andcg20": 0.2315131238770487,
-     "andcg50": 0.28522852253813014,
-     "mrr": 0.05178365937859609,
+     "andcg10": 0.1896190796036598,
+     "andcg20": 0.24250836989495753,
+     "andcg50": 0.29291872198409413,
+     "mrr": 0.06231231231231231,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2508,59 +2882,26 @@
      "first": {
       "service_scan": 3.0,
       "dirb": 26.0,
-      "wpscan": 12.0,
-      "escalated_sudo_command": 11.0,
-      "attacker_change_user": 79.0
-     },
-     "items": 191,
-     "macro_auc": 0.9743050242285132,
-     "within_auc": 0.9291187739463601,
-     "within_hosts": {
-      "32": [
-       0.9291187739463601,
-       9,
-       58
-      ]
-     }
-    },
-    {
-     "andcg10": 0.22101283820766576,
-     "andcg20": 0.26744189148853065,
-     "andcg50": 0.32712535492008327,
-     "mrr": 0.06882911392405064,
-     "cov20": {
-      "nonscan": [
-       1.0,
-       2
-      ],
-      "scan": [
-       2.0,
-       3
-      ]
-     },
-     "first": {
-      "service_scan": 2.5,
-      "dirb": 23.0,
       "wpscan": 10.0,
-      "escalated_sudo_command": 8.0,
-      "attacker_change_user": 79.0
+      "attacker_change_user": 74.0,
+      "escalated_sudo_command": 9.0
      },
      "items": 191,
-     "macro_auc": 0.9748097849188132,
-     "within_auc": 0.9348659003831418,
+     "macro_auc": 0.9832624391251017,
+     "within_auc": 0.9559386973180076,
      "within_hosts": {
       "32": [
-       0.9348659003831418,
+       0.9559386973180076,
        9,
        58
       ]
      }
     },
     {
-     "andcg10": 0.2168697903799863,
-     "andcg20": 0.2804204134953194,
-     "andcg50": 0.3248564393055509,
-     "mrr": 0.06222222222222222,
+     "andcg10": 0.2216538888758692,
+     "andcg20": 0.2724157657492894,
+     "andcg50": 0.3237464878739871,
+     "mrr": 0.06925675675675676,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2573,27 +2914,27 @@
      },
      "first": {
       "service_scan": 2.5,
-      "dirb": 22.0,
-      "wpscan": 10.0,
-      "escalated_sudo_command": 9.0,
-      "attacker_change_user": 75.0
+      "dirb": 33.0,
+      "wpscan": 9.5,
+      "attacker_change_user": 74.0,
+      "escalated_sudo_command": 8.0
      },
      "items": 191,
-     "macro_auc": 0.9751839909644041,
-     "within_auc": 0.9367816091954023,
+     "macro_auc": 0.9835554280370653,
+     "within_auc": 0.9597701149425287,
      "within_hosts": {
       "32": [
-       0.9367816091954023,
+       0.9597701149425287,
        9,
        58
       ]
      }
     },
     {
-     "andcg10": 0.21458032370783095,
-     "andcg20": 0.26589136379632067,
-     "andcg50": 0.31944034330093457,
-     "mrr": 0.05666666666666667,
+     "andcg10": 0.22215757154374344,
+     "andcg20": 0.2775544028503271,
+     "andcg50": 0.32768274546007164,
+     "mrr": 0.06934931506849315,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2606,50 +2947,83 @@
      },
      "first": {
       "service_scan": 2.5,
-      "dirb": 25.0,
+      "dirb": 29.0,
       "wpscan": 9.0,
-      "escalated_sudo_command": 10.0,
-      "attacker_change_user": 75.0
+      "attacker_change_user": 73.0,
+      "escalated_sudo_command": 8.0
      },
      "items": 191,
-     "macro_auc": 0.9735558530986993,
-     "within_auc": 0.9396551724137931,
+     "macro_auc": 0.9839751764005782,
+     "within_auc": 0.9616858237547893,
      "within_hosts": {
       "32": [
-       0.9396551724137931,
+       0.9616858237547893,
        9,
        58
       ]
      }
     },
     {
-     "andcg10": 0.14307574805097895,
-     "andcg20": 0.2944813487041905,
-     "andcg50": 0.3268023720996071,
-     "mrr": 0.052121212121212124,
+     "andcg10": 0.21939553965862385,
+     "andcg20": 0.2724971018886222,
+     "andcg50": 0.3226028930555531,
+     "mrr": 0.06280193236714976,
      "cov20": {
       "nonscan": [
        1.0,
        2
       ],
       "scan": [
-       3.0,
+       2.0,
+       3
+      ]
+     },
+     "first": {
+      "service_scan": 2.5,
+      "dirb": 29.0,
+      "wpscan": 8.0,
+      "attacker_change_user": 69.0,
+      "escalated_sudo_command": 9.0
+     },
+     "items": 191,
+     "macro_auc": 0.9840510802637812,
+     "within_auc": 0.9664750957854407,
+     "within_hosts": {
+      "32": [
+       0.9664750957854407,
+       9,
+       58
+      ]
+     }
+    },
+    {
+     "andcg10": 0.20002987510405337,
+     "andcg20": 0.26165767403303586,
+     "andcg50": 0.32528101803600534,
+     "mrr": 0.06944444444444445,
+     "cov20": {
+      "nonscan": [
+       1.0,
+       2
+      ],
+      "scan": [
+       2.0,
        3
       ]
      },
      "first": {
       "service_scan": 1.5,
-      "dirb": 20.0,
-      "wpscan": 6.0,
-      "escalated_sudo_command": 11.0,
-      "attacker_change_user": 75.0
+      "dirb": 33.0,
+      "wpscan": 11.0,
+      "attacker_change_user": 72.0,
+      "escalated_sudo_command": 8.0
      },
      "items": 191,
-     "macro_auc": 0.9777795235666314,
-     "within_auc": 0.946360153256705,
+     "macro_auc": 0.9859346346291641,
+     "within_auc": 0.9636015325670498,
      "within_hosts": {
       "32": [
-       0.946360153256705,
+       0.9636015325670498,
        9,
        58
       ]
@@ -2658,10 +3032,10 @@
    ],
    "B3": [
     {
-     "andcg10": 0.35751090105697064,
-     "andcg20": 0.3554153556337713,
-     "andcg50": 0.3670242380516052,
-     "mrr": 0.0186932215234102,
+     "andcg10": 0.36532791598565245,
+     "andcg20": 0.37707575166787344,
+     "andcg50": 0.4825351101166902,
+     "mrr": 0.024099883855981417,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2676,8 +3050,8 @@
       "service_scan": 1.0,
       "dirb": 1.0,
       "wpscan": 1.0,
-      "escalated_sudo_command": 54.0,
-      "attacker_change_user": 53.0
+      "attacker_change_user": 41.0,
+      "escalated_sudo_command": 42.0
      },
      "items": 178,
      "incidents": 1,
@@ -2692,10 +3066,10 @@
      }
     },
     {
-     "andcg10": 0.34306828449459686,
-     "andcg20": 0.4370890309915265,
-     "andcg50": 0.4487057994243709,
-     "mrr": 0.051100628930817606,
+     "andcg10": 0.47995536207743195,
+     "andcg20": 0.48988608452349924,
+     "andcg50": 0.5435211508592002,
+     "mrr": 0.1125,
      "cov20": {
       "nonscan": [
        1.0,
@@ -2710,8 +3084,8 @@
       "service_scan": 1.0,
       "dirb": 1.0,
       "wpscan": 1.0,
-      "escalated_sudo_command": 53.0,
-      "attacker_change_user": 12.0
+      "attacker_change_user": 5.0,
+      "escalated_sudo_command": 40.0
      },
      "items": 178,
      "incidents": 1,
@@ -2726,10 +3100,10 @@
      }
     },
     {
-     "andcg10": 0.35294700843285165,
-     "andcg20": 0.35387221098116045,
-     "andcg50": 0.47068029747340895,
-     "mrr": 0.024705882352941175,
+     "andcg10": 0.36684948959754166,
+     "andcg20": 0.3775362737124341,
+     "andcg50": 0.49569569006836195,
+     "mrr": 0.035628019323671496,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2744,8 +3118,8 @@
       "service_scan": 1.0,
       "dirb": 1.0,
       "wpscan": 1.0,
-      "escalated_sudo_command": 50.0,
-      "attacker_change_user": 34.0
+      "attacker_change_user": 23.0,
+      "escalated_sudo_command": 36.0
      },
      "items": 178,
      "incidents": 1,
@@ -2760,10 +3134,10 @@
      }
     },
     {
-     "andcg10": 0.34306828449459686,
-     "andcg20": 0.36090418448759315,
-     "andcg50": 0.47380814260481535,
-     "mrr": 0.021111111111111112,
+     "andcg10": 0.3695536936079439,
+     "andcg20": 0.3817119824441306,
+     "andcg50": 0.49345171430575613,
+     "mrr": 0.030017921146953404,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2778,8 +3152,8 @@
       "service_scan": 1.0,
       "dirb": 1.0,
       "wpscan": 1.0,
-      "escalated_sudo_command": 50.0,
-      "attacker_change_user": 45.0
+      "attacker_change_user": 31.0,
+      "escalated_sudo_command": 36.0
      },
      "items": 178,
      "incidents": 1,
@@ -2794,10 +3168,10 @@
      }
     },
     {
-     "andcg10": 0.3547410668929745,
-     "andcg20": 0.35588863807291843,
-     "andcg50": 0.47402074165543295,
-     "mrr": 0.025816993464052286,
+     "andcg10": 0.36498266200001256,
+     "andcg20": 0.37722223512751596,
+     "andcg50": 0.4967051983365164,
+     "mrr": 0.03835227272727273,
      "cov20": {
       "nonscan": [
        0.0,
@@ -2812,8 +3186,8 @@
       "service_scan": 1.0,
       "dirb": 1.0,
       "wpscan": 1.0,
-      "escalated_sudo_command": 45.0,
-      "attacker_change_user": 34.0
+      "attacker_change_user": 22.0,
+      "escalated_sudo_command": 32.0
      },
      "items": 178,
      "incidents": 1,
@@ -2837,7 +3211,8 @@
    "queue_items": 147,
    "baseline": "oracle-cleaned",
    "seeds": 5,
-   "seq_entities": "all",
+   "seq_entities": "host",
+   "group_score": "pi",
    "training_windows": {
     "host": 2865,
     "srcip": 808,
@@ -2858,21 +3233,37 @@
     }
    },
    "host_calibration": {
+    "vpn[23]": [
+     "own",
+     2466
+    ],
     "internal_share[24]": [
      "pooled",
      41
+    ],
+    "webserver[18]": [
+     "pooled",
+     37
+    ],
+    "mail[20]": [
+     "own",
+     10910
     ],
     "external_mail[5]": [
      "pooled",
      80
     ],
+    "intranet_server[21]": [
+     "pooled",
+     27
+    ],
+    "external_mail[4]": [
+     "pooled",
+     82
+    ],
     "external_mail[2]": [
      "own",
      7497
-    ],
-    "vpn[23]": [
-     "own",
-     2466
     ],
     "cloud_share[1]": [
      "pooled",
@@ -2881,22 +3272,6 @@
     "inet-firewall[25]": [
      "own",
      6308
-    ],
-    "external_mail[4]": [
-     "pooled",
-     82
-    ],
-    "mail[20]": [
-     "own",
-     10910
-    ],
-    "webserver[18]": [
-     "pooled",
-     37
-    ],
-    "intranet_server[21]": [
-     "pooled",
-     27
     ]
    },
    "calib_check": {
@@ -2942,7 +3317,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 34
+   "seconds": 29
   },
   "deterministic": {
    "B0": {
@@ -3107,8 +3482,8 @@
    },
    "B2'": {
     "andcg10": 0.37171560961293115,
-    "andcg20": 0.5229714379766635,
-    "andcg50": 0.5254438751395147,
+    "andcg20": 0.5232842226285211,
+    "andcg50": 0.5261315465348678,
     "mrr": 0.2,
     "cov20": {
      "nonscan": [
@@ -3127,7 +3502,7 @@
      "escalated_sudo_command": 5.0
     },
     "items": 147,
-    "macro_auc": 0.950993577755318,
+    "macro_auc": 0.9590233731507198,
     "within_auc": 0.6933333333333334,
     "within_hosts": {
      "21": [
@@ -3142,8 +3517,8 @@
    "B2": [
     {
      "andcg10": 0.4021926381133558,
-     "andcg20": 0.5275021569225539,
-     "andcg50": 0.5427310355601395,
+     "andcg20": 0.5396047239818581,
+     "andcg50": 0.5504765776049957,
      "mrr": 0.14285714285714285,
      "cov20": {
       "nonscan": [
@@ -3162,7 +3537,7 @@
       "escalated_sudo_command": 7.0
      },
      "items": 147,
-     "macro_auc": 0.9963790318088128,
+     "macro_auc": 0.99922805733067,
      "within_auc": 0.84,
      "within_hosts": {
       "21": [
@@ -3174,8 +3549,8 @@
     },
     {
      "andcg10": 0.4579687874038732,
-     "andcg20": 0.5548704611457883,
-     "andcg50": 0.5627237960668104,
+     "andcg20": 0.5630713440017595,
+     "andcg50": 0.5656711695420429,
      "mrr": 0.15384615384615385,
      "cov20": {
       "nonscan": [
@@ -3194,7 +3569,7 @@
       "escalated_sudo_command": 6.5
      },
      "items": 147,
-     "macro_auc": 0.9979149589756242,
+     "macro_auc": 0.9995463842046205,
      "within_auc": 0.8533333333333334,
      "within_hosts": {
       "21": [
@@ -3205,9 +3580,9 @@
      }
     },
     {
-     "andcg10": 0.4231795537233039,
-     "andcg20": 0.5488928550713488,
-     "andcg50": 0.5645563202041373,
+     "andcg10": 0.4680161485181847,
+     "andcg20": 0.5612520034082886,
+     "andcg50": 0.572473212734734,
      "mrr": 0.16666666666666666,
      "cov20": {
       "nonscan": [
@@ -3226,39 +3601,7 @@
       "escalated_sudo_command": 6.0
      },
      "items": 147,
-     "macro_auc": 0.996840605776041,
-     "within_auc": 0.84,
-     "within_hosts": {
-      "21": [
-       0.84,
-       10,
-       15
-      ]
-     }
-    },
-    {
-     "andcg10": 0.37439661129141766,
-     "andcg20": 0.4930458177682789,
-     "andcg50": 0.5086186014880415,
-     "mrr": 0.14285714285714285,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       2
-      ],
-      "scan": [
-       2.0,
-       2
-      ]
-     },
-     "first": {
-      "dirb": 2.0,
-      "wpscan": 2.0,
-      "attacker_change_user": 7.0,
-      "escalated_sudo_command": 7.0
-     },
-     "items": 147,
-     "macro_auc": 0.9940074965978816,
+     "macro_auc": 0.9993155972210064,
      "within_auc": 0.84,
      "within_hosts": {
       "21": [
@@ -3270,8 +3613,8 @@
     },
     {
      "andcg10": 0.4231795537233039,
-     "andcg20": 0.5541863438324743,
-     "andcg50": 0.5693895063642946,
+     "andcg20": 0.5572429611353606,
+     "andcg50": 0.5684641704618059,
      "mrr": 0.16666666666666666,
      "cov20": {
       "nonscan": [
@@ -3290,7 +3633,39 @@
       "escalated_sudo_command": 6.0
      },
      "items": 147,
-     "macro_auc": 0.9963471991214179,
+     "macro_auc": 0.999363346252099,
+     "within_auc": 0.84,
+     "within_hosts": {
+      "21": [
+       0.84,
+       10,
+       15
+      ]
+     }
+    },
+    {
+     "andcg10": 0.4231795537233039,
+     "andcg20": 0.5603639350816534,
+     "andcg50": 0.5715851444080987,
+     "mrr": 0.16666666666666666,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 1.5,
+      "wpscan": 1.5,
+      "attacker_change_user": 6.0,
+      "escalated_sudo_command": 6.0
+     },
+     "items": 147,
+     "macro_auc": 0.9993792625957965,
      "within_auc": 0.84,
      "within_hosts": {
       "21": [
@@ -3301,12 +3676,12 @@
      }
     }
    ],
-   "B2_def": [
+   "B2_max": [
     {
-     "andcg10": 0.31690220911125105,
-     "andcg20": 0.4555345039710911,
-     "andcg50": 0.4578284864665216,
-     "mrr": 0.11688311688311688,
+     "andcg10": 0.45113813682290116,
+     "andcg20": 0.5811243536405793,
+     "andcg50": 0.5889990224445966,
+     "mrr": 0.08695652173913043,
      "cov20": {
       "nonscan": [
        2.0,
@@ -3318,17 +3693,134 @@
       ]
      },
      "first": {
-      "dirb": 2.0,
-      "wpscan": 4.0,
+      "dirb": 3.0,
+      "wpscan": 3.0,
+      "attacker_change_user": 11.5,
+      "escalated_sudo_command": 11.5
+     },
+     "items": 147
+    },
+    {
+     "andcg10": 0.4684598199058203,
+     "andcg20": 0.5882002139258379,
+     "andcg50": 0.5882002139258379,
+     "mrr": 0.08695652173913043,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 3.5,
+      "wpscan": 3.5,
+      "attacker_change_user": 11.5,
+      "escalated_sudo_command": 11.5
+     },
+     "items": 147
+    },
+    {
+     "andcg10": 0.4634255881135093,
+     "andcg20": 0.5802929279499979,
+     "andcg50": 0.5883306407722136,
+     "mrr": 0.09090909090909091,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 3.5,
+      "wpscan": 3.5,
       "attacker_change_user": 11.0,
-      "escalated_sudo_command": 7.0
+      "escalated_sudo_command": 11.0
+     },
+     "items": 147
+    },
+    {
+     "andcg10": 0.4634255881135093,
+     "andcg20": 0.5802929279499979,
+     "andcg50": 0.5884193322614318,
+     "mrr": 0.09090909090909091,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 3.5,
+      "wpscan": 3.5,
+      "attacker_change_user": 11.0,
+      "escalated_sudo_command": 11.0
+     },
+     "items": 147
+    },
+    {
+     "andcg10": 0.4909546224939909,
+     "andcg20": 0.593812937326199,
+     "andcg50": 0.6018506501484147,
+     "mrr": 0.09523809523809523,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 3.0,
+      "wpscan": 3.0,
+      "attacker_change_user": 10.5,
+      "escalated_sudo_command": 10.5
+     },
+     "items": 147
+    }
+   ],
+   "B2_def": [
+    {
+     "andcg10": 0.3855836352195216,
+     "andcg20": 0.5195611001733519,
+     "andcg50": 0.5296349486998845,
+     "mrr": 0.13333333333333333,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 1.0,
+      "wpscan": 3.0,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 6.0
      },
      "items": 147
     },
     {
      "andcg10": 0.4389823915701544,
-     "andcg20": 0.5643036727010462,
-     "andcg50": 0.5665976551964768,
+     "andcg20": 0.5668318729906011,
+     "andcg50": 0.5694078822104652,
      "mrr": 0.15555555555555556,
      "cov20": {
       "nonscan": [
@@ -3349,9 +3841,32 @@
      "items": 147
     },
     {
-     "andcg10": 0.34034864199969866,
-     "andcg20": 0.47652213739876326,
-     "andcg50": 0.48572289667171475,
+     "andcg10": 0.4205122761770892,
+     "andcg20": 0.5532577358036341,
+     "andcg50": 0.5634527299974673,
+     "mrr": 0.15000000000000002,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 1.0,
+      "wpscan": 2.0,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 5.0
+     },
+     "items": 147
+    },
+    {
+     "andcg10": 0.39563591957575,
+     "andcg20": 0.533756465185521,
+     "andcg50": 0.543951459379354,
      "mrr": 0.12878787878787878,
      "cov20": {
       "nonscan": [
@@ -3364,40 +3879,17 @@
       ]
      },
      "first": {
-      "dirb": 2.0,
-      "wpscan": 3.0,
+      "dirb": 1.0,
+      "wpscan": 2.0,
       "attacker_change_user": 11.0,
       "escalated_sudo_command": 6.0
      },
      "items": 147
     },
     {
-     "andcg10": 0.26368929749879105,
-     "andcg20": 0.43931781671127884,
-     "andcg50": 0.44851857598423045,
-     "mrr": 0.09821428571428571,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       2
-      ],
-      "scan": [
-       2.0,
-       2
-      ]
-     },
-     "first": {
-      "dirb": 2.0,
-      "wpscan": 3.5,
-      "attacker_change_user": 14.0,
-      "escalated_sudo_command": 8.0
-     },
-     "items": 147
-    },
-    {
      "andcg10": 0.40270680199558373,
-     "andcg20": 0.5355020433285406,
-     "andcg50": 0.5378208551152008,
+     "andcg20": 0.5366237067786505,
+     "andcg50": 0.5467948846520645,
      "mrr": 0.13333333333333333,
      "cov20": {
       "nonscan": [
@@ -3421,72 +3913,8 @@
    "B2_alert": [
     {
      "andcg10": 0.310218267410878,
-     "andcg20": 0.4858317236496865,
-     "andcg50": 0.5442723745261219,
-     "mrr": 0.5294117647058824,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       2
-      ],
-      "scan": [
-       2.0,
-       2
-      ]
-     },
-     "first": {
-      "dirb": 13.5,
-      "wpscan": 19.0,
-      "attacker_change_user": 17.0,
-      "escalated_sudo_command": 1.0
-     },
-     "items": 147,
-     "macro_auc": 0.9869167654806338,
-     "within_auc": 0.6333333333333333,
-     "within_hosts": {
-      "21": [
-       0.6333333333333333,
-       10,
-       15
-      ]
-     }
-    },
-    {
-     "andcg10": 0.310218267410878,
-     "andcg20": 0.4578719464865196,
-     "andcg50": 0.5631977397233093,
-     "mrr": 0.5454545454545454,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       2
-      ],
-      "scan": [
-       1.0,
-       2
-      ]
-     },
-     "first": {
-      "dirb": 17.0,
-      "wpscan": 22.0,
-      "attacker_change_user": 11.0,
-      "escalated_sudo_command": 1.0
-     },
-     "items": 147,
-     "macro_auc": 0.9883711213859953,
-     "within_auc": 0.67,
-     "within_hosts": {
-      "21": [
-       0.67,
-       10,
-       15
-      ]
-     }
-    },
-    {
-     "andcg10": 0.39875530412067534,
-     "andcg20": 0.5128519704011282,
-     "andcg50": 0.5774483128573209,
+     "andcg20": 0.4968181445349984,
+     "andcg50": 0.5626975799643654,
      "mrr": 0.5357142857142857,
      "cov20": {
       "nonscan": [
@@ -3499,27 +3927,27 @@
       ]
      },
      "first": {
-      "dirb": 6.0,
-      "wpscan": 18.0,
+      "dirb": 11.5,
+      "wpscan": 16.0,
       "attacker_change_user": 14.0,
       "escalated_sudo_command": 1.0
      },
      "items": 147,
-     "macro_auc": 0.9906265999241322,
-     "within_auc": 0.6266666666666667,
+     "macro_auc": 0.989359924238204,
+     "within_auc": 0.6466666666666666,
      "within_hosts": {
       "21": [
-       0.6266666666666667,
+       0.6466666666666666,
        10,
        15
       ]
      }
     },
     {
-     "andcg10": 0.1957259350109097,
-     "andcg20": 0.38026733019527836,
-     "andcg50": 0.4513524936549322,
-     "mrr": 0.29545454545454547,
+     "andcg10": 0.4080812349163328,
+     "andcg20": 0.5654974705267231,
+     "andcg50": 0.5883226915870754,
+     "mrr": 0.5625,
      "cov20": {
       "nonscan": [
        2.0,
@@ -3531,49 +3959,113 @@
       ]
      },
      "first": {
-      "dirb": 18.0,
-      "wpscan": 20.0,
-      "attacker_change_user": 11.0,
-      "escalated_sudo_command": 2.0
-     },
-     "items": 147,
-     "macro_auc": 0.9918806751712996,
-     "within_auc": 0.63,
-     "within_hosts": {
-      "21": [
-       0.63,
-       10,
-       15
-      ]
-     }
-    },
-    {
-     "andcg10": 0.41766389746018456,
-     "andcg20": 0.5431040026490801,
-     "andcg50": 0.6114021207804727,
-     "mrr": 0.53125,
-     "cov20": {
-      "nonscan": [
-       2.0,
-       2
-      ],
-      "scan": [
-       2.0,
-       2
-      ]
-     },
-     "first": {
-      "dirb": 10.0,
-      "wpscan": 14.0,
-      "attacker_change_user": 16.0,
+      "dirb": 13.0,
+      "wpscan": 18.0,
+      "attacker_change_user": 8.0,
       "escalated_sudo_command": 1.0
      },
      "items": 147,
-     "macro_auc": 0.990900493671927,
-     "within_auc": 0.6833333333333333,
+     "macro_auc": 0.9904866687357914,
+     "within_auc": 0.71,
      "within_hosts": {
       "21": [
-       0.6833333333333333,
+       0.71,
+       10,
+       15
+      ]
+     }
+    },
+    {
+     "andcg10": 0.40547219149063246,
+     "andcg20": 0.5262145977823371,
+     "andcg50": 0.5932055409051392,
+     "mrr": 0.5416666666666666,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 5.0,
+      "wpscan": 15.0,
+      "attacker_change_user": 12.0,
+      "escalated_sudo_command": 1.0
+     },
+     "items": 147,
+     "macro_auc": 0.9924264731239273,
+     "within_auc": 0.6466666666666666,
+     "within_hosts": {
+      "21": [
+       0.6466666666666666,
+       10,
+       15
+      ]
+     }
+    },
+    {
+     "andcg10": 0.39989145700063944,
+     "andcg20": 0.5023903280284322,
+     "andcg50": 0.5821800004941893,
+     "mrr": 0.55,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 15.0,
+      "wpscan": 18.0,
+      "attacker_change_user": 10.0,
+      "escalated_sudo_command": 1.0
+     },
+     "items": 147,
+     "macro_auc": 0.9933555896872703,
+     "within_auc": 0.6433333333333333,
+     "within_hosts": {
+      "21": [
+       0.6433333333333333,
+       10,
+       15
+      ]
+     }
+    },
+    {
+     "andcg10": 0.439209569480861,
+     "andcg20": 0.5771861392641567,
+     "andcg50": 0.6478607254652394,
+     "mrr": 0.5416666666666666,
+     "cov20": {
+      "nonscan": [
+       2.0,
+       2
+      ],
+      "scan": [
+       2.0,
+       2
+      ]
+     },
+     "first": {
+      "dirb": 9.0,
+      "wpscan": 11.0,
+      "attacker_change_user": 12.0,
+      "escalated_sudo_command": 1.0
+     },
+     "items": 147,
+     "macro_auc": 0.992798517657857,
+     "within_auc": 0.71,
+     "within_hosts": {
+      "21": [
+       0.71,
        10,
        15
       ]
@@ -3583,8 +4075,8 @@
    "B3": [
     {
      "andcg10": 0.8607243624559671,
-     "andcg20": 0.8740141462986419,
-     "andcg50": 0.8740141462986419,
+     "andcg20": 0.8744296040587194,
+     "andcg50": 0.8744296040587194,
      "mrr": 0.6666666666666666,
      "cov20": {
       "nonscan": [
@@ -3616,8 +4108,8 @@
     },
     {
      "andcg10": 0.8694229262222456,
-     "andcg20": 0.8772850774304743,
-     "andcg50": 0.8772850774304743,
+     "andcg20": 0.8775383295479733,
+     "andcg50": 0.8775383295479733,
      "mrr": 0.6666666666666666,
      "cov20": {
       "nonscan": [
@@ -3649,8 +4141,8 @@
     },
     {
      "andcg10": 0.8701546971271756,
-     "andcg20": 0.8777960694700612,
-     "andcg50": 0.8777960694700612,
+     "andcg20": 0.8782701004529032,
+     "andcg50": 0.8782701004529032,
      "mrr": 0.6666666666666666,
      "cov20": {
       "nonscan": [
@@ -3681,9 +4173,9 @@
      }
     },
     {
-     "andcg10": 0.8575679248319225,
-     "andcg20": 0.8706843693766864,
-     "andcg50": 0.8706843693766864,
+     "andcg10": 0.8701546971271756,
+     "andcg20": 0.8780168483354044,
+     "andcg50": 0.8780168483354044,
      "mrr": 0.6666666666666666,
      "cov20": {
       "nonscan": [

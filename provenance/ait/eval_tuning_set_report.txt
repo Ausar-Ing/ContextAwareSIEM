@@ -5,27 +5,29 @@ B0_rank       0.316   0.331         0.387   0.067     0.825     0.536
 B0_host       0.265   0.421         0.474   0.068     0.981     0.500
 B1            0.187   0.213         0.286   0.023     0.383     0.535
 B2_nov        0.264   0.351         0.458   0.038     0.929     0.931
-B2'           0.279   0.382         0.452   0.130     0.888     0.785
-B2_def        0.286   0.379±0.023   0.417   0.130       -         -  
-B2_alert      0.236   0.337±0.014   0.414   0.176     0.975     0.834
-B2            0.401   0.450±0.016   0.506   0.228     0.961     0.879
-B3            0.569   0.596±0.009   0.652   0.330       -         -  
+B2'           0.287   0.389         0.468   0.134     0.900     0.856
+B2_def        0.334   0.410±0.020   0.458   0.142       -         -  
+B2_alert      0.261   0.352±0.019   0.434   0.193     0.981     0.855
+B2_max        0.451   0.513±0.020   0.539   0.123       -         -  
+B2            0.419   0.471±0.014   0.542   0.235     0.973     0.893
+B3            0.582   0.603±0.007   0.668   0.336       -         -  
 
 paired first-item ranks of non-scan stages (a better = earlier)
   B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
   B2   vs B0_rank : n= 9  B2 better  7, B0_rank better  2, tied  0, Wilcoxon p=0.039
-  B2   vs B0_host : n= 9  B2 better  5, B0_host better  4, tied  0, Wilcoxon p=0.887
-  B2   vs B1      : n= 9  B2 better  7, B1 better  2, tied  0, Wilcoxon p=0.027
+  B2   vs B0_host : n= 9  B2 better  7, B0_host better  2, tied  0, Wilcoxon p=0.547
+  B2   vs B1      : n= 9  B2 better  7, B1 better  2, tied  0, Wilcoxon p=0.020
   B2   vs B2'     : n= 9  B2 better  4, B2' better  5, tied  0, Wilcoxon p=0.633
-  B2   vs B2_nov  : n= 9  B2 better  6, B2_nov better  3, tied  0, Wilcoxon p=0.203
-  B2   vs B2_alert: n= 9  B2 better  7, B2_alert better  2, tied  0, Wilcoxon p=0.250
-  B3   vs B2      : n= 9  B3 better  5, B2 better  3, tied  1, Wilcoxon p=0.281
+  B2   vs B2_nov  : n= 9  B2 better  7, B2_nov better  2, tied  0, Wilcoxon p=0.125
+  B2   vs B2_alert: n= 9  B2 better  7, B2_alert better  2, tied  0, Wilcoxon p=0.203
+  B2   vs B2_max  : n= 9  B2 better  8, B2_max better  1, tied  0, Wilcoxon p=0.102
+  B3   vs B2      : n= 9  B3 better  5, B2 better  3, tied  1, Wilcoxon p=0.234
 
 paired first-item ranks, split by whether the stage's host has its own calibration
-  calibrated   B2 vs B0_host : n= 3  B2 better  0, B0_host better  3, tied  0, Wilcoxon p=0.250
+  calibrated   B2 vs B0_host : n= 3  B2 better  1, B0_host better  2, tied  0, Wilcoxon p=0.500
   calibrated   B2 vs B0_rank : n= 3  B2 better  2, B0_rank better  1, tied  0, Wilcoxon p=0.750
   calibrated   B2 vs B0      : n= 3  B2 better  3, B0 better  0, tied  0, Wilcoxon p=0.250
-  uncalibrated B2 vs B0_host : n= 6  B2 better  5, B0_host better  1, tied  0, Wilcoxon p=0.062
+  uncalibrated B2 vs B0_host : n= 6  B2 better  6, B0_host better  0, tied  0, Wilcoxon p=0.031
   uncalibrated B2 vs B0_rank : n= 6  B2 better  5, B0_rank better  1, tied  0, Wilcoxon p=0.062
   uncalibrated B2 vs B0      : n= 6  B2 better  6, B0 better  0, tied  0, Wilcoxon p=0.031
 
@@ -43,9 +45,9 @@ calibration check: benign evaluation host windows above S_seq 99 (should be ~1%)
 
 within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
   harrison         host 21   n=13/27: B2 0.977, B0_rank 0.520, B0_host 0.500
-  harrison         host 27   n=486/1680: B2 0.984, B0_rank 0.500, B0_host 0.500
+  harrison         host 27   n=486/1680: B2 0.991, B0_rank 0.500, B0_host 0.500
   shaw             host 21   n=10/15: B2 0.843, B0_rank 0.550, B0_host 0.500
-  wheeler          host 32   n=9/58: B2 0.815, B0_rank 0.547, B0_host 0.500
+  wheeler          host 32   n=9/58: B2 0.852, B0_rank 0.547, B0_host 0.500
 
 B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
   harrison         2 / 2 / 0   0.4113888888888889   max stages 3

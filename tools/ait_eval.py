@@ -8,7 +8,9 @@ within a group because its members share host and rule):
   B0_rank   S_rule as the mid-rank percentile of the level among the host's baseline alerts
   B0_host   host rarity: 100 * (1 - host's share of baseline alerts); no temporal context
   B1        0.8 S_rule + 0.2 S_exp          (best static weights on the tuning set)
-  B2        sequence term 100 min(1, pi(g)/8), entries N=20 delta=60 s   (tuned: w_r = w_c = 0)
+  B2        sequence term = group maximum of S_seq (seq_scoring.GROUP_SCORE; "pi": 100 min(1, pi(g)/8)),
+            entries N=20 delta=60 s, host windows (tuned: w_r = w_c = 0)
+  B2_pi     B2 with the surprise group score pi(g) instead of the maximum (ablation; B2_max when GROUP_SCORE=pi)
   B2_def    0.3 S_rule + 0.2 S_exp + 0.5 * sequence term                 (former default weights)
   B2'       B2 with the forest replaced by a robust z-score
   B2_nov    B2 with the sequence term replaced by 100 * [any member's rule is novel for its entity]
@@ -47,10 +49,9 @@ import eval_metrics as M
 ROLES = json.load(open(args.roles))
 LAMBDA_Q = 8.0
 DELTA_Q = 3600.0
-# Entity types whose windows feed the SEQUENCE TERM of the queue (B2 and its variants):
-# "all" (host and source-address windows, the method as of 2026-10-23) or "host"
-# (host windows only; tested 2026-10-24). Component 8 always keeps every entity type.
-SEQ_ENTITIES = os.environ.get("CONTEXTSIEM_SEQ_ENTITIES", "all")
+# Entity types whose windows feed the sequence term (B2 and its variants): seq_scoring.SEQ_ENTITIES,
+# "host" from 2026-10-24, "all" for earlier results (CONTEXTSIEM_SEQ_ENTITIES). C8 keeps every type.
+SEQ_ENTITIES = C6.SEQ_ENTITIES
 CUR_HOSTS = None        # host of each evaluation alert, set per scenario (within-host AUC)
 phases = collections.defaultdict(list)
 for r in csv.DictReader(open(args.labels)):
@@ -158,9 +159,16 @@ def group_max(gid, G, v):
     o = np.full(G, -np.inf); np.maximum.at(o, gid, v); return o
 
 
-def seq_term(gid, G, k, s_alert):
+def pi_term(gid, G, k, s_alert):
     s = np.where(s_alert < 0, 50.0, s_alert)          # cold start: baseline median
     return 100 * np.minimum(1, surprise(group_max(gid, G, s) / 100, k) / LAMBDA_Q)
+
+
+def seq_term(gid, G, k, s_alert):
+    """the queue's sequence term per group: seq_scoring.GROUP_SCORE ("max" or "pi")"""
+    if C6.GROUP_SCORE == "pi":
+        return pi_term(gid, G, k, s_alert)
+    return group_max(gid, G, np.where(s_alert < 0, 50.0, s_alert))
 
 
 def queue_metrics(prio, stages, ev_scores=None, labels=None):
@@ -213,7 +221,7 @@ for sc in args.scenarios:
     g_rule, g_rank, g_exp = group_max(gid, G, s_rule), group_max(gid, G, s_rank), group_max(gid, G, s_exp)
     res = {"meta": {"alerts": n, "eval_admitted": int(len(ev)), "queue_items": int(G),
                     "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds,
-                    "seq_entities": SEQ_ENTITIES}}
+                    "seq_entities": SEQ_ENTITIES, "group_score": C6.GROUP_SCORE}}
     # B0_host: host rarity -- groups ranked by how rarely their host alerted in the baseline
     base_host = collections.Counter(host_of(a) for a in A if a.ts < t_atk and a.admissible)
     tot_host = max(1, sum(base_host.values()))
@@ -270,6 +278,8 @@ for sc in args.scenarios:
         sa = alert_max(seq_rows(rows_a), Sa, n)[ev]
         b2 = seq_term(gid, G, k, se)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
+        per_seed["B2_pi" if C6.GROUP_SCORE == "max" else "B2_max"].append(
+            queue_metrics((pi_term if C6.GROUP_SCORE == "max" else lambda g, G_, k_, s_: group_max(g, G_, np.where(s_ < 0, 50.0, s_)))(gid, G, k, se), stages))
         if os.environ.get("DUMP_DIR"):
             # per-alert and per-group arrays for diagnosis (ait_blockers.py); no effect on results
             os.makedirs(os.environ["DUMP_DIR"], exist_ok=True)

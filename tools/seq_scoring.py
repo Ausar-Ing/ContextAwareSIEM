@@ -44,6 +44,16 @@ MIN_HOST_CAL = int(_os.environ.get("CONTEXTSIEM_MIN_HOST_CAL", MIN_HOST_CAL))
 #               host sets the centre and scale and the pool supplies the tail
 #   shrink      w * own CDF + (1 - w) * pooled CDF, w = n_h / (n_h + SHRINK_N0)
 CALIB = _os.environ.get("CONTEXTSIEM_CALIB", "shrink")    # shrink adopted 2026-10-23
+# Entity types whose windows feed the SEQUENCE TERM of the queue (Components 7 and 9):
+# "host" from 2026-10-24 (host windows only); "all" (host and source-address windows)
+# reproduces every earlier result. Component 8 always keeps every entity type.
+SEQ_ENTITIES = _os.environ.get("CONTEXTSIEM_SEQ_ENTITIES", "host")
+# Group score of a repeat group in the queue (Component 9): "pi", the surprise
+# -log10(1 - u^k) of the group's highest member S_seq given the group size (the method),
+# or "max", that highest member S_seq itself (ablation arm B2_max). On 2026-10-24 the
+# maximum won alpha-nDCG@20 but placed the first item of 8 of 9 non-scan stages later;
+# the first-item veto of the tuning protocol rejects it.
+GROUP_SCORE = _os.environ.get("CONTEXTSIEM_GROUP_SCORE", "pi")
 MIN_LOC = 20                          # windows needed to estimate a host's centre and spread
 SHRINK_N0 = int(_os.environ.get("CONTEXTSIEM_SHRINK_N0", 100))   # held-out windows at which own and pooled weigh equally
 MIN_TRAIN = 200                       # below this no forest is fitted for the type

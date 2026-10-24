@@ -9,7 +9,8 @@ Part B  hybrid group priority  w_r*S_rule(g) + w_c*S_exp(g) + w_s*seq(g):
         weight simplex in steps of 0.1; S_rule linear (100*l/15) or level rank
         within the host's baseline; seq(g) = 100*min(1, pi(g)/lambda), lambda 4 or 8.
         Every member of a queue group shares host and rule, so S_rule and S_exp
-        are constant within a group.
+        are constant within a group. lam = "max": the sequence term is instead the group's
+        highest member S_seq (the group score adopted on 2026-10-24).
 
 usage: ait_tune.py <scores_dir> <host_roles.json> <wb_dir> <out.json>
 """
@@ -99,12 +100,12 @@ grid = [(r / 10, c / 10, round(1 - r / 10 - c / 10, 1)) for r in range(11) for c
 OUT["B"] = {}
 for c in cfgs:
     res = []
-    for (wr, wc, ws), rv, lam in itertools.product(grid, ("lin", "rank"), (4, 8)):
+    for (wr, wc, ws), rv, lam in itertools.product(grid, ("lin", "rank"), (4, 8, "max")):
         rows = []
         for sc in TUNING:
             d = D[(sc, c)]
             for si, sd_ in enumerate(d["seeds"]):
-                seq = 100 * np.minimum(1, sd_["pi"] / lam)
+                seq = sd_["max"] if lam == "max" else 100 * np.minimum(1, sd_["pi"] / lam)
                 pr = wr * d[f"rule_{rv}"] + wc * d["exp"] + ws * seq
                 q = score_queue(pr, d["stages"]); q.update(seed=si, sc=sc); rows.append(q)
         sm = summarise(rows); sm.update(w=(wr, wc, ws), rule=rv, lam=lam)
