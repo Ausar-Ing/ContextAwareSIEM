@@ -380,6 +380,7 @@ For each scenario, the forest and calibration are fitted on that scenario's acti
 \item \emph{First-item rank} of each non-scan stage and their mean reciprocal rank (MRR): how far the analyst scrolls before first meeting each stage that matters.
 \item \emph{Stage coverage@k}, reported separately for non-scan and scan stages, since scans are surfaced by every system and would otherwise dominate.
 \item \emph{Macro-AUC}: the alert-level AUC of each non-scan stage against benign alerts, averaged over stages so that a stage with thousands of alerts does not outweigh one with ten. It is queue-independent and secondary.
+\item \emph{Within-host AUC}: for each host carrying at least five non-scan attack alerts and five benign alerts, the alert-level AUC of its non-scan attack alerts against its own benign alerts, averaged over those hosts. Host rarity is constant within a host and scores 0.5 by construction, so this measure isolates what the window score adds beyond a host being rarely active, the confound described in Section~\ref{sec:threats}. It rests on few hosts (four in the tuning scenarios) and is secondary.
 \end{itemize}
 Ties are broken by average rank, the expected rank under random tie-breaking; this matters for B0, under which all groups of one rule level tie. Robustness is reported with binary grades and with grades (2, 1, 1), and with $\alpha = 1$, under which only the first item of each stage counts. The tuning objective, for weights, $\Delta$, $\theta$ and the remaining choices, is the mean $\alpha$-nDCG@20 over the tuning scenarios; a difference smaller than the larger of the two configurations' seed standard deviations counts as a tie, broken by MRR.
 
@@ -390,6 +391,7 @@ Ties are broken by average rank, the expected rank under random tie-breaking; th
 \textbf{Workstation.} The hold-out is the final week of the frozen baseline. Under stationarity 1\% of benign windows exceed the 99th baseline percentile; the observed share measures calibration drift, with a confidence interval from resampling whole days, since windows within a day are dependent. Analyst load is the number of queue items per awake hour, awake meaning outside detected downtime, whose priority exceeds a threshold fixed per system on the AIT tuning set: the priority above which half of the non-scan stages' first items fall.
 
 \subsection{Threats to Validity}
+\label{sec:threats}
 
 AIT's users and attacks are simulated, its baselines are short (no weekly cycle) and its hosts are Ubuntu servers \cite{ref22}; the workstation supplies realistic benign activity but no attacks, so no single corpus provides both. Only 6--14 non-scan attack alerts exist per scenario, so per-stage ranks are reported for every scenario rather than averaged away. The scan stages are easy for every system and are reported separately. The workstation baseline spans an examination period with reduced use, and its agent was re-enrolled once, handled by the alias table. In every AIT scenario the attack's privilege escalation lands on the intranet server, one of the least active hosts, so any signal that a host is rarely active scores well; B0$_\mathrm{host}$ and the calibration split exist to separate that from temporal context. The queue is ranked over the whole evaluation period at once, whereas an analyst works a live queue in which an item from one day never competes with one from another; per-day ranking is reported as a check.
 
@@ -495,27 +497,27 @@ B0$_\mathrm{host}$ & host rarity & .265 & .421 & .474 & .068 \\
 \end{tabular}
 \end{table}
 
-\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results, but they already show where the method stands. B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$) and earlier than B0$_\mathrm{rank}$ for seven ($p = 0.039$), but earlier than B0$_\mathrm{host}$ for only five ($p = 0.89$): against host rarity the tuning set shows no paired difference, although B2 leads on $\alpha$-nDCG@20. The calibration split sharpens this. Three of the nine stage occurrences, wheeler's, lie on a host whose calibration is dominated by its own baseline (the intranet server, 111 held-out windows, $w_h = 0.53$), and there host rarity places all three earlier. In seed 0, one benign maintenance episode of 17 minutes in that host's held-out baseline supplies five windows that outscore the attack windows, capping their percentile within the host's own distribution at 95.5, so the attack enters the queue below benign groups on busier hosts. On the other six occurrences B2 is earlier for five ($p = 0.06$), where its calibration is mostly the pooled distribution and therefore partly a statement of host rarity itself. Two further comparisons are not in the method's favour: the robust z-score B2$'$ trails the forest by 0.068 but places five of nine stages earlier ($p = 0.63$), and the 5-alert window wins two of nine. Accumulation raises $\alpha$-nDCG@20 from 0.450 to 0.596 with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes mostly from bundling, notables gathering several stages into one top item: first-item ranks of non-scan stages improve for five, worsen for three and tie for one ($p = 0.28$).
+\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results, but they already show where the method stands. B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$) and earlier than B0$_\mathrm{rank}$ for seven ($p = 0.039$), but earlier than B0$_\mathrm{host}$ for only five ($p = 0.89$): against host rarity the tuning set shows no paired difference, although B2 leads on $\alpha$-nDCG@20. The calibration split sharpens this. Three of the nine stage occurrences, wheeler's, lie on a host whose calibration is dominated by its own baseline (the intranet server, 111 held-out windows, $w_h = 0.53$), and there host rarity places all three earlier. In seed 0, one benign maintenance episode of 17 minutes in that host's held-out baseline supplies five windows that outscore the attack windows, capping their percentile within the host's own distribution at 95.5, so the attack enters the queue below benign groups on busier hosts. On the other six occurrences B2 is earlier for five ($p = 0.06$), where its calibration is mostly the pooled distribution and therefore partly a statement of host rarity itself. Within the attacked hosts, where host rarity is uninformative by construction, B2 separates non-scan attack alerts from the same host's benign alerts with a within-host AUC of 0.879 (0.82--0.98 across the four eligible hosts), against 0.536 for level rarity: on its own machine the attack's window is unusual in a way severity is not. The binary novelty flag of B2$_\mathrm{nov}$ separates them better still (0.931) but ranks the queue worse (0.351), since it cannot order the many novel benign groups among themselves. Two further comparisons are not in the method's favour: the robust z-score B2$'$ trails the forest by 0.068 but places five of nine stages earlier ($p = 0.63$), and the 5-alert window wins two of nine. Accumulation raises $\alpha$-nDCG@20 from 0.450 to 0.596 with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes mostly from bundling, notables gathering several stages into one top item: first-item ranks of non-scan stages improve for five, worsen for three and tie for one ($p = 0.28$).
 
 \begin{table}[t]
-\caption{All systems on the tuning scenarios (five seeds, per-host training, shrinkage calibration, not results): graded $\alpha$-nDCG@k, MRR and macro-AUC of non-scan stages, means over scenarios}
+\caption{All systems on the tuning scenarios (five seeds, per-host training, shrinkage calibration, not results): graded $\alpha$-nDCG@k, MRR, macro-AUC and within-host AUC (w-AUC) of non-scan stages, means over scenarios}
 \label{tab:tuneall}
 \centering\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}l ccccc@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l cccccc@{}}
 \toprule
-\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} \\
+\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} & \textbf{w-AUC} \\
 \midrule
-B0 & .187 & .198 & .262 & .016 & .516 \\
-B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 \\
-B0$_\mathrm{host}$ & .265 & .421 & .474 & .068 & .981 \\
-B1 & .187 & .213 & .286 & .023 & .383 \\
-B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 \\
-B2$'$ & .279 & .382 & .452 & .130 & .888 \\
-B2, default weights & .286 & .379 & .417 & .130 & --- \\
-B2$_\mathrm{alert}$ & .236 & .337 & .414 & .176 & .975 \\
-\textbf{B2} & .401 & .450 & .506 & .228 & .961 \\
-\textbf{B3} & \textbf{.569} & \textbf{.596} & \textbf{.652} & \textbf{.330} & --- \\
+B0 & .187 & .198 & .262 & .016 & .516 & .535 \\
+B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 & .536 \\
+B0$_\mathrm{host}$ & .265 & .421 & .474 & .068 & .981 & .500 \\
+B1 & .187 & .213 & .286 & .023 & .383 & .535 \\
+B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 & .931 \\
+B2$'$ & .279 & .382 & .452 & .130 & .888 & .785 \\
+B2, default weights & .286 & .379 & .417 & .130 & --- & --- \\
+B2$_\mathrm{alert}$ & .236 & .337 & .414 & .176 & .975 & .834 \\
+\textbf{B2} & .401 & .450 & .506 & .228 & .961 & .879 \\
+\textbf{B3} & \textbf{.569} & \textbf{.596} & \textbf{.652} & \textbf{.330} & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}

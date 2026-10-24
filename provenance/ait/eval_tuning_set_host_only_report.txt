@@ -1,0 +1,60 @@
+scenarios: harrison, russellmitchell, shaw, wheeler
+system     aNDCG@10           @20     @50     MRR  macroAUC withinAUC
+B0            0.187   0.198         0.262   0.016     0.516     0.535
+B0_rank       0.316   0.331         0.387   0.067     0.825     0.536
+B0_host       0.265   0.421         0.474   0.068     0.981     0.500
+B1            0.187   0.213         0.286   0.023     0.383     0.535
+B2_nov        0.264   0.351         0.458   0.038     0.929     0.931
+B2'           0.287   0.389         0.468   0.134     0.900     0.856
+B2_def        0.334   0.410±0.020   0.458   0.142       -         -  
+B2_alert      0.261   0.352±0.019   0.434   0.193     0.981     0.855
+B2            0.419   0.471±0.014   0.542   0.235     0.973     0.893
+B3            0.582   0.603±0.007   0.668   0.336       -         -  
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
+  B2   vs B0_rank : n= 9  B2 better  7, B0_rank better  2, tied  0, Wilcoxon p=0.039
+  B2   vs B0_host : n= 9  B2 better  7, B0_host better  2, tied  0, Wilcoxon p=0.547
+  B2   vs B1      : n= 9  B2 better  7, B1 better  2, tied  0, Wilcoxon p=0.020
+  B2   vs B2'     : n= 9  B2 better  4, B2' better  5, tied  0, Wilcoxon p=0.633
+  B2   vs B2_nov  : n= 9  B2 better  7, B2_nov better  2, tied  0, Wilcoxon p=0.125
+  B2   vs B2_alert: n= 9  B2 better  7, B2_alert better  2, tied  0, Wilcoxon p=0.203
+  B3   vs B2      : n= 9  B3 better  5, B2 better  3, tied  1, Wilcoxon p=0.234
+
+paired first-item ranks, split by whether the stage's host has its own calibration
+  calibrated   B2 vs B0_host : n= 3  B2 better  1, B0_host better  2, tied  0, Wilcoxon p=0.500
+  calibrated   B2 vs B0_rank : n= 3  B2 better  2, B0_rank better  1, tied  0, Wilcoxon p=0.750
+  calibrated   B2 vs B0      : n= 3  B2 better  3, B0 better  0, tied  0, Wilcoxon p=0.250
+  uncalibrated B2 vs B0_host : n= 6  B2 better  6, B0_host better  0, tied  0, Wilcoxon p=0.031
+  uncalibrated B2 vs B0_rank : n= 6  B2 better  5, B0_rank better  1, tied  0, Wilcoxon p=0.062
+  uncalibrated B2 vs B0      : n= 6  B2 better  6, B0 better  0, tied  0, Wilcoxon p=0.031
+
+stage hosts and calibration:
+  harrison         dnsteal: inet-firewall/internal_share (own); attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  russellmitchell  attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  shaw             attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  wheeler          attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+
+calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
+  harrison         [shrink n0=100] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
+  russellmitchell  [shrink n0=100] intranet_server 100%, internal_share 100%, cloud_share 50%, vpn 42%, inet-firewall 15%, external_mail 14%, external_mail 13%, mail 10%, webserver 4%
+  shaw             [shrink n0=100] intranet_server 33%, cloud_share 3%, external_mail 2%, mail 0%, external_mail 0%, external_mail 0%, inet-firewall 0%, internal_share 0%, vpn 0%, webserver 0%
+  wheeler          [shrink n0=100] internal_share 30%, cloud_share 23%, external_mail 11%, external_mail 6%, inet-firewall 2%, webserver 2%, external_mail 1%, external_mail 0%, vpn 0%, intranet_server 0%, mail 0%
+
+within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
+  harrison         host 21   n=13/27: B2 0.977, B0_rank 0.520, B0_host 0.500
+  harrison         host 27   n=486/1680: B2 0.991, B0_rank 0.500, B0_host 0.500
+  shaw             host 21   n=10/15: B2 0.843, B0_rank 0.550, B0_host 0.500
+  wheeler          host 32   n=9/58: B2 0.852, B0_rank 0.547, B0_host 0.500
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  harrison         2 / 2 / 0   0.4113888888888889   max stages 3
+  russellmitchell  1 / 0 / 1   -   max stages 0
+  shaw             2 / 2 / 0   17.520833333333332   max stages 2
+  wheeler          1 / 1 / 0   26.24361111111111   max stages 3
+
+training windows after stride (entries):
+  harrison         {'host': 4323, 'srcip': 1465, 'user': 7}
+  russellmitchell  {'host': 1840, 'srcip': 583, 'user': 5}
+  shaw             {'host': 2865, 'srcip': 808, 'user': 26}
+  wheeler          {'host': 6885, 'srcip': 3874, 'user': 14}

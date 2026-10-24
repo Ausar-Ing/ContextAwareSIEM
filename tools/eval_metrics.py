@@ -121,6 +121,27 @@ def macro_auc(alert_scores: np.ndarray, labels) -> float:
     return float(np.mean(v)) if v else float("nan")
 
 
+
+MIN_WITHIN = 5          # attack and benign alerts a host needs for within_host_auc
+
+
+def within_host_auc(alert_scores: np.ndarray, labels, hosts) -> dict:
+    """Separation that host rarity cannot supply: for each host carrying at least
+    MIN_WITHIN non-scan attack alerts and MIN_WITHIN benign alerts, the AUC of its
+    non-scan attack alerts against its benign alerts. A score constant within a host
+    (host rarity) gets 0.5 by construction. Returns {"macro": mean over eligible
+    hosts (nan if none), "hosts": {host: [auc, n_attack, n_benign]}}."""
+    labels = np.asarray(labels, dtype=object); hosts = np.asarray(hosts, dtype=object)
+    att = np.array([l not in BENIGN and l not in SCANS for l in labels])
+    ben = np.isin(labels, list(BENIGN))
+    out = {}
+    for h in sorted(set(hosts[att])):
+        m = hosts == h
+        na, nb = int((m & att).sum()), int((m & ben).sum())
+        if na >= MIN_WITHIN and nb >= MIN_WITHIN:
+            out[h] = [auc(alert_scores[m & att], alert_scores[m & ben]), na, nb]
+    return {"macro": float(np.mean([v[0] for v in out.values()])) if out else float("nan"), "hosts": out}
+
 def _stage(s):
     return s[-1] if isinstance(s, tuple) else s      # keys may be (scenario, stage)
 

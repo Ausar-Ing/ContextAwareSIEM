@@ -1,15 +1,15 @@
 scenarios: harrison, russellmitchell, shaw, wheeler
-system     aNDCG@10           @20     @50     MRR  macroAUC
-B0            0.187   0.198         0.262   0.016     0.516
-B0_rank       0.316   0.331         0.387   0.067     0.825
-B0_host       0.265   0.421         0.474   0.068     0.981
-B1            0.187   0.213         0.286   0.023     0.383
-B2_nov        0.264   0.351         0.458   0.038     0.929
-B2'           0.279   0.382         0.452   0.130     0.888
-B2_def        0.286   0.379±0.023   0.417   0.130       -  
-B2_alert      0.236   0.337±0.014   0.414   0.176     0.975
-B2            0.401   0.450±0.016   0.506   0.228     0.961
-B3            0.569   0.596±0.009   0.652   0.330       -  
+system     aNDCG@10           @20     @50     MRR  macroAUC withinAUC
+B0            0.187   0.198         0.262   0.016     0.516     0.535
+B0_rank       0.316   0.331         0.387   0.067     0.825     0.536
+B0_host       0.265   0.421         0.474   0.068     0.981     0.500
+B1            0.187   0.213         0.286   0.023     0.383     0.535
+B2_nov        0.264   0.351         0.458   0.038     0.929     0.931
+B2'           0.279   0.382         0.452   0.130     0.888     0.785
+B2_def        0.286   0.379±0.023   0.417   0.130       -         -  
+B2_alert      0.236   0.337±0.014   0.414   0.176     0.975     0.834
+B2            0.401   0.450±0.016   0.506   0.228     0.961     0.879
+B3            0.569   0.596±0.009   0.652   0.330       -         -  
 
 paired first-item ranks of non-scan stages (a better = earlier)
   B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
@@ -36,10 +36,16 @@ stage hosts and calibration:
   wheeler          attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
 
 calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
-  harrison         [shrink] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
-  russellmitchell  [shrink] intranet_server 100%, internal_share 100%, cloud_share 50%, vpn 42%, inet-firewall 15%, external_mail 14%, external_mail 13%, mail 10%, webserver 4%
-  shaw             [shrink] intranet_server 33%, cloud_share 3%, external_mail 2%, mail 0%, external_mail 0%, external_mail 0%, inet-firewall 0%, internal_share 0%, vpn 0%, webserver 0%
-  wheeler          [shrink] internal_share 30%, cloud_share 23%, external_mail 11%, external_mail 6%, inet-firewall 2%, webserver 2%, external_mail 1%, external_mail 0%, vpn 0%, intranet_server 0%, mail 0%
+  harrison         [shrink n0=100] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
+  russellmitchell  [shrink n0=100] intranet_server 100%, internal_share 100%, cloud_share 50%, vpn 42%, inet-firewall 15%, external_mail 14%, external_mail 13%, mail 10%, webserver 4%
+  shaw             [shrink n0=100] intranet_server 33%, cloud_share 3%, external_mail 2%, mail 0%, external_mail 0%, external_mail 0%, inet-firewall 0%, internal_share 0%, vpn 0%, webserver 0%
+  wheeler          [shrink n0=100] internal_share 30%, cloud_share 23%, external_mail 11%, external_mail 6%, inet-firewall 2%, webserver 2%, external_mail 1%, external_mail 0%, vpn 0%, intranet_server 0%, mail 0%
+
+within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
+  harrison         host 21   n=13/27: B2 0.977, B0_rank 0.520, B0_host 0.500
+  harrison         host 27   n=486/1680: B2 0.984, B0_rank 0.500, B0_host 0.500
+  shaw             host 21   n=10/15: B2 0.843, B0_rank 0.550, B0_host 0.500
+  wheeler          host 32   n=9/58: B2 0.815, B0_rank 0.547, B0_host 0.500
 
 B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
   harrison         2 / 2 / 0   0.4113888888888889   max stages 3

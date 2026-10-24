@@ -35,5 +35,15 @@ check("macro-AUC weights stages equally", abs(M.macro_auc(sc, lab) - (1.0 + 0.5)
 p = M.paired_ranks({("x", "dirb"): 1, ("x", "dnsteal"): 2, ("y", "dnsteal"): 9},
                    {("x", "dirb"): 5, ("x", "dnsteal"): 4, ("y", "dnsteal"): 3})
 check("paired comparison skips scans, keys by (scenario, stage)", p["n"] == 2 and p["a_better"] == 1 and p["b_better"] == 1, str(p))
+# within-host AUC: host rarity (constant per host) is 0.5; hosts below MIN_WITHIN are skipped
+lab = ["-"] * 6 + ["sudo"] * 5 + ["-"] * 2 + ["sudo"] * 1
+hst = ["a"] * 11 + ["b"] * 3
+sc = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 5], float)
+w = M.within_host_auc(sc, lab, hst)
+check("within-host AUC: perfect separation on host a, host b skipped", w["macro"] == 1.0 and list(w["hosts"]) == ["a"], str(w))
+w = M.within_host_auc(np.full(14, 70.0), lab, hst)
+check("within-host AUC: a per-host constant scores 0.5", w["macro"] == 0.5, str(w))
+w = M.within_host_auc(sc, ["-"] * 14, hst)
+check("within-host AUC: no eligible host gives nan", np.isnan(w["macro"]) and w["hosts"] == {}, str(w))
 print(f"\n{'ALL PASS' if not FAILED else 'FAILED: ' + ', '.join(FAILED)}")
 sys.exit(1 if FAILED else 0)

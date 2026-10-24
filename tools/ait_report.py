@@ -25,9 +25,9 @@ def per_scenario(sc, name):
 
 
 print(f"scenarios: {', '.join(scs)}")
-print(f"{'system':9s} {'aNDCG@10':>9s} {'@20':>13s} {'@50':>7s} {'MRR':>7s} {'macroAUC':>9s}")
+print(f"{'system':9s} {'aNDCG@10':>9s} {'@20':>13s} {'@50':>7s} {'MRR':>7s} {'macroAUC':>9s} {'withinAUC':>9s}")
 for name in systems:
-    vals = {m: [] for m in ("andcg10", "andcg20", "andcg50", "mrr", "macro_auc")}
+    vals = {m: [] for m in ("andcg10", "andcg20", "andcg50", "mrr", "macro_auc", "within_auc")}
     seeds = max(len(per_scenario(sc, name)) for sc in scs)
     by_seed20 = []
     for si in range(seeds):
@@ -35,12 +35,12 @@ for name in systems:
     for sc in scs:
         rows = per_scenario(sc, name)
         for m in vals:
-            v = [x.get(m) for x in rows if x.get(m) is not None]
+            v = [x.get(m) for x in rows if x.get(m) is not None and not (isinstance(x.get(m), float) and np.isnan(x.get(m)))]
             if v:
                 vals[m].append(np.mean(v))
     f = lambda m: f"{np.mean(vals[m]):.3f}" if vals[m] else "  -  "
     sd = f"±{np.std(by_seed20):.3f}" if seeds > 1 else "      "
-    print(f"{name:9s} {f('andcg10'):>9s} {f('andcg20'):>7s}{sd} {f('andcg50'):>7s} {f('mrr'):>7s} {f('macro_auc'):>9s}")
+    print(f"{name:9s} {f('andcg10'):>9s} {f('andcg20'):>7s}{sd} {f('andcg50'):>7s} {f('mrr'):>7s} {f('macro_auc'):>9s} {f('within_auc'):>9s}")
 
 def firsts(name):
     """{(scenario, stage): mean first rank over seeds}"""
@@ -78,6 +78,14 @@ for sc in scs:
     cc = R[sc]["meta"].get("calib_check", {})
     print(f"  {sc:16s} [{R[sc]['meta'].get('calib_mode', 'own_pooled')}] " +
           ", ".join(f"{k.split('[')[0]} {100*v[0]:.0f}%" for k, v in sorted(cc.items(), key=lambda kv: -kv[1][0])))
+
+print("\nwithin-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank")
+for sc in scs:
+    r2 = R[sc]["seeded"]["B2"]; r0 = R[sc]["deterministic"]["B0_rank"]
+    for h in r0.get("within_hosts", {}):
+        print(f"  {sc:16s} host {h:4s} n={r0['within_hosts'][h][1]}/{r0['within_hosts'][h][2]}: B2 "
+              f"{np.mean([x['within_hosts'][h][0] for x in r2]):.3f}, B0_rank {r0['within_hosts'][h][0]:.3f}, "
+              f"B0_host {R[sc]['deterministic']['B0_host']['within_hosts'][h][0]:.3f}")
 
 print("\nB3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages")
 for sc in scs:

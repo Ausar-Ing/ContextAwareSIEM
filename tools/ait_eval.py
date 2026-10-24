@@ -47,6 +47,11 @@ import eval_metrics as M
 ROLES = json.load(open(args.roles))
 LAMBDA_Q = 8.0
 DELTA_Q = 3600.0
+# Entity types whose windows feed the SEQUENCE TERM of the queue (B2 and its variants):
+# "all" (host and source-address windows, the method as of 2026-10-23) or "host"
+# (host windows only; tested 2026-10-24). Component 8 always keeps every entity type.
+SEQ_ENTITIES = os.environ.get("CONTEXTSIEM_SEQ_ENTITIES", "all")
+CUR_HOSTS = None        # host of each evaluation alert, set per scenario (within-host AUC)
 phases = collections.defaultdict(list)
 for r in csv.DictReader(open(args.labels)):
     phases[r["scenario"]].append((r["attack"], float(r["start"]), float(r["end"])))
@@ -132,6 +137,11 @@ def score_types(rows, A, t_atk, model_cls, seed, entries, info=None):
     return out
 
 
+def seq_rows(rows):
+    """the entity types whose windows feed the sequence term"""
+    return rows if SEQ_ENTITIES == "all" else {et: d for et, d in rows.items() if et in SEQ_ENTITIES.split(",")}
+
+
 def alert_max(rows, S, n_alerts):
     mx = np.full(n_alerts, -1.0)
     for et, d in rows.items():
@@ -160,6 +170,9 @@ def queue_metrics(prio, stages, ev_scores=None, labels=None):
            "cov20": M.coverage(f, 20), "first": {s: float(v) for s, v in f.items()}, "items": len(prio)}
     if ev_scores is not None:
         out["macro_auc"] = M.macro_auc(ev_scores, labels)
+        if CUR_HOSTS is not None:
+            w = M.within_host_auc(ev_scores, labels, CUR_HOSTS)
+            out["within_auc"] = w["macro"]; out["within_hosts"] = w["hosts"]
     return out
 
 
@@ -170,6 +183,7 @@ for sc in args.scenarios:
     n = len(A)
     ev = np.array([j for j, a in enumerate(A) if a.ts >= t_atk and a.admissible])
     L = np.array([labels[j] for j in ev], dtype=object)
+    CUR_HOSTS = np.array([host_of(A[j]) for j in ev], dtype=object)
     # queue groups over the evaluation period: same host, same rule, gaps <= 1 h
     gid, last, cur, nxt = [], {}, {}, 0
     for j in ev:
@@ -198,7 +212,8 @@ for sc in args.scenarios:
     s_exp = np.array([ROLES[sc][h]["s_exp"] for h in ip])
     g_rule, g_rank, g_exp = group_max(gid, G, s_rule), group_max(gid, G, s_rank), group_max(gid, G, s_exp)
     res = {"meta": {"alerts": n, "eval_admitted": int(len(ev)), "queue_items": int(G),
-                    "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds}}
+                    "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds,
+                    "seq_entities": SEQ_ENTITIES}}
     # B0_host: host rarity -- groups ranked by how rarely their host alerted in the baseline
     base_host = collections.Counter(host_of(a) for a in A if a.ts < t_atk and a.admissible)
     tot_host = max(1, sum(base_host.values()))
@@ -220,7 +235,7 @@ for sc in args.scenarios:
         np.maximum.at(nov, d["j"], d["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")])
     res["deterministic"]["B2_nov"] = queue_metrics(100 * group_max(gid, G, nov[ev]), stages, nov[ev], L)
     rz = score_types(rows_e, A, t_atk, C6.RobustZModel, 0, True)
-    s_rz = alert_max(rows_e, rz, n)[ev]
+    s_rz = alert_max(seq_rows(rows_e), rz, n)[ev]
     res["deterministic"]["B2'"] = queue_metrics(seq_term(gid, G, k, s_rz), stages, s_rz, L)
     # seeded systems
     per_seed = collections.defaultdict(list)
@@ -251,8 +266,8 @@ for sc in args.scenarios:
             res["meta"]["calib_mode"] = C6.CALIB + (f" n0={C6.SHRINK_N0}" if C6.CALIB == "shrink" else
                                                     f" min_host_cal={C6.MIN_HOST_CAL}" if C6.CALIB == "own_pooled" else "")
         Sa = score_types(rows_a, A, t_atk, C6.TypeModel, seed, False)
-        se_all = alert_max(rows_e, Se, n); se = se_all[ev]
-        sa = alert_max(rows_a, Sa, n)[ev]
+        se_all = alert_max(seq_rows(rows_e), Se, n); se = se_all[ev]
+        sa = alert_max(seq_rows(rows_a), Sa, n)[ev]
         b2 = seq_term(gid, G, k, se)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
         if os.environ.get("DUMP_DIR"):
