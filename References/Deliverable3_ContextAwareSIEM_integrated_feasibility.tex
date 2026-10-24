@@ -94,12 +94,12 @@ entries & 20 & 900 & .34 & .829 & .669 & 21 & 46 & 15.8 \\
 \end{table}
 
 
-\textbf{Tuning under the protocol objective.} The sweeps above were run before four changes: they collapse every Suricata alert into one rule, they train each forest on all hosts' windows in proportion to their volume, they calibrate with the hard switch rather than shrinkage, and they score queue groups by their maximum and are judged by AUC and coverage. We re-ran Component 6 with Suricata signatures as rule identities, per-host equal-share training and the shrinkage calibration, for three windows and five seeds, and evaluated group scores and weights by the protocol objective, $\alpha$-nDCG@20 (Table~\ref{tab:queue}). Suricata identities matter most: under the earlier calibration harrison's AUC for the 20-alert window rose from 0.85 to 0.99, because the exfiltration's DNS signature is no longer indistinguishable from routine TLS complaints, and the share of host windows holding a single rule falls from 89--96\% to 50--58\% for alert windows and to 1\% for entries. Entries lead every alert window under every group score, 0.450--0.471 against at most 0.422 for 20 alerts and 0.391 for 5. Rule severity and exposure add nothing once the sequence term is present. Three near-ties are resolved by the tie rule (Section~IV-C): $\pi$ over the maximum and the member mean for entries (0.450 against 0.471 and 0.460, seed standard deviations 0.026 and 0.033; MRR 0.228 against 0.115 and 0.113), and $\lambda = 8$ over $\lambda = 4$ (0.450 and 0.461, 0.013; MRR 0.228 against 0.144). The choices are those made under the hard switch, where $\pi$ led the maximum outright (0.399 against 0.287); under shrinkage it no longer does, and the choice rests on MRR. Per-host training itself was neutral on average under the hard switch (0.400 against 0.395 with volume-weighted training).
+\textbf{Tuning under the protocol objective.} The sweeps above were run before five changes: they collapse every Suricata alert into one rule, they train each forest on all hosts' windows in proportion to their volume, they calibrate with the hard switch rather than shrinkage, they reduce an alert over all its entities rather than its host window, and they score queue groups by their maximum and are judged by AUC and coverage. We re-ran Component 6 with Suricata signatures as rule identities, per-host equal-share training, shrinkage calibration and host windows, for three windows and five seeds, and evaluated group scores and weights by the protocol objective with the first-item veto (Table~\ref{tab:queue}). Suricata identities matter most: under the earlier calibration harrison's AUC for the 20-alert window rose from 0.85 to 0.99, because the exfiltration's DNS signature is no longer indistinguishable from routine TLS complaints, and the share of host windows holding a single rule falls from 89--96\% to 50--58\% for alert windows and to 1\% for entries. Entries lead the alert windows under every group score (0.471--0.513 against at most 0.464), and every alert-window configuration places the first item of five to eight of nine non-scan stages later than entries with $\pi$. Rule severity and exposure add nothing once the sequence term is present. Among group scores for entries, the maximum wins the objective (0.513) and is vetoed, as described in Section~III-G; the member mean ties with $\pi$ (0.473 against 0.471) and loses on MRR (0.115 against 0.235). Per-host training itself was neutral on average under the hard switch (0.400 against 0.395 with volume-weighted training).
 
-Host rarity remains the closest competitor. Ranking groups only by how rarely their host alerted in the baseline, B0$_\mathrm{host}$, reaches 0.421: below entries under every group score, level with the best alert window. B2 leads it by 0.029, less than two seed standard deviations, and clearly in MRR (0.228 against 0.068), that is, it places the first item of a non-scan stage earlier. Host rarity is strong for a structural reason: in every scenario the privilege escalation lands on the intranet server, one of the least active hosts, and the same hosts are those whose calibration rests mostly on the pooled distribution (Section~III-E). The rarity of the level, B0$_\mathrm{rank}$ (0.331), is below every entries configuration. Both are therefore comparators.
+Host rarity remains the closest competitor. Ranking groups only by how rarely their host alerted in the baseline, B0$_\mathrm{host}$, reaches 0.421, below every entries configuration (0.471--0.513) and level with the best alert window; B2 leads it by 0.050, about three and a half seed standard deviations, and clearly in MRR (0.235 against 0.068), that is, it places the first item of a non-scan stage earlier. Host rarity is strong for a structural reason: in every scenario the privilege escalation lands on the intranet server, one of the least active hosts, and the same hosts are those whose calibration rests mostly on the pooled distribution (Section~III-E). The rarity of the level, B0$_\mathrm{rank}$ (0.331), is below every entries configuration. Both are therefore comparators.
 
 \begin{table}[t]
-\caption{Tuning under the protocol objective: Suricata signatures as rule identities, per-host training, shrinkage calibration, tuning scenarios, five seeds. Graded $\alpha$-nDCG@k and MRR of non-scan stages, means over scenarios and seeds}
+\caption{Tuning under the protocol objective: Suricata signatures as rule identities, per-host training, shrinkage calibration, host windows, tuning scenarios, five seeds. Graded $\alpha$-nDCG@k and MRR of non-scan stages, means over scenarios and seeds}
 \label{tab:queue}
 \centering\footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -108,17 +108,17 @@ Host rarity remains the closest competitor. Ranking groups only by how rarely th
 \textbf{Window} & \textbf{Group score / weights} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{$S_\mathrm{seq}$ only}}\\
-5 alerts & maximum & .223 & .315 & .430 & .075 \\
- & $\pi$ & .236 & .337 & .414 & .176 \\
-20 alerts & maximum & .375 & .422 & .489 & .060 \\
- & $\pi$ & .273 & .346 & .413 & .158 \\
-entries & maximum & .377 & \textbf{.471} & .495 & .115 \\
- & mean & .396 & .460 & \textbf{.513} & .113 \\
- & $\boldsymbol{\pi}$ & \textbf{.401} & .450 & .506 & \textbf{.228} \\
+5 alerts & maximum & .246 & .367 & .454 & .108 \\
+ & $\pi$ & .261 & .352 & .434 & .193 \\
+20 alerts & maximum & .397 & .464 & .512 & .067 \\
+ & $\pi$ & .294 & .375 & .431 & .164 \\
+entries & maximum & \textbf{.451} & \textbf{.513} & .539 & .123 \\
+ & mean & .418 & .473 & .529 & .115 \\
+ & $\boldsymbol{\pi}$ & .419 & .471 & \textbf{.542} & \textbf{.235} \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{hybrid, entries, $\pi$}}\\
- & default $(0.3, 0.2, 0.5)$ & .286 & .379 & .417 & .130 \\
- & $(0, 0.4, 0.6)$ & .293 & .375 & .414 & .126 \\
+ & default $(0.3, 0.2, 0.5)$ & .334 & .410 & .458 & .142 \\
+ & $(0, 0.4, 0.6)$ & .364 & .419 & .469 & .179 \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{no temporal context}}\\
 B0 & level & .187 & .198 & .262 & .016 \\
@@ -129,27 +129,28 @@ B0$_\mathrm{host}$ & host rarity & .265 & .421 & .474 & .068 \\
 \end{tabular}
 \end{table}
 
-\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results, but they already show where the method stands. B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$) and earlier than B0$_\mathrm{rank}$ for seven ($p = 0.039$), but earlier than B0$_\mathrm{host}$ for only five ($p = 0.89$): against host rarity the tuning set shows no paired difference, although B2 leads on $\alpha$-nDCG@20. The calibration split sharpens this. Three of the nine stage occurrences, wheeler's, lie on a host whose calibration is dominated by its own baseline (the intranet server, 111 held-out windows, $w_h = 0.53$), and there host rarity places all three earlier. In seed 0, one benign maintenance episode of 17 minutes in that host's held-out baseline supplies five windows that outscore the attack windows, capping their percentile within the host's own distribution at 95.5, so the attack enters the queue below benign groups on busier hosts. On the other six occurrences B2 is earlier for five ($p = 0.06$), where its calibration is mostly the pooled distribution and therefore partly a statement of host rarity itself. Two further comparisons are not in the method's favour: the robust z-score B2$'$ trails the forest by 0.068 but places five of nine stages earlier ($p = 0.63$), and the 5-alert window wins two of nine. Accumulation raises $\alpha$-nDCG@20 from 0.450 to 0.596 with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes mostly from bundling, notables gathering several stages into one top item: first-item ranks of non-scan stages improve for five, worsen for three and tie for one ($p = 0.28$).
+\textbf{All systems on the tuning set.} With every choice above fixed, the evaluation harness was run on the tuning scenarios (five seeds; Table~\ref{tab:tuneall}). These are tuning numbers, used to check the harness and the design, not results, but they already show where the method stands. B2 places the first item of a non-scan stage earlier than B0 for all nine stage occurrences (Wilcoxon $p = 0.004$), earlier than B0$_\mathrm{rank}$ for seven ($p = 0.039$) and earlier than B0$_\mathrm{host}$ for seven ($p = 0.55$): against host rarity the direction favours temporal context but the tuning set cannot establish it. The calibration split sharpens this. Three of the nine stage occurrences, wheeler's, lie on a host whose calibration is dominated by its own baseline (the intranet server, 111 held-out windows, $w_h = 0.53$), and there host rarity places two of the three earlier. In seed 0, one benign maintenance episode of 17 minutes in that host's held-out baseline supplies five windows that outscore the attack windows, capping their percentile within the host's own distribution; those windows are unusual chiefly for being nearly empty (four entries against the host's median of 19), whereas the attack windows are unusual for a new rule, a level-8 rule against the host's usual level 3, and tactic progression, so the two are anomalous for different reasons. On the other six occurrences B2 is earlier for all six ($p = 0.031$), where its calibration is mostly the pooled distribution and therefore partly a statement of host rarity itself. Within the attacked hosts, where host rarity is uninformative by construction, B2 separates non-scan attack alerts from the same host's benign alerts with a within-host AUC of 0.893 (0.84--0.99 across the four eligible hosts), against 0.536 for level rarity: on its own machine the attack's window is unusual in a way severity is not. The binary novelty flag of B2$_\mathrm{nov}$ separates them better still (0.931) but ranks the queue worse (0.351), since it cannot order the many novel benign groups among themselves. Two further comparisons are not in the method's favour: the robust z-score B2$'$ trails the forest by 0.082 but places five of nine stages earlier ($p = 0.63$), and the 5-alert window wins two of nine. Accumulation raises $\alpha$-nDCG@20 from 0.471 to 0.603 with one benign incident across the four evaluation periods; the first notable containing attack alerts opens 0.4--26\,h after the first attack step in three scenarios and not at all in russellmitchell. Its gain comes mostly from bundling, notables gathering several stages into one top item: first-item ranks of non-scan stages improve for five, worsen for three and tie for one ($p = 0.23$).
 
 \begin{table}[t]
-\caption{All systems on the tuning scenarios (five seeds, per-host training, shrinkage calibration, not results): graded $\alpha$-nDCG@k, MRR and macro-AUC of non-scan stages, means over scenarios}
+\caption{All systems on the tuning scenarios (five seeds, per-host training, shrinkage calibration, host windows, not results): graded $\alpha$-nDCG@k, MRR, macro-AUC and within-host AUC (w-AUC) of non-scan stages, means over scenarios}
 \label{tab:tuneall}
 \centering\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}l ccccc@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l cccccc@{}}
 \toprule
-\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} \\
+\textbf{System} & \textbf{@10} & \textbf{@20} & \textbf{@50} & \textbf{MRR} & \textbf{m-AUC} & \textbf{w-AUC} \\
 \midrule
-B0 & .187 & .198 & .262 & .016 & .516 \\
-B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 \\
-B0$_\mathrm{host}$ & .265 & .421 & .474 & .068 & .981 \\
-B1 & .187 & .213 & .286 & .023 & .383 \\
-B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 \\
-B2$'$ & .279 & .382 & .452 & .130 & .888 \\
-B2, default weights & .286 & .379 & .417 & .130 & --- \\
-B2$_\mathrm{alert}$ & .236 & .337 & .414 & .176 & .975 \\
-\textbf{B2} & .401 & .450 & .506 & .228 & .961 \\
-\textbf{B3} & \textbf{.569} & \textbf{.596} & \textbf{.652} & \textbf{.330} & --- \\
+B0 & .187 & .198 & .262 & .016 & .516 & .535 \\
+B0$_\mathrm{rank}$ & .316 & .331 & .387 & .067 & .825 & .536 \\
+B0$_\mathrm{host}$ & .265 & .421 & .474 & .068 & .981 & .500 \\
+B1 & .187 & .213 & .286 & .023 & .383 & .535 \\
+B2$_\mathrm{nov}$ & .264 & .351 & .458 & .038 & .929 & .931 \\
+B2$'$ & .287 & .389 & .468 & .134 & .900 & .856 \\
+B2, default weights & .334 & .410 & .458 & .142 & --- & --- \\
+B2$_\mathrm{alert}$ & .261 & .352 & .434 & .193 & .981 & .855 \\
+B2$_\mathrm{max}$ & .451 & .513 & .539 & .123 & --- & --- \\
+\textbf{B2} & .419 & .471 & .542 & .235 & .973 & .893 \\
+\textbf{B3} & \textbf{.582} & \textbf{.603} & \textbf{.668} & \textbf{.336} & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -164,8 +165,8 @@ B2$_\mathrm{alert}$ & .236 & .337 & .414 & .176 & .975 \\
 \item Is the tuning/test split of scenarios, fixed before tuning, sufficient to address tuning on the test set, given that the preliminary check above used all eight?
 \item With Suricata signatures and the protocol objective, entries lead the alert windows on the tuning set (Table~\ref{tab:queue}), while alert-level AUC differs little (0.972 for 5 alerts, 0.953 for entries). Entries are adopted and the 5-alert window is kept as the ablation arm; is that acceptable?
 \item How a risk notable is ranked against repeat groups has no measured basis yet. The working assumption (Section~III-H) absorbs its contributing groups and places it by the baseline percentile of $R_e$; is that an acceptable default until the tuning scenarios decide?
-\item Every attack stage on the tuning set lies on a rarely active host, and host rarity alone comes within 0.029 of B2 with no paired difference (Section~\ref{sec:prelim}). Shrinking each host's calibration towards the pooled distribution, instead of switching at 500 windows, reduced the quiet hosts' inflation but did not remove it. Should the paper present AIT-ADS as testing host-level rarity as much as temporal context, and rest the temporal claim on the paired comparison with B0$_\mathrm{host}$ and the calibration split?
-\item On the tuning set a robust z-score trails the Isolation Forest by 0.068 in $\alpha$-nDCG@20 but places five of nine stages earlier (Table~\ref{tab:tuneall}). If the test set shows no difference, should the paper present the simpler scorer as the method, with the forest as the comparator?
+\item Every attack stage on the tuning set lies on a rarely active host, and host rarity alone comes within 0.05 of B2 without a significant paired difference (Section~\ref{sec:prelim}). Shrinking each host's calibration towards the pooled distribution, instead of switching at 500 windows, reduced the quiet hosts' inflation but did not remove it. Should the paper present AIT-ADS as testing host-level rarity as much as temporal context, and rest the temporal claim on the paired comparison with B0$_\mathrm{host}$ and the calibration split?
+\item On the tuning set a robust z-score trails the Isolation Forest by 0.082 in $\alpha$-nDCG@20 but places five of nine stages earlier (Table~\ref{tab:tuneall}). If the test set shows no difference, should the paper present the simpler scorer as the method, with the forest as the comparator?
 \item Harrison and santos have about half of their baselines poisoned by design. Is reporting them as recorded, alongside an oracle-cleaned retraining, the right treatment, or should they be separated from the main comparison?
 \end{enumerate}
 
