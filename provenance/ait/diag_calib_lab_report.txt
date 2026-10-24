@@ -1,0 +1,72 @@
+harrison: 191s
+russellmitchell: 11s
+shaw: 14s
+wheeler: 226s
+
+variant         harrison russellmi      shaw   wheeler   mean@20   @10    MRR
+shrink             0.665     0.409     0.536     0.191   0.450   0.401  0.228
+pooled             0.685     0.541     0.534     0.278   0.510   0.394  0.244
+tail               0.557     0.288     0.601     0.162   0.402   0.338  0.241
+episode            0.318     0.438     0.497     0.209   0.365   0.251  0.117
+tail+episode       0.518     0.258     0.417     0.230   0.356   0.281  0.210
+host_only          0.678     0.404     0.556     0.246   0.471   0.419  0.235
+srcip_only         0.199     0.186     0.120     0.156   0.165   0.125  0.018
+pooled+host_only     0.685     0.540     0.560     0.425   0.552   0.459  0.268
+
+non-scan first-item ranks (mean over seeds)
+  harrison        dnsteal                  shrink=  43.6 pooled=  41.4 tail=  64.0 episode=  43.6 tail+episode=  60.0 host_only=  40.8 srcip_only=  32.4 pooled+host_only=  37.0
+  harrison        service_scan             shrink=   8.0 pooled=  11.2 tail=   4.6 episode=   2.3 tail+episode=   3.8 host_only=   9.4 srcip_only=   1.0 pooled+host_only=  11.2
+  harrison        dirb                     shrink=   6.6 pooled=   6.4 tail=  18.2 episode=  21.6 tail+episode=  23.8 host_only=   6.6 srcip_only=   9.8 pooled+host_only=   6.4
+  harrison        wpscan                   shrink=   6.6 pooled=   6.4 tail=  18.2 episode=  21.6 tail+episode=  23.8 host_only=   6.6 srcip_only=   9.8 pooled+host_only=   6.4
+  harrison        escalated_sudo_command   shrink=   1.5 pooled=   1.5 tail=   2.2 episode=   8.9 tail+episode=   2.2 host_only=   1.5 srcip_only=  41.1 pooled+host_only=   1.5
+  harrison        attacker_change_user     shrink=   1.3 pooled=   1.3 tail=   1.2 episode=   8.5 tail+episode=   1.2 host_only=   1.3 srcip_only=  41.1 pooled+host_only=   1.3
+  russellmitchell service_scan             shrink=   9.4 pooled=   7.6 tail=   1.2 episode=  10.2 tail+episode=   2.2 host_only=   9.0 srcip_only=   2.0 pooled+host_only=   7.6
+  russellmitchell dirb                     shrink=   7.1 pooled=   5.5 tail=  20.6 episode=   7.1 tail+episode=  21.0 host_only=   6.9 srcip_only=  11.0 pooled+host_only=   5.5
+  russellmitchell wpscan                   shrink=   3.2 pooled=   2.8 tail=   8.2 episode=   3.2 tail+episode=   9.4 host_only=   3.2 srcip_only=   7.7 pooled+host_only=   2.8
+  russellmitchell attacker_change_user     shrink=   3.2 pooled=   2.8 tail=   9.5 episode=   3.2 tail+episode=  10.7 host_only=   3.2 srcip_only=  52.3 pooled+host_only=   2.8
+  russellmitchell escalated_sudo_command   shrink=  16.4 pooled=   7.8 tail=  23.8 episode=  11.4 tail+episode=  24.2 host_only=  14.8 srcip_only=  52.3 pooled+host_only=   7.8
+  shaw            dirb                     shrink=   1.8 pooled=   1.8 tail=   7.4 episode=   1.8 tail+episode=  10.0 host_only=   1.7 srcip_only=   6.0 pooled+host_only=   1.7
+  shaw            wpscan                   shrink=   1.5 pooled=   1.5 tail=   1.0 episode=   1.5 tail+episode=   2.0 host_only=   1.4 srcip_only=   7.9 pooled+host_only=   1.4
+  shaw            attacker_change_user     shrink=   6.5 pooled=   7.0 tail=   2.0 episode=   9.7 tail+episode=   3.2 host_only=   6.3 srcip_only=  69.1 pooled+host_only=   6.2
+  shaw            escalated_sudo_command   shrink=   6.5 pooled=   7.0 tail=   3.9 episode=   9.7 tail+episode=   5.3 host_only=   6.3 srcip_only=  69.1 pooled+host_only=   6.2
+  wheeler         service_scan             shrink=   4.5 pooled=   6.0 tail=   1.0 episode=   6.4 tail+episode=   1.0 host_only=   5.4 srcip_only=   2.7 pooled+host_only=   3.8
+  wheeler         dirb                     shrink=   9.0 pooled=  11.0 tail=  37.4 episode=  17.8 tail+episode=  32.4 host_only=   3.0 srcip_only=  14.6 pooled+host_only=   5.0
+  wheeler         wpscan                   shrink=   2.8 pooled=   6.2 tail=  19.0 episode=  12.0 tail+episode=  14.0 host_only=   1.8 srcip_only=  12.4 pooled+host_only=   3.0
+  wheeler         escalated_sudo_command   shrink=  51.4 pooled=  15.8 tail=  36.4 episode=  20.6 tail+episode=  22.2 host_only=  38.2 srcip_only=  79.9 pooled+host_only=   7.4
+  wheeler         attacker_change_user     shrink=  35.8 pooled=  13.0 tail=  30.0 episode=  16.8 tail+episode=  19.0 host_only=  24.6 srcip_only=  79.9 pooled+host_only=   6.3
+
+calibration check, seed 0: benign evaluation host windows above 99 per host (n windows); quiet hosts marked *
+  harrison        shrink        intranet_server* 44%(27), webserver 4%(1136), external_mail 3%(2774), mail 0%(2509), inet-firewall 0%(1680), external_mail 0%(1226), vpn 0%(1114)
+  harrison        pooled        intranet_server* 100%(27), webserver 1%(1136), external_mail 1%(2774), inet-firewall 0%(1680), external_mail 0%(1226), vpn 0%(1114), mail 0%(2509)
+  harrison        tail          intranet_server* 44%(27), webserver 7%(1136), external_mail 3%(2774), mail 1%(2509), inet-firewall 1%(1680), external_mail 0%(1226), vpn 0%(1114)
+  harrison        episode       intranet_server* 26%(27), webserver 4%(1136), inet-firewall 0%(1680), external_mail 0%(1226), external_mail 0%(2774), vpn 0%(1114), mail 0%(2509)
+  harrison        tail+episode  intranet_server* 37%(27), webserver 6%(1136), external_mail 2%(2774), inet-firewall 1%(1680), mail 0%(2509), external_mail 0%(1226), vpn 0%(1114)
+  harrison        host_only     intranet_server* 44%(27), webserver 4%(1136), external_mail 3%(2774), mail 0%(2509), inet-firewall 0%(1680), external_mail 0%(1226), vpn 0%(1114)
+  harrison        srcip_only    intranet_server* 44%(27), webserver 4%(1136), external_mail 3%(2774), mail 0%(2509), inet-firewall 0%(1680), external_mail 0%(1226), vpn 0%(1114)
+  harrison        pooled+host_only intranet_server* 100%(27), webserver 1%(1136), external_mail 1%(2774), inet-firewall 0%(1680), external_mail 0%(1226), vpn 0%(1114), mail 0%(2509)
+  russellmitchell shrink        intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), vpn 42%(513), inet-firewall 15%(972), external_mail 14%(1093), external_mail 13%(730)
+  russellmitchell pooled        intranet_server* 100%(1), cloud_share* 100%(14), internal_share* 100%(4), webserver 10%(754), mail 10%(2110), external_mail 8%(1093), external_mail 7%(730)
+  russellmitchell tail          intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), vpn 42%(513), mail 23%(2110), inet-firewall 15%(972), webserver 13%(754)
+  russellmitchell episode       intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), external_mail 9%(1093), external_mail 8%(730), webserver 4%(754), vpn 0%(513)
+  russellmitchell tail+episode  intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), vpn 26%(513), inet-firewall 15%(972), mail 11%(2110), webserver 8%(754)
+  russellmitchell host_only     intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), vpn 42%(513), inet-firewall 15%(972), external_mail 14%(1093), external_mail 13%(730)
+  russellmitchell srcip_only    intranet_server* 100%(1), internal_share* 100%(4), cloud_share* 50%(14), vpn 42%(513), inet-firewall 15%(972), external_mail 14%(1093), external_mail 13%(730)
+  russellmitchell pooled+host_only intranet_server* 100%(1), cloud_share* 100%(14), internal_share* 100%(4), webserver 10%(754), mail 10%(2110), external_mail 8%(1093), external_mail 7%(730)
+  shaw            shrink        intranet_server* 33%(15), cloud_share* 3%(29), external_mail 2%(4069), mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), external_mail 0%(51)
+  shaw            pooled        cloud_share* 100%(29), webserver 100%(29), intranet_server* 80%(15), internal_share* 57%(7), external_mail 3%(4069), mail 0%(6521), inet-firewall 0%(4797)
+  shaw            tail          intranet_server* 33%(15), cloud_share* 3%(29), external_mail 0%(4069), mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), external_mail 0%(51)
+  shaw            episode       intranet_server* 27%(15), external_mail 4%(4069), cloud_share* 3%(29), mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), external_mail 0%(51)
+  shaw            tail+episode  mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), cloud_share* 0%(29), external_mail 0%(51), external_mail 0%(51), vpn 0%(2377)
+  shaw            host_only     intranet_server* 33%(15), cloud_share* 3%(29), external_mail 2%(4069), mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), external_mail 0%(51)
+  shaw            srcip_only    intranet_server* 33%(15), cloud_share* 3%(29), external_mail 2%(4069), mail 0%(6521), inet-firewall 0%(4797), internal_share* 0%(7), external_mail 0%(51)
+  shaw            pooled+host_only cloud_share* 100%(29), webserver 100%(29), intranet_server* 80%(15), internal_share* 57%(7), external_mail 3%(4069), mail 0%(6521), inet-firewall 0%(4797)
+  wheeler         shrink        internal_share* 30%(10), cloud_share* 23%(13), external_mail 11%(1396), external_mail 6%(4391), inet-firewall 2%(6216), webserver 2%(11736), external_mail 1%(1365)
+  wheeler         pooled        cloud_share* 100%(13), internal_share* 100%(10), intranet_server* 36%(58), external_mail 2%(1396), webserver 1%(11736), external_mail 0%(4391), external_mail 0%(1365)
+  wheeler         tail          internal_share* 20%(10), external_mail 12%(1396), cloud_share* 8%(13), external_mail 6%(4391), webserver 2%(11736), inet-firewall 2%(6216), external_mail 1%(1365)
+  wheeler         episode       internal_share* 10%(10), webserver 2%(11736), vpn 1%(9886), external_mail 0%(4391), external_mail 0%(2896), intranet_server* 0%(58), mail 0%(9081)
+  wheeler         tail+episode  intranet_server* 10%(58), internal_share* 10%(10), cloud_share* 8%(13), external_mail 5%(4391), external_mail 4%(1396), inet-firewall 1%(6216), webserver 1%(11736)
+  wheeler         host_only     internal_share* 30%(10), cloud_share* 23%(13), external_mail 11%(1396), external_mail 6%(4391), inet-firewall 2%(6216), webserver 2%(11736), external_mail 1%(1365)
+  wheeler         srcip_only    internal_share* 30%(10), cloud_share* 23%(13), external_mail 11%(1396), external_mail 6%(4391), inet-firewall 2%(6216), webserver 2%(11736), external_mail 1%(1365)
+  wheeler         pooled+host_only cloud_share* 100%(13), internal_share* 100%(10), intranet_server* 36%(58), external_mail 2%(1396), webserver 1%(11736), external_mail 0%(4391), external_mail 0%(1365)
+
+[exited with code 0]

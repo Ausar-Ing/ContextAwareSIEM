@@ -122,6 +122,12 @@ def score_types(rows, A, t_atk, model_cls, seed, entries, info=None):
                 s[okm] = m.score(d["F"][okm], [h for h, o in zip(hosts, okm) if o], entries)
                 if info is not None:
                     info[et] = dict(m.cal_source)
+                    if os.environ.get("DUMP_DIR"):
+                        raw = np.full(len(d["j"]), np.nan)
+                        raw[okm] = m._raw_scores(d["F"][okm], entries)
+                        info["raw:" + et] = raw
+                        info["held:" + et] = {h: (float(v.max()) if len(v) else None, int(len(v))) for h, v in m.held.items()}
+                        info["pool:" + et] = float(m.cal_type.max())
         out[et] = s
     return out
 
@@ -249,6 +255,22 @@ for sc in args.scenarios:
         sa = alert_max(rows_a, Sa, n)[ev]
         b2 = seq_term(gid, G, k, se)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
+        if os.environ.get("DUMP_DIR"):
+            # per-alert and per-group arrays for diagnosis (ait_blockers.py); no effect on results
+            os.makedirs(os.environ["DUMP_DIR"], exist_ok=True)
+            by_type = {et: alert_max({et: d}, {et: Se[et]}, n)[ev] for et, d in rows_e.items()}
+            np.savez_compressed(f"{os.environ['DUMP_DIR']}/{sc}_seed{seed}.npz", gid=gid, labels=L,
+                                host=np.array([host_of(A[j]) for j in ev], dtype=object),
+                                role=np.array([ROLES[sc][A[j].agent_ip]["role"] for j in ev], dtype=object),
+                                rule=np.array([A[j].rule_id for j in ev], dtype=object),
+                                ts=np.array([A[j].ts for j in ev]), lvl=lvl, k=k, se=se, b2=b2, g_hostr=g_hostr,
+                                se_host=by_type.get("host", np.full(len(ev), -1.0)),
+                                se_srcip=by_type.get("srcip", np.full(len(ev), -1.0)),
+                                cal=np.array([json.dumps(cal_info.get("host", {}))], dtype=object), t_atk=t_atk,
+                                raw_host=alert_max({"host": rows_e["host"]}, {"host": np.nan_to_num(cal_info.get("raw:host"), nan=-1.0)}, n)[ev],
+                                raw_srcip=(alert_max({"srcip": rows_e["srcip"]}, {"srcip": np.nan_to_num(cal_info["raw:srcip"], nan=-1.0)}, n)[ev]
+                                           if "raw:srcip" in cal_info else np.full(len(ev), -1.0)),
+                                held=np.array([json.dumps({k: cal_info.get(k) for k in cal_info if k.startswith(("held:", "pool:"))})], dtype=object))
         per_seed["B2_def"].append(queue_metrics(0.3 * g_rule + 0.2 * g_exp + 0.5 * b2, stages, None))
         per_seed["B2_alert"].append(queue_metrics(seq_term(gid, G, k, sa), stages, sa, L))
         # ---- Component 8: one stream of (alert, entity) in time order, baseline and evaluation

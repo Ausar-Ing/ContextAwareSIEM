@@ -1,0 +1,7 @@
+within-host AUC, attack non-scan vs benign alerts on the same host, mean over seeds
+scenario        host role         S_seq host-win raw host  level  n_attack n_benign
+harrison        inet-firewall     0.984    0.991    0.991  0.500       486     1680
+harrison        intranet_server   0.977    0.977    0.977  0.519        13       27
+russellmitchell intranet_server   0.417    0.417    0.400  0.000         6        1
+shaw            intranet_server   0.843    0.843    0.879  0.550        10       15
+wheeler         intranet_server   0.815    0.852    0.851  0.546         9       58
