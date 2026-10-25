@@ -11,6 +11,7 @@ Variants (forests refitted for each; per scenario and seed):
               "no temporal evidence"), and are left out of training and calibration
   fill10      the same with 10 entries
   noent_fill5 noent and fill5 together
+  winTXX      window expiry T = XX hours instead of 24 (C5); host rows rebuilt
   novwXX      the method's forest, with an explicit novelty term in the group priority:
               (1 - w) * 100 min(1, pi/8) + w * 100 * [a member's host window flags its rule
               as novel], w = XX/100 (tests whether the novelty flag, which separates attack
@@ -49,6 +50,34 @@ def build(sc):
     if os.path.exists(cache):
         return pickle.load(open(cache, "rb"))
     sys.exit(f"run ait_calib_lab.py first to create {cache}")
+
+
+def build_T(sc, hours):
+    """host rows rebuilt with window expiry T = hours (C5), everything else as build()"""
+    cache = f"labrows_T{hours:g}_D{C6.GROUP_GAP_S:g}_{sc}.pkl"
+    if os.path.exists(cache):
+        return pickle.load(open(cache, "rb"))
+    D = dict(build(sc))
+    A, labels, t_atk = pickle.load(open(f"evalcache_{sc}_clean_sid1.pkl", "rb"))
+    b = W.WindowBuilder(N=20, T_hours=hours, learn_rules=True, downtime_gap_s=None, site_utc_offset_h=0.0, collapse_s=60.0)
+    r = {"j": [], "F": [], "ok": []}
+    for j, a in enumerate(A):
+        if a.ts >= t_atk and b.learn_rules:
+            b.learn_rules = False
+        for e, f, ok in b.push(a):
+            if e[0] == "host":
+                r["j"].append(j); r["F"].append(f); r["ok"].append(ok)
+    D["rows"] = {"host": {"j": np.array(r["j"]), "F": np.array(r["F"]), "ok": np.array(r["ok"])}}
+    # queue groups with the current gap Delta (seq_scoring.GROUP_GAP_S)
+    gid, last, cur, nxt = [], {}, {}, 0
+    for j in D["ev"]:
+        key = (D["hosts"][j], A[j].rule_id)
+        if key not in last or A[j].ts - last[key] > C6.GROUP_GAP_S:
+            cur[key] = nxt; nxt += 1
+        last[key] = A[j].ts; gid.append(cur[key])
+    D["gid"] = np.array(gid); D["G"] = nxt
+    pickle.dump(D, open(cache, "wb"))
+    return D
 
 
 NOV = W.ENTRY_FEATURE_NAMES.index("novel_rule_flag")
@@ -132,7 +161,11 @@ for sc in scs:
         if v in OUT.get(sc, {}) and len(OUT[sc][v]) >= args.seeds:
             continue
         t0 = time.time()
-        OUT.setdefault(sc, {})[v] = [run(D, v, seed) for seed in range(args.seeds)]
+        if v.startswith("winT"):            # window expiry T in hours (C5), e.g. winT6, winT72
+            DT = build_T(sc, float(v[4:]))
+            OUT.setdefault(sc, {})[v] = [run(DT, "base", seed) for seed in range(args.seeds)]
+        else:
+            OUT.setdefault(sc, {})[v] = [run(D, v, seed) for seed in range(args.seeds)]
         print(f"{sc} {v}: aNDCG@20 {np.mean([r['andcg20'] for r in OUT[sc][v]]):.3f} "
               f"MRR {np.mean([r['mrr'] for r in OUT[sc][v]]):.3f} within {np.nanmean([r['within'] for r in OUT[sc][v]]):.3f} "
               f"({time.time() - t0:.0f}s)", flush=True)

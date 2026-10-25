@@ -54,7 +54,7 @@ import eval_metrics as M
 
 ROLES = json.load(open(args.roles))
 LAMBDA_Q = 8.0
-DELTA_Q = 3600.0
+DELTA_Q = C6.GROUP_GAP_S     # repeat-group gap Delta (seq_scoring.GROUP_GAP_S)
 # Entity types whose windows feed the sequence term (B2 and its variants): seq_scoring.SEQ_ENTITIES,
 # "host" from 2026-10-24, "all" for earlier results (CONTEXTSIEM_SEQ_ENTITIES). C8 keeps every type.
 SEQ_ENTITIES = C6.SEQ_ENTITIES

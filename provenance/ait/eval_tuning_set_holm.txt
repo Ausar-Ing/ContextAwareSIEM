@@ -1,0 +1,13 @@
+scenarios: harrison, russellmitchell, shaw, wheeler; family of 11 comparisons, Holm step-down
+
+primary   B2         vs B0_host   : n= 9  B2 earlier  6, B0_host earlier  3, tied  0  p=0.625  Holm p=1.000
+primary   B2         vs B0_rank   : n= 9  B2 earlier  8, B0_rank earlier  1, tied  0  p=0.027  Holm p=0.246
+secondary B2         vs B0        : n= 9  B2 earlier  9, B0 earlier  0, tied  0  p=0.004  Holm p=0.043
+secondary B2         vs B1        : n= 9  B2 earlier  7, B1 earlier  2, tied  0  p=0.020  Holm p=0.195
+secondary B2         vs B2'       : n= 9  B2 earlier  4, B2' earlier  5, tied  0  p=0.801  Holm p=1.000
+secondary B2         vs B2_nov    : n= 9  B2 earlier  7, B2_nov earlier  2, tied  0  p=0.051  Holm p=0.406
+secondary B2         vs B2_alert  : n= 9  B2 earlier  7, B2_alert earlier  2, tied  0  p=0.164  Holm p=0.656
+secondary B2         vs B2_max    : n= 9  B2 earlier  8, B2_max earlier  1, tied  0  p=0.070  Holm p=0.438
+secondary B3         vs B2        : n= 9  B3 earlier  6, B2 earlier  2, tied  1  p=0.102  Holm p=0.508
+secondary B3         vs B3_bestgrp: n= 9  B3 earlier  2, B3_bestgrp earlier  4, tied  3  p=0.938  Holm p=1.000
+secondary B3         vs B3_noabs  : n= 9  B3 earlier  5, B3_noabs earlier  0, tied  4  p=0.062  Holm p=0.438

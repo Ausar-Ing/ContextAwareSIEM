@@ -37,7 +37,10 @@ import math
 import numpy as np
 
 T_S = 24 * 3600.0
-H_S = 4 * 3600.0
+import os as _os
+# decay half-life h: 1 h from 2026-10-25 (selected on the tuning set with Delta = 24 h,
+# provenance/ait/param_lab_verdict.txt); 4 h produced every earlier result
+H_S = float(_os.environ.get("CONTEXTSIEM_C8_H_S", 3600.0))
 LAMBDA = 4.0
 CONTRIB_FRAC = 0.10
 THETA_Q = 99.9

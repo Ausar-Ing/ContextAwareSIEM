@@ -46,6 +46,7 @@ to reproduce them. Tables IX and X and `tuning_objective.json` / `eval_tuning_se
 regenerated with stratification on 2026-10-23 (earlier versions are in git history at `db4d5c2`).
 `CONTEXTSIEM_CALIB` selects the calibration of S_seq: `shrink` (default from 2026-10-23, Sec. III-E: w * own held-out CDF + (1 - w) * pooled CDF, w = n/(n + n0), n0 = `CONTEXTSIEM_SHRINK_N0`, default 100), `own_pooled` (the earlier rule: own CDF with at least `MIN_HOST_CAL` = 500 held-out windows, else pooled) or `locscale` (tested and rejected). Tables IX and X, `tuning_objective.json` and `eval_tuning_set.json` were regenerated under `shrink` on 2026-10-23; the `own_pooled` versions are in git history at `54fffc8`, and `eval_tuning_set_cal100.json` / `diag_wheeler_cal100.txt` used `own_pooled`.
 `CONTEXTSIEM_SEQ_ENTITIES` selects the entity types whose windows feed the sequence term: `host` (default from 2026-10-24) or `all` (host and source-address windows, every earlier result). `CONTEXTSIEM_GROUP_SCORE` selects the queue's group score: `pi` (default, the method) or `max` (the ablation arm B2_max). Tables IX and X, `tuning_objective.json` and `eval_tuning_set.json` were regenerated with host windows on 2026-10-24; the versions with both entity types are in git history at `64a0282`.
+`CONTEXTSIEM_DELTA_S` sets the repeat-group gap (default 86400 from 2026-10-25; 3600 for every earlier result) and `CONTEXTSIEM_C8_H_S` the accumulator half-life (default 3600 from 2026-10-25; 14400 earlier). Tables IX and X were regenerated with both on 2026-10-25; the previous versions are in git history at `29f04ef`. The locked test run is `tools/ait_locked_run.sh <freeze-tag>`, governed by `PREREGISTRATION.md`.
 
 ## 4. Table / claim → command → output
 
@@ -79,6 +80,12 @@ regenerated with stratification on 2026-10-23 (earlier versions are in git histo
 | Novelty flag on quiet vs other hosts, within-host AUC of the novelty hybrid | `python3 $T/ait_novelty_check.py $T $P/host_roles.json 0.2` | `diag_novelty_check.txt` | ~2 min |
 | Shrinkage constant with host windows (n0 = 30, 100, 300) | `CONTEXTSIEM_SHRINK_N0=<n0> python3 $T/ait_calib_lab.py $T lab.json --seeds 5 --variants host_only` | `diag_shrink_n0_hostonly.txt` | ~1 min each |
 | Per-item explanations, top 20 queue items per tuning scenario (seed 0) | `python3 $T/ait_explain.py $T $P/host_roles.json <scenario> 20` | `explain_tuning_top20.txt` | ~3 min |
+| Delta and Component 8 constants, one at a time (2026-10-25) | in the directory holding the `evalcache_*` files: `python3 $T/ait_param_lab.py $T $P/host_roles.json pl.json --seeds 5 --variants base,delta900,...,a424` (list in the script), then `python3 $T/ait_param_verdict.py $T pl.json` | `param_lab.json`, `param_lab_verdict.txt` | ~60 min |
+| Window expiry T (6, 12, 24, 72 h) with Delta = 24 h | `python3 $T/ait_feature_lab.py $T flT.json harrison russellmitchell wheeler shaw --seeds 5 --variants winT24,winT6,winT12,winT72`, then `python3 $T/ait_lab_verdict.py $T winT24 flT.json` | `window_T_lab.json`, `window_T_verdict.txt` | ~15 min |
+| Pre-registered Holm family on the tuning set (illustration) | `python3 $T/ait_holm.py $T ev.json` | `eval_tuning_set_holm.txt` | <1 min |
+| Throughput, latency, memory (harrison replay) | `python3 $T/ait_throughput.py $T $D/ait_ads.zip harrison` | `throughput_harrison.json`, `.txt` | ~8 min |
+| Workstation load thresholds from the AIT tuning set | `python3 $T/ait_thresholds.py $T $P/host_roles.json ws_thresholds.json --seeds 5` (after ait_param_lab.py has cached the forests) | `../workstation/ws_thresholds.json` | ~15 min |
+| Workstation false promotion: drift, load, notables per awake hour, vulnerability-detector (2026-10-25) | `python3 $T/ws_eval.py $T data/workstation/baseline_frozen_20261017T2315.json provenance/workstation/ws_thresholds.json ws.json --seeds 5`, and again with `--exclude-vulndet` | `../workstation/ws_eval*.json`, `ws_eval*_log.txt` | ~5 min each |
 | Calibration on training vs held-out windows (Sec. III-E) | `python3 $T/ait_analyses.py calib-synthetic` | printed | ~3 min |
 
 The test scenarios (fox, santos, wardbeck, wilson) appear only in Table V and the

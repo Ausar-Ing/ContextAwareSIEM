@@ -103,7 +103,7 @@ for sc in scenarios:
     gid, last, cur, nxt = [], {}, {}, 0
     for k, j in enumerate(ev):
         key = (host_of[k], A[j].rule_id)
-        if key not in last or A[j].ts - last[key] > 3600:
+        if key not in last or A[j].ts - last[key] > C6.GROUP_GAP_S:
             cur[key] = nxt; nxt += 1
         last[key] = A[j].ts; gid.append(cur[key])
     gid = np.array(gid); G = nxt

@@ -1,14 +1,14 @@
-incumbent entry20d60:pi: alpha-nDCG@20 0.471 (seed sd 0.014), MRR 0.235 (seed sd 0.024)
+incumbent entry20d60:pi: alpha-nDCG@20 0.501 (seed sd 0.019), MRR 0.258 (seed sd 0.024)
 
 candidate                 @20     sd    MRR  objective          first items vs incumbent   verdict
-entry20d60:max          0.513  0.020  0.123  prefers            earlier 1, later 8, tied 0 (p=0.102)  VETOED
-entry20d60:mean         0.473  0.032  0.115  tie, MRR rejects   earlier 2, later 7, tied 0 (p=0.027)  keep incumbent
-entry20d60:pi4          0.487  0.014  0.160  prefers            earlier 4, later 3, tied 2 (p=0.781)  adopt
-alert20:max             0.464  0.016  0.067  tie, MRR rejects   earlier 1, later 8, tied 0 (p=0.055)  keep incumbent
-alert20:mean            0.372  0.021  0.157  rejects            earlier 1, later 8, tied 0 (p=0.055)  keep incumbent
-alert20:pi              0.375  0.021  0.164  rejects            earlier 0, later 8, tied 1 (p=0.008)  keep incumbent
-alert20:pi4             0.379  0.023  0.108  rejects            earlier 0, later 8, tied 1 (p=0.008)  keep incumbent
-alert5:max              0.367  0.023  0.108  rejects            earlier 3, later 6, tied 0 (p=0.359)  keep incumbent
-alert5:mean             0.392  0.018  0.210  rejects            earlier 4, later 5, tied 0 (p=0.844)  keep incumbent
-alert5:pi               0.352  0.019  0.193  rejects            earlier 2, later 7, tied 0 (p=0.203)  keep incumbent
-alert5:pi4              0.363  0.016  0.194  rejects            earlier 2, later 7, tied 0 (p=0.203)  keep incumbent
+entry20d60:max          0.525  0.017  0.128  prefers            earlier 1, later 8, tied 0 (p=0.070)  VETOED
+entry20d60:mean         0.478  0.031  0.122  tie, MRR rejects   earlier 2, later 7, tied 0 (p=0.020)  keep incumbent
+entry20d60:pi4          0.521  0.018  0.176  prefers            earlier 2, later 5, tied 2 (p=0.266)  VETOED
+alert20:max             0.491  0.021  0.091  tie, MRR rejects   earlier 1, later 8, tied 0 (p=0.035)  keep incumbent
+alert20:mean            0.399  0.019  0.175  rejects            earlier 1, later 8, tied 0 (p=0.055)  keep incumbent
+alert20:pi              0.408  0.025  0.189  rejects            earlier 0, later 7, tied 2 (p=0.016)  keep incumbent
+alert20:pi4             0.421  0.033  0.133  rejects            earlier 1, later 8, tied 0 (p=0.008)  keep incumbent
+alert5:max              0.402  0.029  0.119  rejects            earlier 3, later 6, tied 0 (p=0.203)  keep incumbent
+alert5:mean             0.417  0.014  0.221  rejects            earlier 4, later 5, tied 0 (p=0.820)  keep incumbent
+alert5:pi               0.396  0.022  0.207  rejects            earlier 2, later 7, tied 0 (p=0.164)  keep incumbent
+alert5:pi4              0.407  0.019  0.208  rejects            earlier 2, later 7, tied 0 (p=0.164)  keep incumbent

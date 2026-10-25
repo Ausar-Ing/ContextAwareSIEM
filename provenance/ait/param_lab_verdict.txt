@@ -1,0 +1,35 @@
+
+== judged on B2; incumbent base: 0.471 (sd 0.014), MRR 0.235 (sd 0.024), incidents 6.0, benign 1.0, seeds 5
+variant        @20     sd    MRR   inc benign  per scenario (harri, russe, shaw, wheel)   first items vs base   verdict
+delta900     0.464  0.013  0.233   6.0    1.0  0.652 0.399 0.558 0.247   earlier 0, later 4, tied 5 (p=0.125)   keep base
+delta1800    0.466  0.013  0.233   6.0    1.0  0.666 0.397 0.555 0.246   earlier 0, later 4, tied 5 (p=0.125)   keep base
+delta14400   0.487  0.018  0.237   6.0    1.0  0.696 0.423 0.547 0.281   earlier 4, later 0, tied 5 (p=0.125)   keep base
+delta86400   0.501  0.019  0.258   6.0    1.0  0.696 0.412 0.617 0.281   earlier 6, later 0, tied 3 (p=0.031)   ADOPT
+delta172800  0.503  0.019  0.258   6.0    1.0  0.696 0.412 0.619 0.284   earlier 6, later 0, tied 3 (p=0.031)   ADOPT
+delta1000000000  0.503  0.019  0.258   6.0    1.0  0.696 0.412 0.619 0.284   earlier 6, later 0, tied 3 (p=0.031)   ADOPT
+delta86400+h1  0.501  0.019  0.258   7.0    1.0  0.696 0.412 0.617 0.281   earlier 6, later 0, tied 3 (p=0.031)   ADOPT
+delta86400+h12  0.501  0.019  0.258   5.0    0.0  0.696 0.412 0.617 0.281   earlier 6, later 0, tied 3 (p=0.031)   ADOPT
+
+== judged on B3; incumbent base: 0.603 (sd 0.007), MRR 0.336 (sd 0.009), incidents 6.0, benign 1.0, seeds 5
+variant        @20     sd    MRR   inc benign  per scenario (harri, russe, shaw, wheel)   first items vs base   verdict
+delta900     0.605  0.006  0.333   6.0    1.0  0.788 0.343 0.887 0.401   earlier 0, later 4, tied 5 (p=0.125)   keep base
+delta1800    0.599  0.006  0.334   6.0    1.0  0.785 0.337 0.873 0.401   earlier 0, later 4, tied 5 (p=0.125)   keep base
+delta14400   0.619  0.018  0.338   6.0    1.0  0.807 0.356 0.887 0.428   earlier 4, later 0, tied 5 (p=0.125)   keep base
+delta86400   0.627  0.019  0.339   6.0    1.0  0.818 0.355 0.906 0.428   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+delta172800  0.624  0.016  0.340   6.0    1.0  0.818 0.355 0.883 0.441   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+delta1000000000  0.624  0.016  0.340   6.0    1.0  0.818 0.355 0.883 0.441   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+delta86400+h1  0.660  0.015  0.338   7.0    1.0  0.809 0.499 0.903 0.428   earlier 4, later 1, tied 4 (p=0.125)   ADOPT
+delta86400+h12  0.641  0.022  0.351   5.0    0.0  0.818 0.412 0.906 0.428   earlier 5, later 0, tied 4 (p=0.062)   ADOPT
+thq99        0.603  0.007  0.336   6.0    1.0  0.780 0.352 0.879 0.401   earlier 0, later 0, tied 9 (p=1.000)   keep base
+thq995       0.603  0.007  0.336   6.0    1.0  0.780 0.352 0.879 0.401   earlier 0, later 0, tied 9 (p=1.000)   keep base
+thq9999      0.603  0.007  0.335   6.0    1.0  0.781 0.352 0.877 0.401   earlier 0, later 1, tied 8 (p=1.000)   keep base
+cf05         0.697  0.016  0.461   7.0    2.0  0.797 0.760 0.814 0.418   earlier 5, later 0, tied 4 (p=0.062)   rejected (benign incidents)
+cf20         0.581  0.012  0.487   2.0    0.0  0.748 0.404 0.925 0.246   earlier 6, later 3, tied 0 (p=0.516)   keep base
+h1           0.639  0.003  0.335   7.0    1.0  0.781 0.502 0.872 0.401   earlier 1, later 2, tied 6 (p=1.000)   ADOPT
+h12          0.611  0.012  0.348   5.0    0.0  0.761 0.404 0.877 0.401   earlier 3, later 0, tied 6 (p=0.250)   keep base
+lam2         0.603  0.007  0.336   6.0    1.0  0.780 0.352 0.877 0.401   earlier 0, later 0, tied 9 (p=1.000)   keep base
+lam8         0.603  0.007  0.336   6.0    1.0  0.780 0.352 0.879 0.401   earlier 0, later 1, tied 8 (p=1.000)   keep base
+a001         0.471  0.014  0.235   0.0    0.0  0.678 0.404 0.556 0.246   earlier 3, later 5, tied 1 (p=0.234)   keep base
+a226         0.603  0.007  0.335   6.0    1.0  0.781 0.352 0.878 0.401   earlier 0, later 1, tied 8 (p=1.000)   keep base
+a505         0.533  0.005  0.146   6.0    2.0  0.615 0.518 0.600 0.400   earlier 3, later 6, tied 0 (p=0.344)   keep base
+a424         0.532  0.008  0.203   5.0    1.0  0.770 0.352 0.606 0.401   earlier 1, later 2, tied 6 (p=0.500)   keep base

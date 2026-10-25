@@ -8,7 +8,7 @@ def check(name, ok, detail=""):
     print(f"  {'PASS' if ok else 'FAIL'}  {name}{('  -- ' + detail) if detail else ''}")
     if not ok: FAILED.append(name)
 print("accumulator")
-acc = A.Accumulator(N=20, a_r=1.0, a_c=0.0, a_s=0.0)
+acc = A.Accumulator(N=20, a_r=1.0, a_c=0.0, a_s=0.0, h=4 * 3600.0)   # mechanics checked at h = 4 h
 for i in range(1000):
     R, terms, w = acc.push("h", 1000.0 + i * 0.01, "R1", 20.0, 0.0, -1, False, ())
 check("1000 repeats count as 1 + ln 1000 alerts", abs(R - 20 * (1 + math.log(1000))) < 1e-6, f"{R:.2f}")
@@ -16,12 +16,12 @@ R4, _, _ = acc.push("h", 1000.0 + 9.99 + 4 * 3600, "R2", 0.0, 0.0, -1, False, ()
 check("group halves after one half-life since its LAST member", abs(R4 - 20 * (1 + math.log(1000)) / 2) < 1e-3, f"{R4:.2f}")
 R_late, _, _ = acc.push("h", 1000.0 + 9.99 + 25 * 3600, "R3", 0.0, 0.0, -1, False, ())
 check("group older than T is dropped", R_late == 0.0)
-acc2 = A.Accumulator(N=20, a_r=0.0, a_c=0.0, a_s=1.0)
+acc2 = A.Accumulator(N=20, a_r=0.0, a_c=0.0, a_s=1.0, h=4 * 3600.0)
 Rq, _, w = acc2.push("u", 0.0, "R1", 0, 0, 99.0, True, ())
 check("q for S_seq 99 on a quiet entity is 50", abs(w - 50) < 1e-6, f"{w:.2f}")
 check("the same 99 from an entity with 100 effective windows scores q < 10", A.q_score(99.0, 100.0) < 10,
       f"{A.q_score(99.0, 100.0):.2f}")
-acc3 = A.Accumulator(N=20, a_r=0.0, a_c=0.0, a_s=1.0)
+acc3 = A.Accumulator(N=20, a_r=0.0, a_c=0.0, a_s=1.0, h=4 * 3600.0)
 for i in range(2000):                      # entries every second: n_e reaches 2000/20 = 100
     acc3.push("busy", float(i), f"R{i}", 0, 0, 50.0, True, ())
 _, _, w3 = acc3.push("busy", 2000.0 + 4 * 3600, "Rz", 0, 0, 99.0, True, ())

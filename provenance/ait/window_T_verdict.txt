@@ -1,0 +1,7 @@
+incumbent winT24: alpha-nDCG@20 0.501 (sd 0.019), MRR 0.258 (sd 0.024), within-host 0.893, hosts above 5% 12 (worst 50%)
+
+variant         @20     sd    MRR  within  >5% unscored  per scenario (harri, russe, shaw, wheel)   first items vs incumbent   verdict
+winT24        0.501  0.019  0.258   0.893   12    0.000  0.696 0.412 0.617 0.281   (incumbent)
+winT6         0.488  0.017  0.220   0.878   17    0.000  0.664 0.436 0.632 0.222   earlier 5, later 4, tied 0 (p=0.637)   keep incumbent
+winT12        0.484  0.022  0.226   0.913   12    0.000  0.672 0.424 0.609 0.232   earlier 3, later 5, tied 1 (p=0.383)   keep incumbent
+winT72        0.543  0.015  0.335   0.884   13    0.000  0.664 0.550 0.754 0.203   earlier 6, later 3, tied 0 (p=0.406)   rejected (within-host or calibration)

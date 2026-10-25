@@ -54,6 +54,10 @@ SEQ_ENTITIES = _os.environ.get("CONTEXTSIEM_SEQ_ENTITIES", "host")
 # maximum won alpha-nDCG@20 but placed the first item of 8 of 9 non-scan stages later;
 # the first-item veto of the tuning protocol rejects it.
 GROUP_SCORE = _os.environ.get("CONTEXTSIEM_GROUP_SCORE", "pi")
+# Repeat-group gap Delta (Component 9): consecutive alerts of one (host, rule) further apart
+# than this start a new queue group. 24 h from 2026-10-25 (selected on the tuning set,
+# provenance/ait/param_lab_verdict.txt); 1 h produced every earlier result.
+GROUP_GAP_S = float(_os.environ.get("CONTEXTSIEM_DELTA_S", 86400.0))
 MIN_LOC = 20                          # windows needed to estimate a host's centre and spread
 SHRINK_N0 = int(_os.environ.get("CONTEXTSIEM_SHRINK_N0", 100))   # held-out windows at which own and pooled weigh equally
 MIN_TRAIN = 200                       # below this no forest is fitted for the type

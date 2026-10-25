@@ -1,46 +1,46 @@
 === Part A: S_seq only, group score x window (mean over 4 scenarios x seeds)
 window       group   aNDCG@10    @20    @50    MRR  ns@20
-alert20      max        0.397  0.464  0.512  0.067   1.20
-alert20      mean       0.302  0.372  0.439  0.157   1.20
-alert20      pi         0.294  0.375  0.431  0.164   1.20
-alert5       max        0.246  0.367  0.454  0.108   1.40
-alert5       mean       0.292  0.392  0.439  0.210   2.00
-alert5       pi         0.261  0.352  0.434  0.193   1.60
-entry20d60   max        0.451  0.513  0.539  0.123   1.70
-entry20d60   mean       0.418  0.473  0.529  0.115   1.50
-entry20d60   pi         0.419  0.471  0.542  0.235   1.50
+alert20      max        0.457  0.491  0.534  0.091   1.20
+alert20      mean       0.348  0.399  0.511  0.175   1.20
+alert20      pi         0.360  0.408  0.510  0.189   1.20
+alert5       max        0.261  0.402  0.466  0.119   1.60
+alert5       mean       0.321  0.417  0.486  0.221   2.00
+alert5       pi         0.316  0.396  0.487  0.207   1.60
+entry20d60   max        0.470  0.525  0.559  0.128   1.75
+entry20d60   mean       0.435  0.478  0.558  0.122   1.50
+entry20d60   pi         0.457  0.501  0.584  0.258   1.60
 
 === Part B: hybrid weights (objective: mean alpha-nDCG@20)
 
 -- window alert20
-  B0_host host rarity      aNDCG@20 0.421 (@10 0.265, @50 0.474) MRR 0.068
-  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.464 (@10 0.397, @50 0.512) MRR 0.067 ns@20 1.20 | harri 0.71 wheel 0.31 russe 0.31 shaw 0.53
-  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=max | aNDCG@20 0.464 (@10 0.397, @50 0.512) MRR 0.067 ns@20 1.20 | harri 0.71 wheel 0.31 russe 0.31 shaw 0.53
-  3rd                      w=(0.0, 0.1, 0.9) S_rule=lin  lam=4 | aNDCG@20 0.382 (@10 0.298, @50 0.451) MRR 0.106 ns@20 1.20 | harri 0.63 wheel 0.21 russe 0.19 shaw 0.49
-  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.198 (@10 0.187, @50 0.262) MRR 0.016 ns@20 0.00 | harri 0.24 wheel 0.19 russe 0.15 shaw 0.21
-  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.182 (@10 0.160, @50 0.229) MRR 0.015 ns@20 0.00 | harri 0.25 wheel 0.14 russe 0.10 shaw 0.24
-  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.379 (@10 0.299, @50 0.436) MRR 0.108 ns@20 1.20 | harri 0.65 wheel 0.19 russe 0.19 shaw 0.49
-  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.306 (@10 0.238, @50 0.388) MRR 0.093 ns@20 1.00 | harri 0.47 wheel 0.16 russe 0.10 shaw 0.49
+  B0_host host rarity      aNDCG@20 0.499 (@10 0.339, @50 0.521) MRR 0.084
+  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.491 (@10 0.457, @50 0.534) MRR 0.091 ns@20 1.20 | harri 0.71 wheel 0.31 russe 0.30 shaw 0.64
+  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=max | aNDCG@20 0.491 (@10 0.457, @50 0.534) MRR 0.091 ns@20 1.20 | harri 0.71 wheel 0.31 russe 0.30 shaw 0.64
+  3rd                      w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.421 (@10 0.373, @50 0.523) MRR 0.133 ns@20 1.20 | harri 0.67 wheel 0.20 russe 0.19 shaw 0.62
+  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.224 (@10 0.190, @50 0.390) MRR 0.029 ns@20 0.25 | harri 0.25 wheel 0.19 russe 0.16 shaw 0.29
+  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.207 (@10 0.173, @50 0.354) MRR 0.026 ns@20 0.25 | harri 0.28 wheel 0.18 russe 0.12 shaw 0.25
+  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.421 (@10 0.373, @50 0.523) MRR 0.133 ns@20 1.20 | harri 0.67 wheel 0.20 russe 0.19 shaw 0.62
+  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.333 (@10 0.290, @50 0.446) MRR 0.108 ns@20 1.00 | harri 0.47 wheel 0.17 russe 0.11 shaw 0.59
   2 of 396 configurations within 0.01 of the best; their w_r range 0.0-0.0, w_c 0.0-0.0, w_s 1.0-1.0
 
 -- window alert5
-  B0_host host rarity      aNDCG@20 0.421 (@10 0.265, @50 0.474) MRR 0.068
-  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.367 (@10 0.246, @50 0.454) MRR 0.108 ns@20 1.40 | harri 0.54 wheel 0.26 russe 0.16 shaw 0.51
-  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=max | aNDCG@20 0.367 (@10 0.246, @50 0.454) MRR 0.108 ns@20 1.40 | harri 0.54 wheel 0.26 russe 0.16 shaw 0.51
-  3rd                      w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.363 (@10 0.272, @50 0.444) MRR 0.194 ns@20 1.60 | harri 0.40 wheel 0.29 russe 0.23 shaw 0.52
-  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.198 (@10 0.187, @50 0.262) MRR 0.016 ns@20 0.00 | harri 0.24 wheel 0.19 russe 0.15 shaw 0.21
-  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.182 (@10 0.160, @50 0.229) MRR 0.015 ns@20 0.00 | harri 0.25 wheel 0.14 russe 0.10 shaw 0.24
-  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.363 (@10 0.272, @50 0.444) MRR 0.194 ns@20 1.60 | harri 0.40 wheel 0.29 russe 0.23 shaw 0.52
-  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.276 (@10 0.190, @50 0.387) MRR 0.153 ns@20 1.25 | harri 0.35 wheel 0.22 russe 0.07 shaw 0.47
+  B0_host host rarity      aNDCG@20 0.499 (@10 0.339, @50 0.521) MRR 0.084
+  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.407 (@10 0.328, @50 0.499) MRR 0.208 ns@20 1.60 | harri 0.42 wheel 0.32 russe 0.24 shaw 0.65
+  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=4 | aNDCG@20 0.407 (@10 0.328, @50 0.499) MRR 0.208 ns@20 1.60 | harri 0.42 wheel 0.32 russe 0.24 shaw 0.65
+  3rd                      w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.402 (@10 0.261, @50 0.466) MRR 0.119 ns@20 1.60 | harri 0.53 wheel 0.26 russe 0.16 shaw 0.65
+  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.224 (@10 0.190, @50 0.390) MRR 0.029 ns@20 0.25 | harri 0.25 wheel 0.19 russe 0.16 shaw 0.29
+  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.207 (@10 0.173, @50 0.354) MRR 0.026 ns@20 0.25 | harri 0.28 wheel 0.18 russe 0.12 shaw 0.25
+  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.407 (@10 0.328, @50 0.499) MRR 0.208 ns@20 1.60 | harri 0.42 wheel 0.32 russe 0.24 shaw 0.65
+  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.326 (@10 0.232, @50 0.441) MRR 0.173 ns@20 1.25 | harri 0.35 wheel 0.26 russe 0.09 shaw 0.60
   4 of 396 configurations within 0.01 of the best; their w_r range 0.0-0.0, w_c 0.0-0.0, w_s 1.0-1.0
 
 -- window entry20d60
-  B0_host host rarity      aNDCG@20 0.421 (@10 0.265, @50 0.474) MRR 0.068
-  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.513 (@10 0.451, @50 0.539) MRR 0.123 ns@20 1.70 | harri 0.70 wheel 0.29 russe 0.48 shaw 0.58
-  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=max | aNDCG@20 0.513 (@10 0.451, @50 0.539) MRR 0.123 ns@20 1.70 | harri 0.70 wheel 0.29 russe 0.48 shaw 0.58
-  3rd                      w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.487 (@10 0.437, @50 0.558) MRR 0.160 ns@20 1.50 | harri 0.66 wheel 0.29 russe 0.41 shaw 0.59
-  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.198 (@10 0.187, @50 0.262) MRR 0.016 ns@20 0.00 | harri 0.24 wheel 0.19 russe 0.15 shaw 0.21
-  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.182 (@10 0.160, @50 0.229) MRR 0.015 ns@20 0.00 | harri 0.25 wheel 0.14 russe 0.10 shaw 0.24
-  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.487 (@10 0.437, @50 0.558) MRR 0.160 ns@20 1.50 | harri 0.66 wheel 0.29 russe 0.41 shaw 0.59
-  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.415 (@10 0.361, @50 0.470) MRR 0.123 ns@20 1.55 | harri 0.48 wheel 0.27 russe 0.35 shaw 0.56
-  2 of 396 configurations within 0.01 of the best; their w_r range 0.0-0.0, w_c 0.0-0.0, w_s 1.0-1.0
+  B0_host host rarity      aNDCG@20 0.499 (@10 0.339, @50 0.521) MRR 0.084
+  best                     w=(0.0, 0.0, 1.0) S_rule=lin  lam=max | aNDCG@20 0.525 (@10 0.470, @50 0.559) MRR 0.128 ns@20 1.75 | harri 0.73 wheel 0.29 russe 0.48 shaw 0.60
+  2nd                      w=(0.0, 0.0, 1.0) S_rule=rank lam=max | aNDCG@20 0.525 (@10 0.470, @50 0.559) MRR 0.128 ns@20 1.75 | harri 0.73 wheel 0.29 russe 0.48 shaw 0.60
+  3rd                      w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.521 (@10 0.477, @50 0.604) MRR 0.176 ns@20 1.60 | harri 0.69 wheel 0.32 russe 0.43 shaw 0.64
+  B0 rule only             w=(1.0, 0.0, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.224 (@10 0.190, @50 0.390) MRR 0.029 ns@20 0.25 | harri 0.25 wheel 0.19 russe 0.16 shaw 0.29
+  B1 rule+exp (0.6,0.4,0)  w=(0.6, 0.4, 0.0) S_rule=lin  lam=4 | aNDCG@20 0.207 (@10 0.173, @50 0.354) MRR 0.026 ns@20 0.25 | harri 0.28 wheel 0.18 russe 0.12 shaw 0.25
+  S_seq only               w=(0.0, 0.0, 1.0) S_rule=lin  lam=4 | aNDCG@20 0.521 (@10 0.477, @50 0.604) MRR 0.176 ns@20 1.60 | harri 0.69 wheel 0.32 russe 0.43 shaw 0.64
+  default (0.3,0.2,0.5)    w=(0.3, 0.2, 0.5) S_rule=lin  lam=4 | aNDCG@20 0.426 (@10 0.375, @50 0.506) MRR 0.128 ns@20 1.60 | harri 0.49 wheel 0.28 russe 0.35 shaw 0.58
+  4 of 396 configurations within 0.01 of the best; their w_r range 0.0-0.0, w_c 0.0-0.0, w_s 1.0-1.0

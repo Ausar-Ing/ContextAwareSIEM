@@ -1,0 +1,25 @@
+{
+ "scenario": "harrison",
+ "python": "3.11.15",
+ "cpu": 2,
+ "parse_alerts_per_s": 49453.0999235268,
+ "alerts": 470132,
+ "windows_alerts_per_s": 508.30339043558297,
+ "window_rows": {
+  "host": 470132,
+  "srcip": 436851,
+  "user": 175
+ },
+ "entities": 979,
+ "peak_traced_MB_windows_incl_outputs": 244.6607847213745,
+ "fit_seconds_all_types": 1.0877625900002386,
+ "score_windows_per_s_batch": 249639.28832731853,
+ "online_latency_ms_p50_p95_p99": [
+  12.101791499844694,
+  16.654719399321035,
+  19.403528589436963
+ ],
+ "accumulator_pushes_per_s": 101784.81204754868,
+ "accumulator_pushes": 907158,
+ "online_alerts_per_s_estimate": 68.17289852115609
+}
