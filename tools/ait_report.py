@@ -15,7 +15,7 @@ R = {}
 for p in sys.argv[2:]:
     R.update(json.load(open(p)))
 scs = sorted(R)
-systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2_pi", "B2_max", "B2_novterm", "B2", "B3", "B3_bestgrp", "B3_noabs"]
+systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2_pi", "B2_max", "B2_novterm", "B2", "B3", "B3_bestgrp", "B3_noabs", "B3_novterm"]
 
 
 def per_scenario(sc, name):
@@ -69,7 +69,7 @@ def firsts(name):
 
 print("\npaired first-item ranks of non-scan stages (a better = earlier)")
 for a, b in [("B2", "B0"), ("B2", "B0_rank"), ("B2", "B0_host"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_alert"),
-             ("B2", "B2_pi"), ("B2", "B2_max"), ("B2_novterm", "B2"), ("B2_novterm", "B0_host"), ("B3", "B2"), ("B3", "B3_bestgrp"), ("B3", "B3_noabs")]:
+             ("B2", "B2_pi"), ("B2", "B2_max"), ("B2_novterm", "B2"), ("B2_novterm", "B0_host"), ("B3", "B2"), ("B3", "B3_bestgrp"), ("B3", "B3_noabs"), ("B3_novterm", "B3")]:
     if not all(x in R[sc]["seeded"] or x in R[sc]["deterministic"] for sc in scs for x in (a, b)):
         continue
     p = M.paired_ranks(firsts(a), firsts(b))

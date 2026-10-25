@@ -9,6 +9,7 @@ B2'           0.287   0.389         0.468   0.134     0.900     0.856
 B2_def        0.332   0.409±0.024   0.458   0.142       -         -  
 B2_alert      0.258   0.348±0.020   0.428   0.182     0.981     0.857
 B2_max        0.452   0.512±0.022   0.533   0.116       -         -  
+B2_novterm     0.427   0.510±0.032   0.556   0.239       -         -  
 B2            0.423   0.473±0.022   0.540   0.232     0.974     0.896
 B3            0.585   0.606±0.014   0.669   0.333       -         -  
 B3_bestgrp     0.474   0.497±0.026   0.562   0.237       -         -  
@@ -25,6 +26,7 @@ B2'          0.389   0.412    0.405    0.392   0.421   0.167
 B2_def       0.409   0.513    0.453    0.384   0.415   0.147
 B2_alert     0.348   0.374    0.364    0.357   0.376   0.191
 B2_max       0.512   0.677    0.580    0.481   0.515   0.120
+B2_novterm   0.510   0.576    0.543    0.502   0.518   0.247
 B2           0.473   0.538    0.504    0.464   0.489   0.243
 B3           0.606   0.735    0.661    0.619   0.623   0.336
 B3_bestgrp   0.497   0.580    0.535    0.491   0.516   0.248
@@ -39,6 +41,8 @@ paired first-item ranks of non-scan stages (a better = earlier)
   B2   vs B2_nov  : n= 9  B2 better  7, B2_nov better  2, tied  0, Wilcoxon p=0.160
   B2   vs B2_alert: n= 9  B2 better  7, B2_alert better  2, tied  0, Wilcoxon p=0.164
   B2   vs B2_max  : n= 9  B2 better  8, B2_max better  1, tied  0, Wilcoxon p=0.070
+  B2_novterm vs B2      : n= 9  B2_novterm better  4, B2 better  0, tied  5, Wilcoxon p=0.125
+  B2_novterm vs B0_host : n= 9  B2_novterm better  8, B0_host better  1, tied  0, Wilcoxon p=0.016
   B3   vs B2      : n= 9  B3 better  5, B2 better  4, tied  0, Wilcoxon p=0.258
   B3   vs B3_bestgrp: n= 9  B3 better  2, B3_bestgrp better  5, tied  2, Wilcoxon p=0.891
   B3   vs B3_noabs: n= 9  B3 better  4, B3_noabs better  0, tied  5, Wilcoxon p=0.125

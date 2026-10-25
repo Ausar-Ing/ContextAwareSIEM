@@ -21,6 +21,7 @@ within a group because its members share host and rule):
             baseline percentile of R (the working assumption)
   B3_bestgrp  B3 with each notable ranked at its best absorbed group's priority (no promotion)
   B3_noabs    B3 with notables added beside their groups instead of absorbing them
+  B3_novterm  B3 with the groups ranked as in the candidate arm B2_novterm
 
 Guard: test scenarios (fox, santos, wardbeck, wilson) are refused unless
 --allow-test is given. The protocol is run on them once, after every choice is
@@ -301,7 +302,8 @@ for sc in args.scenarios:
         sa = alert_max(seq_rows(rows_a), Sa, n)[ev]
         b2 = seq_term(gid, G, k, se)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
-        per_seed["B2_novterm"].append(queue_metrics((1 - NOVELTY_W) * pi_term(gid, G, k, se) + NOVELTY_W * 100 * g_novh, stages))
+        b2n = (1 - NOVELTY_W) * pi_term(gid, G, k, se) + NOVELTY_W * 100 * g_novh
+        per_seed["B2_novterm"].append(queue_metrics(b2n, stages))
         per_seed["B2_pi" if C6.GROUP_SCORE == "max" else "B2_max"].append(
             queue_metrics((pi_term if C6.GROUP_SCORE == "max" else lambda g, G_, k_, s_: group_max(g, G_, np.where(s_ < 0, 50.0, s_)))(gid, G, k, se), stages))
         if os.environ.get("DUMP_DIR"):
@@ -360,6 +362,7 @@ for sc in args.scenarios:
         best = [max(b2[g] for g in inc["gids"]) for inc in incidents]
         nprio = prio3[int(keep.sum()):]
         per_seed["B3_bestgrp"].append(queue_metrics(np.array(list(b2[keep]) + best), st3, days=days3))
+        per_seed["B3_novterm"].append(queue_metrics(np.array(list(b2n[keep]) + nprio), st3, days=days3))
         per_seed["B3_noabs"].append(queue_metrics(np.array(list(b2) + nprio),
                                                   list(stages) + st3[int(keep.sum()):],
                                                   days=list(CUR_DAYS) + days3[int(keep.sum()):]))

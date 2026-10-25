@@ -14,6 +14,7 @@ B2            0.419   0.471±0.014   0.542   0.235     0.973     0.893
 B3            0.582   0.603±0.007   0.668   0.336       -         -  
 B3_bestgrp     0.464   0.489±0.016   0.555   0.236       -         -  
 B3_noabs      0.562   0.597±0.007   0.657   0.335       -         -  
+B3_novterm     0.583   0.642±0.012   0.679   0.342       -         -  
 
 robustness and per-day ranking (means over scenarios and seeds): alpha-nDCG@20 with the protocol grades, binary grades, grades (2,1,1), alpha = 1; per-day alpha-nDCG@20 and MRR
 system         @20  binary  (2,1,1)  alpha=1  day@20  dayMRR
@@ -31,6 +32,7 @@ B2           0.471   0.540    0.504    0.469   0.491   0.248
 B3           0.603   0.734    0.659    0.621   0.620   0.339
 B3_bestgrp   0.489   0.577    0.528    0.488   0.509   0.249
 B3_noabs     0.597   0.708    0.648    0.627   0.608   0.337
+B3_novterm   0.642   0.761    0.695    0.669   0.653   0.342
 
 paired first-item ranks of non-scan stages (a better = earlier)
   B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
@@ -46,6 +48,7 @@ paired first-item ranks of non-scan stages (a better = earlier)
   B3   vs B2      : n= 9  B3 better  5, B2 better  3, tied  1, Wilcoxon p=0.234
   B3   vs B3_bestgrp: n= 9  B3 better  2, B3_bestgrp better  4, tied  3, Wilcoxon p=1.000
   B3   vs B3_noabs: n= 9  B3 better  3, B3_noabs better  0, tied  6, Wilcoxon p=0.250
+  B3_novterm vs B3      : n= 9  B3_novterm better  4, B3 better  0, tied  5, Wilcoxon p=0.125
 
 paired first-item ranks, split by whether the stage's host has its own calibration
   calibrated   B2 vs B0_host : n= 3  B2 better  1, B0_host better  2, tied  0, Wilcoxon p=0.500
