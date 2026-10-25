@@ -1,0 +1,9 @@
+incumbent base: alpha-nDCG@20 0.471 (sd 0.014), MRR 0.235 (sd 0.024), within-host 0.893, hosts above 5% 12 (worst 50%)
+
+variant         @20     sd    MRR  within  >5% unscored  per scenario (harri, russe, shaw, wheel)   first items vs incumbent   verdict
+base          0.471  0.014  0.235   0.893   12    0.000  0.678 0.404 0.556 0.246   (incumbent)
+noent         0.546  0.023  0.272   0.889   15    0.000  0.607 0.578 0.569 0.429   earlier 6, later 3, tied 0 (p=0.125)   rejected (within-host or calibration)
+noent_dur     0.498  0.027  0.247   0.870   17    0.000  0.593 0.532 0.512 0.355   earlier 6, later 3, tied 0 (p=0.426)   rejected (within-host or calibration)
+fill5         0.493  0.013  0.245   0.852   14    0.001  0.608 0.533 0.606 0.224   earlier 3, later 5, tied 1 (p=0.461)   VETOED (first items)
+fill10        0.436  0.001  0.223   0.835   13    0.058  0.541 0.640 0.364 0.198   earlier 3, later 6, tied 0 (p=0.375)   keep incumbent
+noent_fill5   0.512  0.021  0.249   0.837   15    0.001  0.585 0.531 0.596 0.334   earlier 4, later 5, tied 0 (p=0.496)   VETOED (first items)

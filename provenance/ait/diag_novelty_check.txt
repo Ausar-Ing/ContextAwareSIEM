@@ -1,0 +1,6 @@
+w = 0.2
+scenario        benign groups novel: quiet hosts | other hosts    within-host AUC: S_seq | novelty | (1-w)S_seq + w*novelty
+harrison          0.12 (8 groups) |   0.07 (58 groups)          0.999 | 0.990 | 0.999
+russellmitchell   0.57 (7 groups) |   0.21 (73 groups)          nan | nan | nan
+shaw              0.30 (20 groups) |   0.01 (115 groups)          0.840 | 0.767 | 0.840
+wheeler           0.12 (24 groups) |   0.04 (141 groups)          0.851 | 0.825 | 0.898

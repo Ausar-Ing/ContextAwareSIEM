@@ -10,12 +10,17 @@ within a group because its members share host and rule):
   B1        0.8 S_rule + 0.2 S_exp          (best static weights on the tuning set)
   B2        sequence term = group maximum of S_seq (seq_scoring.GROUP_SCORE; "pi": 100 min(1, pi(g)/8)),
             entries N=20 delta=60 s, host windows (tuned: w_r = w_c = 0)
+  B2_novterm  candidate (2026-10-25, not the method): (1 - w) * 100 min(1, pi/8) + w * 100 * [a member's
+            host window flags its rule as novel], w = 0.2 (CONTEXTSIEM_NOVELTY_W)
   B2_pi     B2 with the surprise group score pi(g) instead of the maximum (ablation; B2_max when GROUP_SCORE=pi)
   B2_def    0.3 S_rule + 0.2 S_exp + 0.5 * sequence term                 (former default weights)
   B2'       B2 with the forest replaced by a robust z-score
   B2_nov    B2 with the sequence term replaced by 100 * [any member's rule is novel for its entity]
   B2_alert  B2 with the window of the last 5 alerts
-  B3        B2 + risk notables (Component 8) absorbing their contributing groups
+  B3        B2 + risk notables (Component 8) absorbing their contributing groups, ranked by the
+            baseline percentile of R (the working assumption)
+  B3_bestgrp  B3 with each notable ranked at its best absorbed group's priority (no promotion)
+  B3_noabs    B3 with notables added beside their groups instead of absorbing them
 
 Guard: test scenarios (fox, santos, wardbeck, wilson) are refused unless
 --allow-test is given. The protocol is run on them once, after every choice is
@@ -53,6 +58,8 @@ DELTA_Q = 3600.0
 # "host" from 2026-10-24, "all" for earlier results (CONTEXTSIEM_SEQ_ENTITIES). C8 keeps every type.
 SEQ_ENTITIES = C6.SEQ_ENTITIES
 CUR_HOSTS = None        # host of each evaluation alert, set per scenario (within-host AUC)
+NOVELTY_W = float(os.environ.get("CONTEXTSIEM_NOVELTY_W", 0.2))   # weight of the novelty term in arm B2_novterm
+CUR_DAYS = None         # UTC day of each queue group's first member, set per scenario (per-day ranking)
 phases = collections.defaultdict(list)
 for r in csv.DictReader(open(args.labels)):
     phases[r["scenario"]].append((r["attack"], float(r["start"]), float(r["end"])))
@@ -171,11 +178,20 @@ def seq_term(gid, G, k, s_alert):
     return group_max(gid, G, np.where(s_alert < 0, 50.0, s_alert))
 
 
-def queue_metrics(prio, stages, ev_scores=None, labels=None):
+def queue_metrics(prio, stages, ev_scores=None, labels=None, days=None):
     f = M.first_item_ranks(prio, stages)
     out = {"andcg10": M.alpha_ndcg(prio, stages, 10), "andcg20": M.alpha_ndcg(prio, stages, 20),
            "andcg50": M.alpha_ndcg(prio, stages, 50), "mrr": M.mrr_nonscan(f),
            "cov20": M.coverage(f, 20), "first": {s: float(v) for s, v in f.items()}, "items": len(prio)}
+    # robustness (Sec. IV-C): binary grades, grades (2, 1, 1), alpha = 1
+    out["andcg20_bin"] = M.alpha_ndcg(prio, stages, 20, grades=M.GRADES_BINARY)
+    out["andcg20_211"] = M.alpha_ndcg(prio, stages, 20, grades=M.GRADES_211)
+    out["andcg20_a1"] = M.alpha_ndcg(prio, stages, 20, alpha=1.0)
+    # per-day ranking: each item competes only with its own day's items
+    days = CUR_DAYS if days is None else days
+    if days is not None and len(days) == len(prio):
+        pdm = M.per_day(prio, stages, days, 20)
+        out["day_andcg20"] = pdm["andcg"]; out["day_mrr"] = pdm["mrr"]; out["day_first"] = pdm["first"]
     if ev_scores is not None:
         out["macro_auc"] = M.macro_auc(ev_scores, labels)
         if CUR_HOSTS is not None:
@@ -200,6 +216,8 @@ for sc in args.scenarios:
             cur[key] = nxt; nxt += 1
         last[key] = A[j].ts; gid.append(cur[key])
     gid = np.array(gid); G = nxt
+    first_ts = np.full(G, np.inf); np.minimum.at(first_ts, gid, np.array([A[j].ts for j in ev]))
+    CUR_DAYS = (first_ts // 86400).astype(int)
     k = np.bincount(gid, minlength=G).astype(float)
     stages = M.item_stages(gid, L, G)
     gid_of = dict(zip(ev.tolist(), gid.tolist()))
@@ -242,6 +260,11 @@ for sc in args.scenarios:
     for et, d in rows_e.items():
         np.maximum.at(nov, d["j"], d["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")])
     res["deterministic"]["B2_nov"] = queue_metrics(100 * group_max(gid, G, nov[ev]), stages, nov[ev], L)
+    # host-window novelty, for the candidate arm B2_novterm
+    nov_h = np.zeros(n)
+    dh_ = rows_e["host"]
+    np.maximum.at(nov_h, dh_["j"], np.where(dh_["ok"], dh_["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")], 0.0))
+    g_novh = group_max(gid, G, nov_h[ev])
     rz = score_types(rows_e, A, t_atk, C6.RobustZModel, 0, True)
     s_rz = alert_max(seq_rows(rows_e), rz, n)[ev]
     res["deterministic"]["B2'"] = queue_metrics(seq_term(gid, G, k, s_rz), stages, s_rz, L)
@@ -278,6 +301,7 @@ for sc in args.scenarios:
         sa = alert_max(seq_rows(rows_a), Sa, n)[ev]
         b2 = seq_term(gid, G, k, se)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
+        per_seed["B2_novterm"].append(queue_metrics((1 - NOVELTY_W) * pi_term(gid, G, k, se) + NOVELTY_W * 100 * g_novh, stages))
         per_seed["B2_pi" if C6.GROUP_SCORE == "max" else "B2_max"].append(
             queue_metrics((pi_term if C6.GROUP_SCORE == "max" else lambda g, G_, k_, s_: group_max(g, G_, np.where(s_ < 0, 50.0, s_)))(gid, G, k, se), stages))
         if os.environ.get("DUMP_DIR"):
@@ -330,7 +354,15 @@ for sc in args.scenarios:
             prio3.append(pct); st3.append(sset)
             inc_info.append({"t_open_h": (inc["t_open"] - t_atk) / 3600, "stages": sorted(sset),
                              "groups": len(inc["gids"]), "entities": len(inc["members"])})
-        q3 = queue_metrics(np.array(prio3), st3)
+        days3 = list(CUR_DAYS[keep]) + [int(inc["t_open"] // 86400) for inc in incidents]
+        q3 = queue_metrics(np.array(prio3), st3, days=days3)
+        # notable-ranking variants (Sec. III-H working assumption vs alternatives)
+        best = [max(b2[g] for g in inc["gids"]) for inc in incidents]
+        nprio = prio3[int(keep.sum()):]
+        per_seed["B3_bestgrp"].append(queue_metrics(np.array(list(b2[keep]) + best), st3, days=days3))
+        per_seed["B3_noabs"].append(queue_metrics(np.array(list(b2) + nprio),
+                                                  list(stages) + st3[int(keep.sum()):],
+                                                  days=list(CUR_DAYS) + days3[int(keep.sum()):]))
         att = [x for x in inc_info if x["stages"]]
         q3["incidents"] = len(inc_info); q3["attack_incidents"] = len(att)
         q3["benign_incidents"] = len(inc_info) - len(att)

@@ -1,0 +1,6 @@
+n0 = 30 (host windows, 5 seeds)
+{'harrison': 0.627, 'russellmitchell': 0.389, 'shaw': 0.556, 'wheeler': 0.255} mean 0.457
+n0 = 100 (host windows, 5 seeds)
+{'harrison': 0.678, 'russellmitchell': 0.404, 'shaw': 0.556, 'wheeler': 0.246} mean 0.471
+n0 = 300 (host windows, 5 seeds)
+{'harrison': 0.676, 'russellmitchell': 0.429, 'shaw': 0.56, 'wheeler': 0.267} mean 0.483

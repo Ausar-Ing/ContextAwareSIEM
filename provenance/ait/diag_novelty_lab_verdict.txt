@@ -1,0 +1,8 @@
+incumbent base: alpha-nDCG@20 0.471 (sd 0.014), MRR 0.235 (sd 0.024), within-host 0.893, hosts above 5% 12 (worst 50%)
+
+variant         @20     sd    MRR  within  >5% unscored  per scenario (harri, russe, shaw, wheel)   first items vs incumbent   verdict
+base          0.471  0.014  0.235   0.893   12    0.000  0.678 0.404 0.556 0.246   (incumbent)
+novw10        0.491  0.017  0.240   0.893   12    0.000  0.696 0.412 0.559 0.297   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+novw20        0.512  0.019  0.242   0.893   12    0.000  0.727 0.412 0.560 0.349   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+novw30        0.512  0.019  0.242   0.893   12    0.000  0.727 0.412 0.560 0.349   earlier 4, later 0, tied 5 (p=0.125)   ADOPT
+novw50        0.512  0.019  0.242   0.893   12    0.000  0.727 0.412 0.560 0.349   earlier 4, later 0, tied 5 (p=0.125)   ADOPT

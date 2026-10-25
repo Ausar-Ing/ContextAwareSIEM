@@ -45,5 +45,10 @@ w = M.within_host_auc(np.full(14, 70.0), lab, hst)
 check("within-host AUC: a per-host constant scores 0.5", w["macro"] == 0.5, str(w))
 w = M.within_host_auc(sc, ["-"] * 14, hst)
 check("within-host AUC: no eligible host gives nan", np.isnan(w["macro"]) and w["hosts"] == {}, str(w))
+# per-day ranking: items only compete within their day
+stg = [{"escalated_sudo_command"}, set(), set(), {"dirb"}]
+pdm = M.per_day(np.array([1.0, 9.0, 5.0, 2.0]), stg, [0, 0, 1, 1], k=20)
+check("per-day: sudo ranks 2 on day 0, dirb 2 on day 1", pdm["first"] == {"escalated_sudo_command": 2.0, "dirb": 2.0} and pdm["days"] == 2, str(pdm))
+check("robustness grade maps", M.GRADES_211["dnsteal"] == 2 and M.GRADES_211["online_cracking"] == 1 and M.GRADES_BINARY["dirb"] == 1, "")
 print(f"\n{'ALL PASS' if not FAILED else 'FAILED: ' + ', '.join(FAILED)}")
 sys.exit(1 if FAILED else 0)

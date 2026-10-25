@@ -1,0 +1,252 @@
+harrison, seed 0: top 20 of 90 queue items under B2 (priority = pi; S_rule and S_exp shown for the hybrid's terms)
+
+# 1 [attacker_change_user] intranet_server rule 5304 (level 3) x1, 02-08 08:36-08:36
+     terms: S_seq(max) 100.00 -> pi 4.88 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.049); rule_level_max 10.00 vs host median 3.00 (+0.027); rule_level_mean 4.80 vs host median 3.00 (+0.027)
+# 2 [escalated_sudo_command] intranet_server rule 5403 (level 4) x1, 02-08 08:36-08:36
+     terms: S_seq(max) 100.00 -> pi 4.88 (weight 1); S_rule 27, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.049); rule_level_max 10.00 vs host median 3.00 (+0.027); rule_level_mean 4.70 vs host median 3.00 (+0.025)
+# 3 [benign] intranet_server rule 5706 (level 6) x1, 02-08 07:16-07:16
+     terms: S_seq(max) 100.00 -> pi 4.58 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.047); rule_level_max 6.00 vs host median 3.00 (+0.017); tactic_progression 0.43 vs host median 0.00 (+0.010)
+# 4 [escalated_sudo_command] intranet_server rule 5502 (level 3) x3, 02-08 08:36-08:37
+     terms: S_seq(max) 100.00 -> pi 4.40 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.050); rule_level_max 10.00 vs host median 3.00 (+0.026); rule_level_mean 4.60 vs host median 3.00 (+0.023)
+# 5 [escalated_sudo_command] intranet_server rule 5402 (level 3) x3, 02-08 08:36-08:37
+     terms: S_seq(max) 100.00 -> pi 4.40 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.052); rule_level_max 10.00 vs host median 3.00 (+0.023); rule_level_mean 4.60 vs host median 3.00 (+0.021)
+# 6 [attacker_change_user/escalated_sudo_command] intranet_server rule 5501 (level 3) x5, 02-08 08:36-08:37
+     terms: S_seq(max) 100.00 -> pi 4.18 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.041); rule_level_max 10.00 vs host median 3.00 (+0.024); volume_share_max 0.93 vs host median 0.21 (+0.019)
+# 7 [benign] intranet_server rule 31509 (level 3) x4, 02-08 07:30-08:17
+     terms: S_seq(max) 100.00 -> pi 3.97 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: volume_share_max 0.92 vs host median 0.21 (+0.026); rule_level_max 10.00 vs host median 3.00 (+0.023); distinct_technique_count 6.00 vs host median 1.00 (+0.013)
+# 8 [dirb/wpscan] intranet_server rule 31122 (level 5) x12, 02-08 07:28-07:37
+     terms: S_seq(max) 100.00 -> pi 3.80 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.038); rule_level_max 10.00 vs host median 3.00 (+0.023); volume_share_max 0.91 vs host median 0.21 (+0.016)
+# 9 [benign] external_mail rule 5503 (level 5) x1, 02-08 08:46-08:46
+     terms: S_seq(max) 99.98 -> pi 3.65 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.65 vs host median 0.00 (+0.051); rule_level_max 5.00 vs host median 3.00 (+0.044); rule_level_mean 3.10 vs host median 3.00 (+0.033)
+#10 [benign] intranet_server rule 31509 (level 3) x1, 02-08 09:23-09:23
+     terms: S_seq(max) 99.97 -> pi 3.50 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: rule_level_max 10.00 vs host median 3.00 (+0.038); volume_share_max 0.96 vs host median 0.21 (+0.025); rule_level_mean 4.50 vs host median 3.00 (+0.017)
+#11 [service_scan] inet-firewall rule suricata:2220006 (level 3) x1, 02-08 07:16-07:16
+     terms: S_seq(max) 99.96 -> pi 3.40 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.088); distinct_rule_count 7.00 vs host median 3.00 (+0.023); current_run_length 0.69 vs host median 2.40 (+0.020)
+#12 [service_scan] inet-firewall rule suricata:2220000 (level 3) x1, 02-08 07:16-07:16
+     terms: S_seq(max) 99.96 -> pi 3.40 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.088); distinct_rule_count 8.00 vs host median 3.00 (+0.023); current_run_length 0.69 vs host median 2.40 (+0.021)
+#13 [benign] inet-firewall rule 5706 (level 6) x1, 02-08 07:16-07:16
+     terms: S_seq(max) 99.96 -> pi 3.40 (weight 1); S_rule 40, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.087); current_run_length 0.69 vs host median 2.40 (+0.021); distinct_rule_count 6.00 vs host median 3.00 (+0.020)
+#14 [benign] inet-firewall rule suricata:2230002 (level 3) x1, 02-08 07:21-07:21
+     terms: S_seq(max) 99.96 -> pi 3.39 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.089); distinct_rule_count 10.00 vs host median 3.00 (+0.021); current_run_length 0.69 vs host median 2.40 (+0.019)
+#15 [benign] external_mail rule 9705 (level 5) x3, 02-08 08:46-08:46
+     terms: S_seq(max) 99.97 -> pi 3.01 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.71 vs host median 0.00 (+0.042); rule_level_max 5.00 vs host median 3.00 (+0.027); window_duration_s 10.78 vs host median 8.29 (+0.017)
+#16 [service_scan] intranet_server rule suricata:2024364 (level 3) x3, 02-08 07:16-07:16
+     terms: S_seq(max) 99.96 -> pi 2.97 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.057); tactic_progression 0.43 vs host median 0.00 (+0.012); rule_level_max 6.00 vs host median 3.00 (+0.011)
+#17 [dirb/wpscan] intranet_server rule 30306 (level 5) x84, 02-08 07:28-07:55
+     terms: S_seq(max) 100.00 -> pi 2.95 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.033); rule_level_max 10.00 vs host median 3.00 (+0.018); volume_share_max 0.92 vs host median 0.21 (+0.013)
+#18 [service_scan] inet-firewall rule suricata:2024364 (level 3) x3, 02-08 07:16-07:16
+     terms: S_seq(max) 99.96 -> pi 2.91 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.088); distinct_rule_count 9.00 vs host median 3.00 (+0.023); current_run_length 0.69 vs host median 2.40 (+0.022)
+#19 [benign] intranet_server rule 31509 (level 3) x7, 02-08 10:23-13:06
+     terms: S_seq(max) 99.98 -> pi 2.89 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: rule_level_max 10.00 vs host median 3.00 (+0.037); volume_share_max 0.96 vs host median 0.21 (+0.026); rule_level_trend -0.22 vs host median 0.00 (+0.018)
+#20 [service_scan] webserver rule suricata:2024364 (level 3) x3, 02-08 07:16-07:16
+     terms: S_seq(max) 99.94 -> pi 2.76 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.082); distinct_rule_count 5.00 vs host median 2.00 (+0.020); rule_level_trend 0.05 vs host median 0.00 (+0.014)
+
+russellmitchell, seed 0: top 20 of 105 queue items under B2 (priority = pi; S_rule and S_exp shown for the hybrid's terms)
+
+# 1 [benign] intranet_server rule 5706 (level 6) x1, 01-24 03:56-03:56
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.030); tactic_progression 0.87 vs host median 0.00 (+0.021); window_duration_s 11.06 vs host median 9.99 (+0.012)
+# 2 [benign] cloud_share rule 5706 (level 6) x1, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 40, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.034); rule_level_mean 4.50 vs host median 3.00 (+0.014); rule_level_max 6.00 vs host median 3.00 (+0.007)
+# 3 [wpscan] intranet_server rule 30306 (level 5) x1, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.026); rule_level_mean 4.69 vs host median 3.00 (+0.021); distinct_technique_count 7.00 vs host median 2.00 (+0.015)
+# 4 [wpscan] intranet_server rule 31122 (level 5) x1, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.026); rule_level_mean 4.71 vs host median 3.00 (+0.022); distinct_technique_count 7.00 vs host median 2.00 (+0.016)
+# 5 [attacker_change_user] intranet_server rule 5304 (level 3) x1, 01-24 04:37-04:37
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.028); rule_level_mean 4.60 vs host median 3.00 (+0.021); distinct_technique_count 7.00 vs host median 2.00 (+0.017)
+# 6 [dirb] intranet_server rule 31104 (level 6) x2, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.70 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.027); rule_level_mean 4.64 vs host median 3.00 (+0.021); distinct_technique_count 7.00 vs host median 2.00 (+0.015)
+# 7 [service_scan] intranet_server rule suricata:2024364 (level 3) x3, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.52 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.024); tactic_progression 0.87 vs host median 0.00 (+0.020); rule_level_mean 3.62 vs host median 3.00 (+0.018)
+# 8 [benign] external_mail rule 31101 (level 5) x3, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.52 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.55 vs host median 0.00 (+0.035); rule_level_max 6.00 vs host median 3.00 (+0.034); novel_rule_flag 1.00 vs host median 0.00 (+0.031)
+# 9 [benign] external_mail rule 31101 (level 5) x3, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.47 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.71 vs host median 0.00 (+0.039); rule_level_max 6.00 vs host median 3.00 (+0.033); novel_rule_flag 1.00 vs host median 0.00 (+0.031)
+#10 [benign] external_mail rule 5706 (level 6) x1, 01-24 03:56-03:56
+     terms: S_seq(max) 100.00 -> pi 4.42 (weight 1); S_rule 40, S_exp 0 (weight 0)
+     window features: tactic_progression 0.65 vs host median 0.00 (+0.041); rule_level_max 6.00 vs host median 3.00 (+0.041); novel_rule_flag 1.00 vs host median 0.00 (+0.032)
+#11 [benign] external_mail rule 5706 (level 6) x1, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.42 (weight 1); S_rule 40, S_exp 0 (weight 0)
+     window features: rule_level_max 6.00 vs host median 3.00 (+0.042); tactic_progression 0.52 vs host median 0.00 (+0.036); novel_rule_flag 1.00 vs host median 0.00 (+0.031)
+#12 [benign] cloud_share rule 31101 (level 5) x5, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.30 (weight 1); S_rule 33, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.037); rule_level_mean 4.67 vs host median 3.00 (+0.020); rule_level_max 6.00 vs host median 3.00 (+0.013)
+#13 [dirb] intranet_server rule 31516 (level 6) x6, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.22 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.025); rule_level_mean 4.64 vs host median 3.00 (+0.022); rule_level_trend 0.45 vs host median 0.00 (+0.013)
+#14 [dirb] intranet_server rule 30305 (level 5) x7, 01-24 03:57-03:57
+     terms: S_seq(max) 100.00 -> pi 4.15 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.026); rule_level_mean 4.67 vs host median 3.00 (+0.020); distinct_technique_count 7.00 vs host median 2.00 (+0.013)
+#15 [escalated_sudo_command] intranet_server rule 5402 (level 3) x2, 01-24 04:37-04:38
+     terms: S_seq(max) 100.00 -> pi 4.06 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.028); rule_level_mean 4.41 vs host median 3.00 (+0.022); distinct_technique_count 8.00 vs host median 2.00 (+0.018)
+#16 [benign] external_mail rule 52507 (level 3) x8, 01-24 03:25-10:25
+     terms: S_seq(max) 99.99 -> pi 3.22 (weight 1); S_rule 20, S_exp 0 (weight 0)
+     window features: rule_level_max 6.00 vs host median 3.00 (+0.043); tactic_progression 0.58 vs host median 0.00 (+0.043); distinct_rule_count 4.00 vs host median 2.00 (+0.021)
+#17 [benign] internal_share rule suricata:2013504 (level 3) x5, 01-24 09:37-09:37
+     terms: S_seq(max) 99.99 -> pi 3.15 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: rule_level_mean 4.50 vs host median 3.00 (+0.025); rule_level_max 6.00 vs host median 3.00 (+0.013); rule_level_trend -3.00 vs host median 0.00 (+0.010)
+#18 [benign] external_mail rule 52507 (level 3) x8, 01-24 03:25-10:25
+     terms: S_seq(max) 99.98 -> pi 2.87 (weight 1); S_rule 20, S_exp 0 (weight 0)
+     window features: tactic_progression 0.87 vs host median 0.00 (+0.047); rule_level_max 6.00 vs host median 3.00 (+0.039); window_duration_s 10.92 vs host median 9.40 (+0.020)
+#19 [benign] webserver rule 5706 (level 6) x1, 01-24 03:57-03:57
+     terms: S_seq(max) 99.82 -> pi 2.74 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: rule_level_mean 3.70 vs host median 3.00 (+0.045); novel_rule_flag 1.00 vs host median 0.00 (+0.034); rule_level_trend 0.16 vs host median 0.00 (+0.028)
+#20 [benign] inet-firewall rule suricata:2230002 (level 3) x1, 01-24 03:58-03:58
+     terms: S_seq(max) 99.80 -> pi 2.69 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.048); rule_level_max 6.00 vs host median 3.00 (+0.043); distinct_rule_count 8.00 vs host median 3.00 (+0.029)
+
+shaw, seed 0: top 20 of 147 queue items under B2 (priority = pi; S_rule and S_exp shown for the hybrid's terms)
+
+# 1 [wpscan] intranet_server rule 31122 (level 5) x2, 01-29 14:38-14:38
+     terms: S_seq(max) 100.00 -> pi 4.70 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: rule_level_trend 0.86 vs host median 0.00 (+0.030); novel_rule_flag 1.00 vs host median 0.00 (+0.025); rule_level_mean 5.67 vs host median 3.00 (+0.013)
+# 2 [dirb] intranet_server rule 31104 (level 6) x2, 01-29 14:39-14:39
+     terms: S_seq(max) 100.00 -> pi 4.70 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.026); rule_level_trend 0.57 vs host median 0.00 (+0.024); rule_level_max 10.00 vs host median 3.00 (+0.009)
+# 3 [benign] cloud_share rule suricata:2001569 (level 3) x1, 01-30 17:39-17:39
+     terms: S_seq(max) 100.00 -> pi 4.57 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.046); rule_level_mean 4.64 vs host median 4.00 (+0.015); inter_arrival_min_s 5.75 vs host median 4.84 (+0.005)
+# 4 [wpscan] intranet_server rule 30306 (level 5) x1, 01-29 14:38-14:38
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.037); rule_level_trend 1.00 vs host median 0.00 (+0.028); rule_level_mean 4.33 vs host median 3.00 (+0.014)
+# 5 [attacker_change_user] intranet_server rule 5304 (level 3) x1, 01-29 15:20-15:20
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.030); rule_level_max 10.00 vs host median 3.00 (+0.008); rule_level_mean 5.33 vs host median 3.00 (+0.005)
+# 6 [escalated_sudo_command] intranet_server rule 5403 (level 4) x1, 01-29 15:21-15:21
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 27, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.028); rule_level_max 10.00 vs host median 3.00 (+0.007); tactic_progression 0.44 vs host median 0.00 (+0.007)
+# 7 [benign] intranet_server rule 5715 (level 3) x1, 01-29 19:30-19:30
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.031); rule_level_trend -0.20 vs host median 0.00 (+0.012); tactic_progression 0.39 vs host median 0.00 (+0.008)
+# 8 [benign] intranet_server rule 5501 (level 3) x1, 01-29 19:30-19:30
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.033); rule_level_trend -0.20 vs host median 0.00 (+0.013); rule_level_max 10.00 vs host median 3.00 (+0.008)
+# 9 [benign] intranet_server rule 5501 (level 3) x1, 01-30 12:36-12:36
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.030); rule_level_trend -0.26 vs host median 0.00 (+0.017); rule_level_max 10.00 vs host median 3.00 (+0.007)
+#10 [benign] intranet_server rule 5715 (level 3) x1, 01-30 12:36-12:36
+     terms: S_seq(max) 100.00 -> pi 4.54 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.031); rule_level_trend -0.25 vs host median 0.00 (+0.018); rule_level_max 10.00 vs host median 3.00 (+0.006)
+#11 [escalated_sudo_command] intranet_server rule 5402 (level 3) x2, 01-29 15:21-15:21
+     terms: S_seq(max) 100.00 -> pi 4.24 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.028); tactic_progression 0.57 vs host median 0.00 (+0.008); rule_level_trend -0.17 vs host median 0.00 (+0.007)
+#12 [attacker_change_user/escalated_sudo_command] intranet_server rule 5501 (level 3) x4, 01-29 15:20-15:21
+     terms: S_seq(max) 100.00 -> pi 3.94 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.030); rule_level_max 10.00 vs host median 3.00 (+0.006); current_run_length 0.69 vs host median 1.61 (+0.004)
+#13 [dirb/wpscan] intranet_server rule 31516 (level 6) x12, 01-29 14:38-14:39
+     terms: S_seq(max) 100.00 -> pi 3.92 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: rule_level_trend 0.86 vs host median 0.00 (+0.028); novel_rule_flag 1.00 vs host median 0.00 (+0.025); rule_level_mean 5.67 vs host median 3.00 (+0.013)
+#14 [dirb] intranet_server rule 30305 (level 5) x7, 01-29 14:39-14:39
+     terms: S_seq(max) 100.00 -> pi 3.70 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.025); rule_level_trend 0.32 vs host median 0.00 (+0.019); rule_level_max 10.00 vs host median 3.00 (+0.009)
+#15 [benign] external_mail rule 5551 (level 10) x5, 01-29 13:24-13:47
+     terms: S_seq(max) 99.98 -> pi 3.10 (weight 1); S_rule 67, S_exp 0 (weight 0)
+     window features: tactic_progression 0.46 vs host median 0.00 (+0.019); rule_level_max 10.00 vs host median 3.00 (+0.010); rule_level_trend 0.13 vs host median 0.00 (+0.008)
+#16 [benign] mail rule 5503 (level 5) x1, 01-30 17:43-17:43
+     terms: S_seq(max) 99.76 -> pi 2.62 (weight 1); S_rule 33, S_exp 100 (weight 0)
+     window features: tactic_progression 0.40 vs host median 0.00 (+0.046); rule_level_max 5.00 vs host median 3.00 (+0.034); distinct_technique_count 2.00 vs host median 1.00 (+0.019)
+#17 [dirb/wpscan] intranet_server rule 31151 (level 10) x368, 01-29 14:38-14:39
+     terms: S_seq(max) 100.00 -> pi 2.43 (weight 1); S_rule 67, S_exp 75 (weight 0)
+     window features: rule_level_trend 1.40 vs host median 0.00 (+0.037); novel_rule_flag 1.00 vs host median 0.00 (+0.029); rule_level_mean 5.60 vs host median 3.00 (+0.015)
+#18 [benign] external_mail rule 5503 (level 5) x2, 01-30 06:43-06:44
+     terms: S_seq(max) 99.81 -> pi 2.42 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.65 vs host median 0.00 (+0.037); rule_level_max 5.00 vs host median 3.00 (+0.025); inter_arrival_mean_s 7.79 vs host median 5.32 (+0.021)
+#19 [benign] external_mail rule 9705 (level 5) x32, 01-29 13:24-13:47
+     terms: S_seq(max) 99.98 -> pi 2.30 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.46 vs host median 0.00 (+0.018); rule_level_max 10.00 vs host median 3.00 (+0.012); rule_level_mean 5.25 vs host median 3.00 (+0.008)
+#20 [benign] intranet_server rule 5502 (level 3) x1, 01-29 19:30-19:30
+     terms: S_seq(max) 99.18 -> pi 2.08 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: rule_level_trend -0.20 vs host median 0.00 (+0.012); rule_level_max 10.00 vs host median 3.00 (+0.009); tactic_progression 0.26 vs host median 0.00 (+0.006)
+
+wheeler, seed 0: top 20 of 191 queue items under B2 (priority = pi; S_rule and S_exp shown for the hybrid's terms)
+
+# 1 [benign] internal_share rule 5706 (level 6) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 100.00 -> pi 5.00 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.031); inter_arrival_min_s 11.25 vs host median 5.08 (+0.016); inter_arrival_mean_s 11.25 vs host median 5.08 (+0.015)
+# 2 [wpscan] intranet_server rule 31510 (level 8) x1, 01-30 07:56-07:56
+     terms: S_seq(max) 100.00 -> pi 4.84 (weight 1); S_rule 53, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.043); volume_share_max 0.92 vs host median 0.19 (+0.019); rule_level_trend 0.13 vs host median 0.00 (+0.013)
+# 3 [dirb/wpscan] intranet_server rule 31122 (level 5) x5, 01-30 07:40-07:56
+     terms: S_seq(max) 100.00 -> pi 4.30 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.036); volume_share_max 0.92 vs host median 0.19 (+0.018); rule_level_trend 0.20 vs host median 0.00 (+0.014)
+# 4 [benign] webserver rule 31151 (level 10) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.99 -> pi 3.90 (weight 1); S_rule 67, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.068); rule_level_max 10.00 vs host median 3.00 (+0.027); rule_level_trend 0.17 vs host median 0.00 (+0.021)
+# 5 [benign] external_mail rule 5706 (level 6) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.98 -> pi 3.78 (weight 1); S_rule 40, S_exp 0 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.087); tactic_progression 0.40 vs host median 0.00 (+0.035); rule_level_max 6.00 vs host median 3.00 (+0.034)
+# 6 [service_scan] inet-firewall rule suricata:2220000 (level 3) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.98 -> pi 3.64 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.087); rule_level_max 6.00 vs host median 3.00 (+0.026); current_run_length 0.69 vs host median 2.20 (+0.022)
+# 7 [service_scan] inet-firewall rule suricata:2220006 (level 3) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.98 -> pi 3.62 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.109); rule_level_max 6.00 vs host median 3.00 (+0.033); current_run_length 0.69 vs host median 2.20 (+0.025)
+# 8 [benign] inet-firewall rule 5706 (level 6) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.97 -> pi 3.46 (weight 1); S_rule 40, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.105); rule_level_max 6.00 vs host median 3.00 (+0.043); current_run_length 0.69 vs host median 2.20 (+0.024)
+# 9 [benign] external_mail rule 31101 (level 5) x3, 01-30 07:39-07:39
+     terms: S_seq(max) 99.98 -> pi 3.29 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.089); tactic_progression 0.41 vs host median 0.00 (+0.032); rule_level_max 6.00 vs host median 3.00 (+0.015)
+#10 [benign] external_mail rule 5503 (level 5) x1, 01-29 07:04-07:04
+     terms: S_seq(max) 99.94 -> pi 3.26 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: rule_level_max 5.00 vs host median 3.00 (+0.046); tactic_progression 0.52 vs host median 0.00 (+0.041); distinct_tactic_count 5.00 vs host median 4.00 (+0.026)
+#11 [service_scan] inet-firewall rule suricata:2024364 (level 3) x3, 01-30 07:39-07:39
+     terms: S_seq(max) 99.98 -> pi 3.16 (weight 1); S_rule 20, S_exp 100 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.087); rule_level_max 6.00 vs host median 3.00 (+0.026); current_run_length 0.69 vs host median 2.20 (+0.021)
+#12 [dirb/wpscan] intranet_server rule 30306 (level 5) x83, 01-30 07:39-07:56
+     terms: S_seq(max) 100.00 -> pi 3.08 (weight 1); S_rule 33, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.037); volume_share_max 0.92 vs host median 0.19 (+0.019); rule_level_trend 0.20 vs host median 0.00 (+0.015)
+#13 [benign] external_mail rule 5503 (level 5) x1, 01-29 09:35-09:35
+     terms: S_seq(max) 99.87 -> pi 2.90 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: rule_level_max 5.00 vs host median 3.00 (+0.049); tactic_progression 0.40 vs host median 0.00 (+0.045); distinct_tactic_count 5.00 vs host median 4.00 (+0.032)
+#14 [service_scan] webserver rule suricata:2024364 (level 3) x6, 01-30 07:39-07:39
+     terms: S_seq(max) 99.97 -> pi 2.82 (weight 1); S_rule 20, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.063); rule_level_trend 0.17 vs host median 0.00 (+0.030); rule_level_max 10.00 vs host median 3.00 (+0.028)
+#15 [dirb] intranet_server rule 31104 (level 6) x172, 01-30 07:39-07:55
+     terms: S_seq(max) 100.00 -> pi 2.76 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.039); volume_share_max 0.78 vs host median 0.19 (+0.016); tactic_progression -0.80 vs host median 0.00 (+0.016)
+#16 [benign] external_mail rule 5503 (level 5) x1, 01-29 09:27-09:27
+     terms: S_seq(max) 99.78 -> pi 2.65 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: inter_arrival_min_s 8.12 vs host median 4.16 (+0.032); rule_level_max 5.00 vs host median 3.00 (+0.029); volume_share_max 0.05 vs host median 0.17 (+0.021)
+#17 [benign] webserver rule 5706 (level 6) x1, 01-30 07:39-07:39
+     terms: S_seq(max) 99.77 -> pi 2.65 (weight 1); S_rule 40, S_exp 75 (weight 0)
+     window features: novel_rule_flag 1.00 vs host median 0.00 (+0.093); rule_level_max 6.00 vs host median 3.00 (+0.062); rule_level_mean 3.15 vs host median 3.00 (+0.022)
+#18 [benign] external_mail rule 5503 (level 5) x1, 01-29 16:20-16:20
+     terms: S_seq(max) 99.74 -> pi 2.59 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: tactic_progression 0.39 vs host median 0.00 (+0.050); rule_level_max 5.00 vs host median 3.00 (+0.036); rule_level_mean 3.10 vs host median 3.00 (+0.023)
+#19 [benign] external_mail rule 9705 (level 5) x3, 01-29 07:04-07:04
+     terms: S_seq(max) 99.89 -> pi 2.50 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: rule_level_max 5.00 vs host median 3.00 (+0.031); tactic_progression 0.55 vs host median 0.00 (+0.029); rule_level_trend 0.05 vs host median 0.00 (+0.027)
+#20 [benign] external_mail rule 5503 (level 5) x1, 01-30 10:48-10:48
+     terms: S_seq(max) 99.60 -> pi 2.40 (weight 1); S_rule 33, S_exp 0 (weight 0)
+     window features: rule_level_max 5.00 vs host median 3.00 (+0.050); tactic_progression 0.40 vs host median 0.00 (+0.048); distinct_tactic_count 5.00 vs host median 4.00 (+0.030)
+

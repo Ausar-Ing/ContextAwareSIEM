@@ -1,0 +1,82 @@
+scenarios: harrison, russellmitchell, shaw, wheeler
+system     aNDCG@10           @20     @50     MRR  macroAUC withinAUC
+B0            0.187   0.198         0.262   0.016     0.516     0.535
+B0_rank       0.316   0.331         0.387   0.067     0.825     0.536
+B0_host       0.265   0.421         0.474   0.068     0.981     0.500
+B1            0.187   0.213         0.286   0.023     0.383     0.535
+B2_nov        0.264   0.351         0.458   0.038     0.929     0.931
+B2'           0.287   0.389         0.468   0.134     0.900     0.856
+B2_def        0.332   0.409±0.024   0.458   0.142       -         -  
+B2_alert      0.258   0.348±0.020   0.428   0.182     0.981     0.857
+B2_max        0.452   0.512±0.022   0.533   0.116       -         -  
+B2            0.423   0.473±0.022   0.540   0.232     0.974     0.896
+B3            0.585   0.606±0.014   0.669   0.333       -         -  
+B3_bestgrp     0.474   0.497±0.026   0.562   0.237       -         -  
+B3_noabs      0.564   0.599±0.015   0.657   0.332       -         -  
+
+robustness and per-day ranking (means over scenarios and seeds): alpha-nDCG@20 with the protocol grades, binary grades, grades (2,1,1), alpha = 1; per-day alpha-nDCG@20 and MRR
+system         @20  binary  (2,1,1)  alpha=1  day@20  dayMRR
+B0           0.198   0.382    0.266    0.194   0.199   0.020
+B0_rank      0.331   0.520    0.403    0.347   0.334   0.069
+B0_host      0.421   0.481    0.450    0.385   0.450   0.074
+B1           0.213   0.394    0.279    0.217   0.235   0.027
+B2_nov       0.351   0.426    0.385    0.374   0.415   0.044
+B2'          0.389   0.412    0.405    0.392   0.421   0.167
+B2_def       0.409   0.513    0.453    0.384   0.415   0.147
+B2_alert     0.348   0.374    0.364    0.357   0.376   0.191
+B2_max       0.512   0.677    0.580    0.481   0.515   0.120
+B2           0.473   0.538    0.504    0.464   0.489   0.243
+B3           0.606   0.735    0.661    0.619   0.623   0.336
+B3_bestgrp   0.497   0.580    0.535    0.491   0.516   0.248
+B3_noabs     0.599   0.709    0.650    0.624   0.608   0.335
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n= 9  B2 better  9, B0 better  0, tied  0, Wilcoxon p=0.004
+  B2   vs B0_rank : n= 9  B2 better  7, B0_rank better  2, tied  0, Wilcoxon p=0.039
+  B2   vs B0_host : n= 9  B2 better  6, B0_host better  3, tied  0, Wilcoxon p=0.727
+  B2   vs B1      : n= 9  B2 better  7, B1 better  2, tied  0, Wilcoxon p=0.020
+  B2   vs B2'     : n= 9  B2 better  4, B2' better  5, tied  0, Wilcoxon p=0.637
+  B2   vs B2_nov  : n= 9  B2 better  7, B2_nov better  2, tied  0, Wilcoxon p=0.160
+  B2   vs B2_alert: n= 9  B2 better  7, B2_alert better  2, tied  0, Wilcoxon p=0.164
+  B2   vs B2_max  : n= 9  B2 better  8, B2_max better  1, tied  0, Wilcoxon p=0.070
+  B3   vs B2      : n= 9  B3 better  5, B2 better  4, tied  0, Wilcoxon p=0.258
+  B3   vs B3_bestgrp: n= 9  B3 better  2, B3_bestgrp better  5, tied  2, Wilcoxon p=0.891
+  B3   vs B3_noabs: n= 9  B3 better  4, B3_noabs better  0, tied  5, Wilcoxon p=0.125
+
+paired first-item ranks, split by whether the stage's host has its own calibration
+  calibrated   B2 vs B0_host : n= 3  B2 better  0, B0_host better  3, tied  0, Wilcoxon p=0.250
+  calibrated   B2 vs B0_rank : n= 3  B2 better  2, B0_rank better  1, tied  0, Wilcoxon p=0.750
+  calibrated   B2 vs B0      : n= 3  B2 better  3, B0 better  0, tied  0, Wilcoxon p=0.250
+  uncalibrated B2 vs B0_host : n= 6  B2 better  6, B0_host better  0, tied  0, Wilcoxon p=0.031
+  uncalibrated B2 vs B0_rank : n= 6  B2 better  5, B0_rank better  1, tied  0, Wilcoxon p=0.062
+  uncalibrated B2 vs B0      : n= 6  B2 better  6, B0 better  0, tied  0, Wilcoxon p=0.031
+
+stage hosts and calibration:
+  harrison         dnsteal: inet-firewall/internal_share (own); attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  russellmitchell  attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  shaw             attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  wheeler          attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+
+calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
+  harrison         [shrink n0=100] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
+  russellmitchell  [shrink n0=100] intranet_server 100%, internal_share 100%, cloud_share 50%, vpn 42%, inet-firewall 15%, external_mail 14%, external_mail 13%, mail 10%, webserver 4%
+  shaw             [shrink n0=100] intranet_server 33%, cloud_share 3%, external_mail 2%, mail 0%, external_mail 0%, external_mail 0%, inet-firewall 0%, internal_share 0%, vpn 0%, webserver 0%
+  wheeler          [shrink n0=100] internal_share 30%, cloud_share 23%, external_mail 11%, external_mail 6%, inet-firewall 2%, webserver 2%, external_mail 1%, external_mail 0%, vpn 0%, intranet_server 0%, mail 0%
+
+within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
+  harrison         host 21   n=13/27: B2 0.980, B0_rank 0.520, B0_host 0.500
+  harrison         host 27   n=486/1680: B2 0.992, B0_rank 0.500, B0_host 0.500
+  shaw             host 21   n=10/15: B2 0.854, B0_rank 0.550, B0_host 0.500
+  wheeler          host 32   n=9/58: B2 0.847, B0_rank 0.547, B0_host 0.500
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  harrison         2 / 2 / 0   0.4113888888888889   max stages 3
+  russellmitchell  1 / 0 / 1   -   max stages 0
+  shaw             2 / 2 / 0   17.520833333333332   max stages 2
+  wheeler          1 / 1 / 0   26.24361111111111   max stages 3
+
+training windows after stride (entries):
+  harrison         {'host': 4323, 'srcip': 1465, 'user': 7}
+  russellmitchell  {'host': 1840, 'srcip': 583, 'user': 5}
+  shaw             {'host': 2865, 'srcip': 808, 'user': 26}
+  wheeler          {'host': 6885, 'srcip': 3874, 'user': 14}

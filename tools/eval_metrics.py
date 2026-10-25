@@ -122,6 +122,33 @@ def macro_auc(alert_scores: np.ndarray, labels) -> float:
 
 
 
+# Robustness grades (Deliverable 3, Sec. IV-C): binary, and (2, 1, 1) -- control or data 2,
+# credential attack and reconnaissance 1. With alpha = 1 only the first item of a stage counts.
+GRADES_BINARY = {s: 1 for s in GRADES}
+GRADES_211 = {s: (2 if g == 3 else 1) for s, g in GRADES.items()}
+
+
+def per_day(scores: np.ndarray, stages: list, days, k: int = 20) -> dict:
+    """Per-day ranking: an analyst works one day's queue at a time, so each item
+    competes only with items of its own day (the day of its first member). Returns
+    the mean alpha-nDCG@k over days holding at least one attack item, and the MRR of
+    non-scan stages with each stage's first-item rank taken in the day queue where
+    it ranks best."""
+    scores = np.asarray(scores, float); days = np.asarray(days)
+    nd, first = [], {}
+    for d in sorted(set(days.tolist())):
+        idx = np.flatnonzero(days == d)
+        st = [stages[i] for i in idx]
+        if not any(st):
+            continue
+        v = alpha_ndcg(scores[idx], st, k)
+        if not math.isnan(v):
+            nd.append(v)
+        for s_, r in first_item_ranks(scores[idx], st).items():
+            first[s_] = min(first.get(s_, np.inf), r)
+    return {"andcg": float(np.mean(nd)) if nd else float("nan"), "mrr": mrr_nonscan(first),
+            "first": {s_: float(v) for s_, v in first.items()}, "days": len(nd)}
+
 MIN_WITHIN = 5          # attack and benign alerts a host needs for within_host_auc
 
 

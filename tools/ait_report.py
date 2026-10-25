@@ -15,7 +15,7 @@ R = {}
 for p in sys.argv[2:]:
     R.update(json.load(open(p)))
 scs = sorted(R)
-systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2_pi", "B2_max", "B2", "B3"]
+systems = ["B0", "B0_rank", "B0_host", "B1", "B2_nov", "B2'", "B2_def", "B2_alert", "B2_pi", "B2_max", "B2_novterm", "B2", "B3", "B3_bestgrp", "B3_noabs"]
 
 
 def per_scenario(sc, name):
@@ -44,6 +44,20 @@ for name in systems:
     sd = f"±{np.std(by_seed20):.3f}" if seeds > 1 else "      "
     print(f"{name:9s} {f('andcg10'):>9s} {f('andcg20'):>7s}{sd} {f('andcg50'):>7s} {f('mrr'):>7s} {f('macro_auc'):>9s} {f('within_auc'):>9s}")
 
+print("\nrobustness and per-day ranking (means over scenarios and seeds): alpha-nDCG@20 with the protocol grades,"
+      " binary grades, grades (2,1,1), alpha = 1; per-day alpha-nDCG@20 and MRR")
+print(f"{'system':11s} {'@20':>6s} {'binary':>7s} {'(2,1,1)':>8s} {'alpha=1':>8s} {'day@20':>7s} {'dayMRR':>7s}")
+for name in systems:
+    if not all(name in R[sc]["seeded"] or name in R[sc]["deterministic"] for sc in scs):
+        continue
+    def mm(key):
+        v = [np.nanmean([x[key] for x in per_scenario(sc, name) if x.get(key) is not None]) for sc in scs
+             if any(x.get(key) is not None for x in per_scenario(sc, name))]
+        return f"{np.mean(v):.3f}" if v else "  -  "
+    print(f"{name:11s} {mm('andcg20'):>6s} {mm('andcg20_bin'):>7s} {mm('andcg20_211'):>8s} {mm('andcg20_a1'):>8s} "
+          f"{mm('day_andcg20'):>7s} {mm('day_mrr'):>7s}")
+
+
 def firsts(name):
     """{(scenario, stage): mean first rank over seeds}"""
     out = {}
@@ -55,8 +69,8 @@ def firsts(name):
 
 print("\npaired first-item ranks of non-scan stages (a better = earlier)")
 for a, b in [("B2", "B0"), ("B2", "B0_rank"), ("B2", "B0_host"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_alert"),
-             ("B2", "B2_pi"), ("B2", "B2_max"), ("B3", "B2")]:
-    if not all(b in R[sc]["seeded"] or b in R[sc]["deterministic"] for sc in scs):
+             ("B2", "B2_pi"), ("B2", "B2_max"), ("B2_novterm", "B2"), ("B2_novterm", "B0_host"), ("B3", "B2"), ("B3", "B3_bestgrp"), ("B3", "B3_noabs")]:
+    if not all(x in R[sc]["seeded"] or x in R[sc]["deterministic"] for sc in scs for x in (a, b)):
         continue
     p = M.paired_ranks(firsts(a), firsts(b))
     print(f"  {a:4s} vs {b:8s}: n={p['n']:2d}  {a} better {p['a_better']:2d}, {b} better {p['b_better']:2d}, "
