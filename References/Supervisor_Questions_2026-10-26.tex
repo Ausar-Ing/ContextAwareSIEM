@@ -25,7 +25,7 @@
 
 The design is complete and has been tuned on the four AIT-ADS tuning scenarios; the four test scenarios have not been touched since the untuned preliminary check in Deliverable~3. The test run happens \emph{once}, under a written pre-registration (\texttt{provenance/ait/PREREGISTRATION.md}), and its results are the only numbers the paper may call results. Before it can run, a set of choices has to be fixed, and several of them are judgement calls about what the paper should claim rather than technical questions. This document lists them.
 
-Section~1 summarises where the project stands. Section~2 defines the terms used in the questions. Sections~3 and 4 are the questions: Section~3 the eight that \textbf{block the test run}, Section~4 the seven that concern how the design is presented and can be settled later. Each question gives the background, the evidence, the options with their consequences, and a recommendation. Section~5 lists open points from Deliverable~3 that have since been resolved, and the appendix holds the per-stage numbers.
+Section~1 summarises where the project stands. Section~2 defines the terms used in the questions. Sections~3 and 4 are the questions: Section~3 the nine that \textbf{block the test run}, Section~4 the eight that concern how the design is presented and can be settled later. Each question gives the background, the evidence, the options with their consequences, and a recommendation. Section~5 lists open points from Deliverable~3 that have since been resolved, and the appendix holds the per-stage numbers.
 
 \begin{table}[h]
 \centering\small
@@ -41,14 +41,16 @@ Q5 & Confirm the relevance grades & Confirm as they are & yes \\
 Q6 & What to claim if the forest does not beat a robust z-score & Pre-commit to reporting them as equal & yes \\
 Q7 & Accept the tie rule and the first-item veto added during tuning & Accept & yes \\
 Q8 & Keep the hybrid form although rule and exposure get zero weight & Keep, report the exposure observation & yes \\
+Q9 & Add the risk-based alerting baseline of Uetz et al.\ (2026) as a comparator? & Add it, tuned on the tuning set only & yes \\
 \midrule
-Q9 & Entry windows instead of alert windows & Accept & no \\
-Q10 & Notable ranking: enough evidence to fix it & Fix it & no \\
-Q11 & Role-based exposure score without an asset inventory & Accept, as a stated limitation & no \\
-Q12 & Is the scenario split enough, given the preliminary check saw all eight & Accept, disclosed & no \\
-Q13 & AIT-ADS for ranking, workstation for false promotion; attacks on the workstation? & Keep the division, no attacks & no \\
-Q14 & Workstation results and the drifting user model & Report; workstation before the test run & no \\
-Q15 & Exclude vulnerability-detector alerts at admission & Exclude & no \\
+Q10 & Entry windows instead of alert windows & Accept & no \\
+Q11 & Notable ranking: enough evidence to fix it & Fix it & no \\
+Q12 & Role-based exposure score without an asset inventory & Accept, as a stated limitation & no \\
+Q13 & Is the scenario split enough, given the preliminary check saw all eight & Accept, disclosed & no \\
+Q14 & AIT-ADS for ranking, workstation for false promotion; attacks on the workstation? & Keep the division, no attacks & no \\
+Q15 & Workstation results and the drifting user model & Report; workstation before the test run & no \\
+Q16 & Exclude vulnerability-detector alerts at admission & Exclude & no \\
+Q17 & Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set? & AIT-ADS; alternatives stated in Related Work & no \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -81,7 +83,7 @@ B2$_\mathrm{nov+}$ & B2 + novelty term (candidate, Q1) & 0.526 & 0.261 & --- & 4
 \end{tabular}
 \end{table}
 
-\sub{Workstation (secondary corpus).} The frozen five-week baseline of a real Windows~11 workstation was used with every choice inherited from AIT-ADS: fitted on the first four weeks, run on the last (68.9 awake hours). No queue group reached the method's alert threshold, against 2.1 items per awake hour for rule level; the accumulator raised one notable in the week. Calibration drifted: 2.3\% of host windows and 7.5\% of user windows exceeded the 99th percentile instead of 1\% (Q14).
+\sub{Workstation (secondary corpus).} The frozen five-week baseline of a real Windows~11 workstation was used with every choice inherited from AIT-ADS: fitted on the first four weeks, run on the last (68.9 awake hours). No queue group reached the method's alert threshold, against 2.1 items per awake hour for rule level; the accumulator raised one notable in the week. Calibration drifted: 2.3\% of host windows and 7.5\% of user windows exceeded the 99th percentile instead of 1\% (Q15).
 
 \sub{Throughput.} The reference implementation (Python, one core) processes about 68 alerts per second online (12\,ms per alert at the median), far above the workstation's 0.07 per second but below the 276 per second of the largest AIT burst.
 
@@ -203,36 +205,67 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 \rec{(a). The form costs nothing, keeps every term inspectable, and a deployment with a real asset inventory may weight exposure differently; (c) would bend the rule just written in Q7.}
 \ask{(a), (b) or (c).}
 
+
+\subsection*{Q9. Add the risk-based alerting baseline of Uetz et al.\ as a comparator?}
+
+\sub{Background.} Uetz et al., ``Can Risk-Based Alerting Mitigate Cybersecurity Alert Fatigue?'' (arXiv, 2 September 2026), is the closest published evaluation and appeared after Deliverable~3 was drafted. They define five risk hypotheses (rule level, accumulation of alerts on an entity, variety of alert types, rarity of alert types, aperiodicity), combine them, and evaluate on eight alert datasets. One of these is AIT-ADS: the russellmitchell scenario, one of our tuning scenarios, with Wazuh and Suricata alerts scored separately. Their best combinations reach a mean AUROC of 0.92 against 0.72 for rule level. Deliverable~3 had stated that AIT-ADS had not been used for alert ranking; that sentence has been replaced and the paper is now cited.
+
+\sub{Why it matters.} Our comparators without temporal context are rule level, exposure, level rarity and host rarity. A reviewer will ask whether a learned window beats a well-chosen \emph{hand-designed} risk score, and Uetz et al.\ supply exactly that. Two of their hypotheses, rarity and accumulation, overlap with signals in our design (the novelty feature and Component~8), so the comparison is direct.
+
+\sub{Differences to state.} We learn context per host from the alert sequence rather than fixing it by hypothesis; we rank a queue of repeat groups and judge when each stage is first met, rather than alert-level AUROC; and we use all eight scenarios under a split fixed in advance, where they use one.
+
+\sub{Options.} (a) Implement their hypotheses on our queue as a secondary comparator (B$_\mathrm{RBA}$), select its combination on the tuning set only, and add ``B2 vs B$_\mathrm{RBA}$'' to the secondary family (12 comparisons; the primary family is unchanged under Q3(b)). (b) Cite and discuss only. (c) Make it a primary comparison.
+
+\rec{(a). It is the strongest hand-designed baseline in the literature, it is cheap to implement on our existing harness, and leaving it out invites the obvious objection. It must be added before the freeze and pre-registered; making it primary (c) would lower the power of the primary test further.}
+\ask{(a), (b) or (c).}
+
 \section{Questions about presentation (not blocking)}
 
-\subsection*{Q9. Entry windows instead of alert windows}
+\subsection*{Q10. Entry windows instead of alert windows}
 Windows hold the last 20 \emph{entries} (collapsed runs of one rule) rather than the last 20 alerts, so that one flood cannot fill the window. On the tuning set entries lead every alert-window configuration (0.478--0.525 against at most 0.491), and every alert-window configuration places five to eight of nine first items later. Alert-level AUC is slightly higher for short alert windows (0.981 for 5 alerts against 0.973 for entries), which is why the 5-alert window is kept as the ablation arm B2$_\mathrm{alert}$.
 \rec{Accept entries, with the ablation arm reported.}
 
-\subsection*{Q10. Is the evidence for the notable ranking enough to fix it?}
+\subsection*{Q11. Is the evidence for the notable ranking enough to fix it?}
 A notable absorbs its contributing groups and is placed by the baseline percentile of its risk, which in practice puts it at the top. Against the alternatives on the tuning set: placing it at its best group's priority (no promotion) loses most of the accumulation gain (0.554 against 0.660); leaving the groups in place (no absorption) scores lower (0.641) and meets five stages later and none earlier. The basis is four scenarios and nine stage occurrences.
 \rec{Fix the rule; it is stated as tuned on four scenarios.}
 
-\subsection*{Q11. Role-based exposure score}
+\subsection*{Q12. Role-based exposure score}
 Neither corpus has an asset inventory, so exposure is derived from documented host roles ($S_\mathrm{exp} = 100(c+x)/2$ from criticality and internet exposure), fixed before any ranking was computed. It receives zero weight in the tuned priority (Q8), so the evaluation does not depend on it.
 \rec{Accept, stated as a limitation.}
 
-\subsection*{Q12. Is the scenario split enough, given that the preliminary check saw all eight?}
+\subsection*{Q13. Is the scenario split enough, given that the preliminary check saw all eight?}
 The split was fixed before tuning (two large, two small, one contaminated per half). The test scenarios were read once, untuned, for the preliminary feasibility check with an earlier design; nothing since. The harness refuses them without an explicit flag, and the locked-run script refuses to run twice.
 \rec{Accept, with the preliminary check disclosed as it is now.}
 
-\subsection*{Q13. Division of corpora; attacks on the workstation?}
+\subsection*{Q14. Division of corpora; attacks on the workstation?}
 AIT-ADS supplies labelled attacks on simulated users; the workstation supplies a real user's benign activity but no attacks. They are never pooled; only the configuration crosses, from AIT-ADS to the workstation. Running attacks on the workstation after the freeze would add a realistic positive class but on one host, with a single attacker (the researcher), and would need its own protocol.
 \rec{Keep the division; no attacks, stated as a limitation and as future work.}
 
-\subsection*{Q14. Workstation results and the drifting user model}
+\subsection*{Q15. Workstation results and the drifting user model}
 Fitted on four weeks and run on the fifth (68.9 awake hours, 21{,}617 admitted alerts, 143 queue groups): no queue group reached the method's threshold (the priority above which half the AIT attack stages' first items fall; derived with the earlier $\Delta = 1$\,h queue and to be recomputed at the freeze), against 2.1 items per awake hour for rule level and 0.9 for level rarity; the accumulator raised one notable in the week, on the user entity. Host windows exceeded the 99th percentile 2.3\% of the time (95\% interval 0.2--6.1\%) and user windows 7.5\% (0.7--16.7\%), against 1\% expected: the user model does not stay calibrated over five weeks, which an operator would need to handle by periodic refitting. These numbers do not involve the AIT test scenarios.
 \rec{Report them as they stand, and keep the workstation analysis before the test run (it is final now).}
 \ask{whether the drift needs a mitigation (for example weekly refitting) evaluated before the paper, or only discussion.}
 
-\subsection*{Q15. Exclude vulnerability-detector alerts at admission?}
+\subsection*{Q16. Exclude vulnerability-detector alerts at admission?}
 Like the configuration-assessment (SCA) alerts already excluded, vulnerability-detector alerts describe an exploitable state, not anyone's activity. On the workstation they arrive in bursts (958 alerts in ten distinct minutes, up to 299 per minute) at high levels (443 at level 10, 60 at level 13), so they would dominate a severity-ranked queue. Excluding them changes none of the workstation results above; AIT-ADS contains none.
 \rec{Exclude, on the same grounds as SCA.}
+
+
+\subsection*{Q17. Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set?}
+
+\sub{Background.} Related work evaluates on three kinds of data: the authors' own Wazuh labs (not public, typically small: 55 alerts, 15{,}427 alerts, 46{,}454 events), network-flow datasets (CICIDS2017, UNSW-NB15, NSL-KDD, which are flows, not SIEM alerts), and proprietary company data (DeepCASE's Lastline data). The SOC-screening survey in our references (Ndichu et al., 2026) names AIT-ADS and SABU as the public resources closest to SIEM alerts and notes that no public corpus has real analyst dispositions.
+
+\sub{How AIT-ADS knows which alerts are attacks.} Its ground truth is a record of the attack, not an analyst's opinion. The attacks are executed by scripted attacker models; labelling rules, filled in from each run's execution facts (attacker addresses and domains, start and stop time of each step), mark the log events each attack step caused, and alerts take their labels from those events. We use these event-level labels, not the coarser time-interval labels. ``No analyst labels'' therefore means there is no record of how an analyst would have triaged each alert (true, false or benign positive), not that the attack ground truth is uncertain.
+
+\sub{Alternatives checked (October 2026).}
+\begin{itemize}
+\item \textbf{GUIDE} (Microsoft, 2024; extended with expert priority labels in 2026): about 1M real incidents with customer-analyst triage grades. Microsoft Defender XDR, not Wazuh: no Wazuh rule IDs or levels, labels grade whole incidents rather than attack steps, and there is no attack-free baseline period per network. Best kept as future validation.
+\item \textbf{SALAD / SALAD-SOC} (KMITL, 2026; Hugging Face and Zenodo): 2.78M records derived from CICIDS2017 and UNSW-NB15 flows, with triage decisions and priority scores whose generation is undocumented. No SIEM rule identities, two unrelated networks merged (timestamps 2015--2017), pre-split into train/validation/test, and no attack stages.
+\item \textbf{kholil-lil/wazuh-alerts} (Hugging Face, 2025): real Wazuh output but 738 alerts from 2 h 49 min of one day, agent identities redacted, 63\% firewall active-response entries; its true/false-positive labels coincide with the rule level (all level-3 alerts false, all level 4 and above true), so severity alone classifies it perfectly. Built for fine-tuning a language model.
+\item \textbf{Uetz et al.} (2026) independently report AIT-ADS as the only pre-existing dataset meeting their requirements.
+\end{itemize}
+
+\rec{AIT-ADS as the primary corpus, with the alternatives and the reason each does not fit stated in Related Work (done in the main document).}
 
 \section{Resolved since Deliverable 3's open points}
 
@@ -243,6 +276,7 @@ Like the configuration-assessment (SCA) alerts already excluded, vulnerability-d
 \item \textbf{Queue group gap} $\Delta$: 24\,h (from 1\,h), selected on the tuning set; longer gaps tie.
 \item \textbf{Near-empty windows:} variants that ignore window size were rejected; their gain came from quiet-host inflation.
 \item \textbf{Per-item explanation} is implemented (top contributing terms and window features).
+\item \textbf{Related work on datasets} updated: Deliverable~3 now cites Uetz et al.\ (2026) and Ndichu et al.\ (2026), both of which use AIT-ADS, and states why GUIDE, SALAD and the Hugging Face Wazuh set do not fit.
 \end{itemize}
 
 \appendix
