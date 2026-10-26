@@ -1,0 +1,298 @@
+\documentclass[10.5pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{times}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\setlist{itemsep=2pt,topsep=3pt}
+\newcommand{\rec}[1]{\par\smallskip\noindent\colorbox{gray!12}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textbf{Recommendation.} #1}}\par\smallskip}
+\newcommand{\ask}[1]{\par\noindent\textbf{Decision needed:} #1\par\medskip}
+\newcommand{\sub}[1]{\par\smallskip\noindent\textbf{#1}\quad}
+
+\title{\textbf{Context-Aware Alert Prioritization for Wazuh}\\[2pt]
+\large Decisions needed before the locked test run: questions for the supervisor}
+\date{26 October 2026}
+\author{}
+
+\begin{document}
+\maketitle
+\vspace{-2.5em}
+
+\section*{How to read this}
+
+The design is complete and has been tuned on the four AIT-ADS tuning scenarios; the four test scenarios have not been touched since the untuned preliminary check in Deliverable~3. The test run happens \emph{once}, under a written pre-registration (\texttt{provenance/ait/PREREGISTRATION.md}), and its results are the only numbers the paper may call results. Before it can run, a set of choices has to be fixed, and several of them are judgement calls about what the paper should claim rather than technical questions. This document lists them.
+
+Section~1 summarises where the project stands. Section~2 defines the terms used in the questions. Sections~3 and 4 are the questions: Section~3 the eight that \textbf{block the test run}, Section~4 the seven that concern how the design is presented and can be settled later. Each question gives the background, the evidence, the options with their consequences, and a recommendation. Section~5 lists open points from Deliverable~3 that have since been resolved, and the appendix holds the per-stage numbers.
+
+\begin{table}[h]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}c X X c@{}}
+\toprule
+& \textbf{Question} & \textbf{Recommendation} & \textbf{Blocks test} \\
+\midrule
+Q1 & Add an explicit novelty term to the priority (four-term hybrid)? & Adopt if a four-term hybrid is acceptable & yes \\
+Q2 & How to frame AIT-ADS given that host rarity alone ranks as well as the method & State the confound; carry the temporal claim on MRR, within-host AUC and the calibration split & yes \\
+Q3 & Holm correction over all 11 comparisons or over the 2 primary ones & Primary family separately & yes \\
+Q4 & Contaminated scenarios: headline recorded or cleaned & Recorded as headline, cleaned beside it & yes \\
+Q5 & Confirm the relevance grades & Confirm as they are & yes \\
+Q6 & What to claim if the forest does not beat a robust z-score & Pre-commit to reporting them as equal & yes \\
+Q7 & Accept the tie rule and the first-item veto added during tuning & Accept & yes \\
+Q8 & Keep the hybrid form although rule and exposure get zero weight & Keep, report the exposure observation & yes \\
+\midrule
+Q9 & Entry windows instead of alert windows & Accept & no \\
+Q10 & Notable ranking: enough evidence to fix it & Fix it & no \\
+Q11 & Role-based exposure score without an asset inventory & Accept, as a stated limitation & no \\
+Q12 & Is the scenario split enough, given the preliminary check saw all eight & Accept, disclosed & no \\
+Q13 & AIT-ADS for ranking, workstation for false promotion; attacks on the workstation? & Keep the division, no attacks & no \\
+Q14 & Workstation results and the drifting user model & Report; workstation before the test run & no \\
+Q15 & Exclude vulnerability-detector alerts at admission & Exclude & no \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Where the project stands}
+
+\sub{Method (as tuned).} Each admitted Wazuh alert updates a window of the last 20 \emph{entries} (runs of one rule, collapsed when repeats are less than 60\,s apart, expiring after 24\,h) for each entity it concerns. A fourteen-feature vector of the window is scored by an Isolation Forest per entity type, trained on the scenario's pre-attack period, and the raw score is turned into a percentile $S_\mathrm{seq}$ by calibrating against held-out baseline windows. Calibration mixes the host's own distribution with the pooled one, weighted by how many windows the host has (``shrinkage'', $w = n/(n+100)$). The queue shows \emph{repeat groups}, alerts with the same host and rule less than $\Delta = 24$\,h apart, ranked by $\pi(g) = -\log_{10}(1-u^{k})$, the improbability that a group of $k$ benign alerts reaches its highest $S_\mathrm{seq}$. Only the host window feeds the queue; source-address and user windows feed the accumulator (Component~8), which keeps a decaying risk per entity (half-life 1\,h) and raises a \emph{notable} that absorbs its contributing groups when risk crosses the 99.9th baseline percentile with evidence from two rules and two tactics.
+
+\sub{How choices were made.} On the tuning scenarios only, by one objective (graded $\alpha$-nDCG@20), with a tie rule (differences within the seed standard deviation are ties, broken by MRR only if MRR differs clearly) and a first-item veto (a change that places the first item of most attack stages later is rejected). Guards against the confound in Q2 were added for variants that change calibration: the within-host AUC must not fall and no more hosts may be miscalibrated.
+
+\sub{Where it stands on the tuning set} (five seeds; Table~\ref{tab:main}). The method B2 beats rule severity on all nine non-scan attack stages and level rarity on eight. It is level with host rarity on $\alpha$-nDCG@20 but meets the important stages much earlier (MRR 0.258 against 0.084). Accumulation (B3) lifts $\alpha$-nDCG@20 to 0.660, raises a notable containing attack alerts in all four scenarios, 0.4--26\,h after the first attack step, and raises one benign notable in total.
+
+\begin{table}[h]
+\centering\small
+\caption{Tuning set, five seeds (not results). $\alpha$-nDCG@20 is the primary metric; MRR and within-host AUC are defined in Section 2; ``vs B2'' counts the nine non-scan stage occurrences where the system meets the stage earlier / later than B2.}
+\label{tab:main}
+\begin{tabular}{@{}l l c c c c@{}}
+\toprule
+System & What it ranks by & $\alpha$-nDCG@20 & MRR & within-host AUC & vs B2 \\
+\midrule
+B0 & rule level & 0.224 & 0.029 & 0.535 & 0 / 9 \\
+B0$_\mathrm{rank}$ & rarity of the level on that host & 0.330 & 0.074 & 0.536 & 1 / 8 \\
+B0$_\mathrm{host}$ & how rarely the host alerts & 0.499 & 0.084 & 0.500 & 3 / 6 \\
+B2$'$ & robust z-score instead of forest & 0.420 & 0.168 & 0.856 & 5 / 4 \\
+B2$_\mathrm{nov}$ & novelty flag alone & 0.462 & 0.055 & 0.931 & 2 / 7 \\
+\textbf{B2} & \textbf{the method} & \textbf{0.501} & \textbf{0.258} & \textbf{0.893} & --- \\
+B2$_\mathrm{nov+}$ & B2 + novelty term (candidate, Q1) & 0.526 & 0.261 & --- & 4 / 0 \\
+\textbf{B3} & \textbf{B2 + accumulation} & \textbf{0.660} & \textbf{0.338} & --- & 6 / 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\sub{Workstation (secondary corpus).} The frozen five-week baseline of a real Windows~11 workstation was used with every choice inherited from AIT-ADS: fitted on the first four weeks, run on the last (68.9 awake hours). No queue group reached the method's alert threshold, against 2.1 items per awake hour for rule level; the accumulator raised one notable in the week. Calibration drifted: 2.3\% of host windows and 7.5\% of user windows exceeded the 99th percentile instead of 1\% (Q14).
+
+\sub{Throughput.} The reference implementation (Python, one core) processes about 68 alerts per second online (12\,ms per alert at the median), far above the workstation's 0.07 per second but below the 276 per second of the largest AIT burst.
+
+\section{Terms used below}
+
+\begin{description}[leftmargin=1.2em,style=nextline]
+\item[Non-scan stage occurrence] One attack stage other than reconnaissance (user change, sudo escalation, DNS exfiltration, password cracking) in one scenario. The tuning set has nine; the test set about ten. They are the unit of every paired test.
+\item[First-item rank] The queue position of the first item containing a given stage: how far an analyst scrolls before first meeting it. \textbf{MRR} is the mean of its reciprocal over non-scan stages.
+\item[Graded $\alpha$-nDCG@20] How much attack value appears in the top 20 queue items, weighting user change, sudo and exfiltration 3, password cracking 2, scans 1 (Q5), and crediting repeats of a stage less ($\alpha = 0.5$). It rewards putting \emph{many} stages near the top; first-item ranks reward meeting \emph{each} important stage early. The two can disagree (Q7).
+\item[Host rarity, B0$_\mathrm{host}$] Every group is ranked by how rarely its host alerted in the baseline. It uses no temporal context at all; it is the comparator that tests the confound in Q2.
+\item[Within-host AUC] For each host carrying both attack and benign alerts, how well a score separates the two \emph{on that host}. Host rarity is constant within a host, so it scores 0.5 by construction: this is the one measure host rarity cannot win.
+\item[Calibration split] Stages are split by whether the attacked host's calibration rests mostly on its own baseline (it has at least 100 held-out windows) or mostly on the pooled one. Only the first group tests the window score as specified; the second partly tests host rarity.
+\item[Seed SD] Each run is repeated with five forest seeds; the spread of the scenario-averaged metric across seeds is the noise level the tie rule uses.
+\end{description}
+
+\section{Questions that block the test run}
+
+\subsection*{Q1. Should an explicit novelty term enter the priority?}
+
+\sub{Background.} The window features already include a novelty flag (``this rule has not been seen for this entity''). The per-item explanations show it is the most influential feature for 53 of the top 80 queue items, and on its own (B2$_\mathrm{nov}$) it separates attack from benign alerts within a host better than the full window score (within-host AUC 0.931 against 0.893), although it ranks the queue far worse, because a binary flag cannot order the many novel benign groups. This suggested stating novelty outright in the priority:
+\[ P(g) = (1-w)\cdot\text{sequence term}(g) + w\cdot 100\cdot\mathbb{1}[\text{a member's host window flags its rule as novel}]. \]
+
+\sub{Evidence.} At $w = 0.2$ (larger weights give identical rankings) the variant B2$_\mathrm{nov+}$ passes the tuning protocol: $\alpha$-nDCG@20 0.526 against 0.501, four first items earlier, none later, within-host AUC and calibration unchanged. With accumulation it reaches 0.684 against B3's 0.660, again never worse on any stage. It places seven of nine stages earlier than host rarity ($p = 0.16$); before $\Delta$ was tuned it was eight of nine ($p = 0.012$), the only result so far significant against host rarity. Against this, on benign groups the flag fires two to thirty times as often on the rarely active hosts (12--57\% of their benign groups against 1--21\% elsewhere), so part of its gain is host rarity again.
+
+\sub{Options.} (a) Adopt: the priority becomes a four-term hybrid (rule, exposure, sequence, novelty) and B2 is replaced by B2$_\mathrm{nov+}$; the old B2 stays as the ablation arm. (b) Keep it as a reported arm only. (c) Drop it.
+
+\rec{(a), if a four-term hybrid is acceptable for the paper's story. It is the strongest variant measured and the only one never worse than the method on any stage. The quiet-host bias is real but is exactly what the within-host AUC and the calibration split are reported to expose, and those will be reported for it too. If the story should stay ``one learned temporal score'', (b).}
+\ask{adopt, keep as arm, or drop.}
+
+\subsection*{Q2. How should the paper frame AIT-ADS, given the host-rarity confound?}
+
+\sub{Background.} In every AIT scenario, tuning and test, the attack's privilege escalation lands on the intranet server, one of the least active hosts. Any signal that a host rarely alerts therefore ranks the attack well without knowing anything about the activity. The same quiet hosts have too few baseline windows for a calibration of their own, so their scores lean on the pooled distribution, which mixes host rarity into the window score itself.
+
+\sub{Evidence.}
+\begin{itemize}
+\item Host rarity alone reaches $\alpha$-nDCG@20 0.499 against B2's 0.501 (it gained as much from $\Delta = 24$\,h as B2 did). B2 meets the stages earlier (MRR 0.258 against 0.084) and places six of nine stages earlier ($p = 0.63$).
+\item Calibration split: on the three stages whose host has its own calibration (all in wheeler) host rarity wins all three; on the six others B2 wins all six ($p = 0.031$).
+\item Within-host AUC: 0.893 for B2, 0.536 for level rarity, 0.5 for host rarity by construction. On its own machine the attack's window is unusual in a way severity is not.
+\item A calibration study showed that, on AIT-ADS, ranking improves almost in step with how badly quiet hosts are miscalibrated (pooled-only calibration: 0.552 with quiet hosts' benign windows 100\% above the 99th percentile; well-calibrated variants: 0.36--0.40). Improving $\alpha$-nDCG on this dataset can mean re-introducing host rarity, which is why the guards in Section~1 exist.
+\end{itemize}
+
+\sub{Options.} (a) State the confound openly; claim temporal context only through the comparisons host rarity cannot win (first-item ranks and MRR, the within-host AUC, the calibration split), and present $\alpha$-nDCG against host rarity as a tie. (b) Treat host rarity as a legitimate context feature and add it to the method (it would win AIT-ADS but would make the result an artefact of the dataset's design). (c) Seek a second labelled corpus where attacks land on busy hosts.
+
+\rec{(a). It is honest and defensible: the within-host AUC isolates exactly what the paper claims. (b) would be fitting the dataset; (c) is right for future work but no such public alert-level corpus is known to us.}
+\ask{whether (a) is the framing the paper should take.}
+
+\subsection*{Q3. Which family should the Holm correction cover?}
+
+\sub{Background.} Deliverable~3 states that $p$-values across ``the whole family'' are Holm-corrected. The pre-registration lists that family: 2 primary comparisons (B2 against host rarity and against level rarity) and 9 secondary ones (B2 against B0, B1, B2$'$, B2$_\mathrm{nov}$, B2$_\mathrm{alert}$, B2$_\mathrm{max}$; B3 against B2 and against its two notable variants). The test set has about ten stage occurrences, and the paired test is the Wilcoxon signed-rank test.
+
+\sub{Evidence: what each choice permits.} With 11 comparisons the smallest Holm threshold is $0.05/11 = 0.0045$. The exact two-sided Wilcoxon $p$ for $n$ pairs is:
+
+\begin{center}\small
+\begin{tabular}{@{}c c c c c@{}}
+\toprule
+$n$ & all one side & one loss (smallest rank) & two losses & three losses \\
+\midrule
+9 & 0.0039 & 0.0078 & 0.020 & 0.055 \\
+10 & 0.0020 & 0.0039 & 0.0098 & 0.027 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Under the whole family, a primary comparison is significant only if B2 wins essentially every stage (10 of 10, or 9 of 10 with the loss at the smallest difference). Under a primary-only family (2 comparisons, threshold 0.025 for the smaller $p$), 10 occurrences tolerate two losses. On the tuning set, even B2 against rule severity (9 of 9) survives the whole-family correction only just ($p = 0.043$).
+
+\sub{Options.} (a) Whole family, as written: the test is very strict and the primary comparisons will almost certainly be reported as directions, not significant results. (b) Holm over the 2 primary comparisons; secondary comparisons corrected as their own family and labelled exploratory. (c) No correction (not recommended).
+
+\rec{(b). The primary hypotheses were fixed in advance and are few; correcting them together with nine exploratory ablations makes the primary test nearly impossible to pass with ten pairs. The change must be made now, before the run, and the pre-registration states the power table so the choice cannot look convenient afterwards.}
+\ask{(a) or (b).}
+
+\subsection*{Q4. Contaminated scenarios: which version is the headline?}
+
+\sub{Background.} AIT-ADS designed two scenarios, harrison (tuning) and santos (test), so that an exfiltration runs through about half of the pre-attack period: the model learns part of the attack as normal. A deployed system cannot know its baseline is clean, so the ``recorded'' version is the realistic one; the ``cleaned'' version (attack alerts removed from training using the labels) shows the method's ceiling.
+
+\sub{Evidence} (harrison, measured before $\Delta$ was tuned). Recorded against cleaned: B2 0.621 against 0.678; the exfiltration's first item falls from rank 41 to 56; the privilege-escalation stages stay at the top (ranks 1--3); B3 is unaffected (0.777 against 0.780). In the untuned preliminary check the recorded harrison model ranked exfiltration alerts below benign activity (AUC 0.18).
+
+\sub{Options.} (a) Recorded as headline, cleaned reported beside it. (b) Cleaned as headline, recorded as a robustness result. (c) Separate both scenarios from the main comparison.
+
+\rec{(a). It is what a deployment would face, and the cost is concentrated in one stage, which the paper can show per stage. The pre-registration runs both.}
+\ask{which version is the headline for santos.}
+
+\subsection*{Q5. Are the relevance grades acceptable?}
+
+\sub{Background.} The primary metric weights stages by what the attacker achieved: 3 for user change, sudo escalation and exfiltration (control or data), 2 for online password cracking (a credential attack), 1 for the three scans (reconnaissance), 0 for benign. They were fixed from the dataset authors' description of the attack steps, before any test result and independently of anything the layer reads, so that no system is favoured by construction.
+
+\sub{Evidence.} The conclusions are robust to the grading. B2 against host rarity under binary grades: 0.575 against 0.555; grades (2,~1,~1): 0.536 against 0.529; $\alpha = 1$ (only the first item of a stage counts): 0.490 against 0.453. Level rarity comes closest under binary grades (0.511).
+
+\rec{Confirm the grades as they are; robustness settings are reported in the paper.}
+\ask{confirm, or name a change before the run.}
+
+\subsection*{Q6. What will the paper claim if the forest does not beat a robust z-score?}
+
+\sub{Background.} B2$'$ replaces the Isolation Forest with a robust z-score (the largest standardised deviation of any feature from its baseline median). It exists to test whether the learned model earns its place.
+
+\sub{Evidence.} The forest ranks better on the primary metric (0.501 against 0.420) and separates within hosts better (0.893 against 0.856), but the z-score meets five of nine stages earlier ($p = 0.80$), notably both wheeler stages (7.5 against 18--26). On ten stage occurrences a difference of this size will not be significant either way.
+
+\sub{Options.} (a) Pre-commit: unless B2 beats B2$'$ significantly on the test set, the paper reports the two scorers as equal and says the window representation, not the forest, carries the result. (b) Present the simpler scorer as the method if the test set shows no difference. (c) Keep the forest as the method regardless.
+
+\rec{(a). It is the honest reading of the likely outcome and keeps the method unchanged before the run; (b) would be a post-hoc method change.}
+\ask{which claim is pre-committed.}
+
+\subsection*{Q7. Do you accept the tie rule and the first-item veto?}
+
+\sub{Background.} Deliverable~3 originally said only ``the objective is $\alpha$-nDCG@20, ties broken by MRR''. During tuning two gaps appeared. First, ``a tie'' was undefined; it is now a difference smaller than the larger of the two configurations' seed SDs, and the MRR tie-break applies only when MRR itself differs by more than its seed SD (otherwise the incumbent stays). Second, the objective and the paper's primary test can disagree: when host windows were adopted, ranking groups by their maximum score won $\alpha$-nDCG@20 (now 0.525 against 0.501) but met eight of nine stages later and halved MRR. The objective rewards filling the top 20 with many stages (scans included); the primary test rewards meeting each important stage early. The veto was added so that tuning cannot pick a configuration that worsens the primary test.
+
+\sub{Evidence.} The veto has since rejected the group maximum and a capped surprise score ($\lambda = 4$, which also ties the top of the queue). It was added on the tuning set, before any test run, and is declared as such in the paper and the pre-registration.
+
+\rec{Accept both. Under a stricter reading of ``tie'' (each configuration's own SD) the group maximum would have replaced $\pi$; the veto removes that sensitivity because the maximum fails the primary test outright.}
+\ask{accept, or specify a different rule before the run.}
+
+\subsection*{Q8. Keep the hybrid priority although rule and exposure receive zero weight?}
+
+\sub{Background.} The priority was designed as an inspectable sum $w_r S_\mathrm{rule} + w_c S_\mathrm{exp} + w_s S_\mathrm{seq}$. Tuned on AIT-ADS the weights are $(0, 0, 1)$: the priority reduces to the sequence term.
+
+\sub{Evidence.} The former default $(0.3, 0.2, 0.5)$ scores 0.417 against 0.501. Every configuration near the optimum has $w_r = 0$. A small exposure weight, $(0, 0.1, 0.9)$, ties (0.503, same MRR) and is therefore not adopted under the tie rule, but it places five of nine stages earlier and none later. The accumulator keeps its own weights $(0.3, 0.2, 0.5)$, which tied or beat every alternative tested.
+
+\sub{Options.} (a) Keep the hybrid form, report the tuned weights and the default side by side, and report the exposure observation. (b) State the priority as the sequence term alone for AIT-ADS. (c) Adopt $(0, 0.1, 0.9)$ despite the tie rule.
+
+\rec{(a). The form costs nothing, keeps every term inspectable, and a deployment with a real asset inventory may weight exposure differently; (c) would bend the rule just written in Q7.}
+\ask{(a), (b) or (c).}
+
+\section{Questions about presentation (not blocking)}
+
+\subsection*{Q9. Entry windows instead of alert windows}
+Windows hold the last 20 \emph{entries} (collapsed runs of one rule) rather than the last 20 alerts, so that one flood cannot fill the window. On the tuning set entries lead every alert-window configuration (0.478--0.525 against at most 0.491), and every alert-window configuration places five to eight of nine first items later. Alert-level AUC is slightly higher for short alert windows (0.981 for 5 alerts against 0.973 for entries), which is why the 5-alert window is kept as the ablation arm B2$_\mathrm{alert}$.
+\rec{Accept entries, with the ablation arm reported.}
+
+\subsection*{Q10. Is the evidence for the notable ranking enough to fix it?}
+A notable absorbs its contributing groups and is placed by the baseline percentile of its risk, which in practice puts it at the top. Against the alternatives on the tuning set: placing it at its best group's priority (no promotion) loses most of the accumulation gain (0.554 against 0.660); leaving the groups in place (no absorption) scores lower (0.641) and meets five stages later and none earlier. The basis is four scenarios and nine stage occurrences.
+\rec{Fix the rule; it is stated as tuned on four scenarios.}
+
+\subsection*{Q11. Role-based exposure score}
+Neither corpus has an asset inventory, so exposure is derived from documented host roles ($S_\mathrm{exp} = 100(c+x)/2$ from criticality and internet exposure), fixed before any ranking was computed. It receives zero weight in the tuned priority (Q8), so the evaluation does not depend on it.
+\rec{Accept, stated as a limitation.}
+
+\subsection*{Q12. Is the scenario split enough, given that the preliminary check saw all eight?}
+The split was fixed before tuning (two large, two small, one contaminated per half). The test scenarios were read once, untuned, for the preliminary feasibility check with an earlier design; nothing since. The harness refuses them without an explicit flag, and the locked-run script refuses to run twice.
+\rec{Accept, with the preliminary check disclosed as it is now.}
+
+\subsection*{Q13. Division of corpora; attacks on the workstation?}
+AIT-ADS supplies labelled attacks on simulated users; the workstation supplies a real user's benign activity but no attacks. They are never pooled; only the configuration crosses, from AIT-ADS to the workstation. Running attacks on the workstation after the freeze would add a realistic positive class but on one host, with a single attacker (the researcher), and would need its own protocol.
+\rec{Keep the division; no attacks, stated as a limitation and as future work.}
+
+\subsection*{Q14. Workstation results and the drifting user model}
+Fitted on four weeks and run on the fifth (68.9 awake hours, 21{,}617 admitted alerts, 143 queue groups): no queue group reached the method's threshold (the priority above which half the AIT attack stages' first items fall; derived with the earlier $\Delta = 1$\,h queue and to be recomputed at the freeze), against 2.1 items per awake hour for rule level and 0.9 for level rarity; the accumulator raised one notable in the week, on the user entity. Host windows exceeded the 99th percentile 2.3\% of the time (95\% interval 0.2--6.1\%) and user windows 7.5\% (0.7--16.7\%), against 1\% expected: the user model does not stay calibrated over five weeks, which an operator would need to handle by periodic refitting. These numbers do not involve the AIT test scenarios.
+\rec{Report them as they stand, and keep the workstation analysis before the test run (it is final now).}
+\ask{whether the drift needs a mitigation (for example weekly refitting) evaluated before the paper, or only discussion.}
+
+\subsection*{Q15. Exclude vulnerability-detector alerts at admission?}
+Like the configuration-assessment (SCA) alerts already excluded, vulnerability-detector alerts describe an exploitable state, not anyone's activity. On the workstation they arrive in bursts (958 alerts in ten distinct minutes, up to 299 per minute) at high levels (443 at level 10, 60 at level 13), so they would dominate a severity-ranked queue. Excluding them changes none of the workstation results above; AIT-ADS contains none.
+\rec{Exclude, on the same grounds as SCA.}
+
+\section{Resolved since Deliverable 3's open points}
+
+\begin{itemize}
+\item \textbf{The accumulator's surprise correction} (open point 3) is implemented and measured; its constants ($\lambda$, $\theta$, contribution floor, weights, half-life) were tuned on the tuning set. $\theta$ between the 99th and 99.99th percentile, and $\lambda$ between 2 and 8, give the same notables; a 5\% contribution floor would raise $\alpha$-nDCG@20 to 0.697 but doubles the benign notables and was rejected by the false-notable guard.
+\item \textbf{Calibration of quiet hosts:} the 500-window switch was replaced by shrinkage; tail extrapolation and episode weighting were tested and rejected.
+\item \textbf{Window sources:} only host windows feed the queue (source-address windows alone rank attack stages no better than severity); the accumulator keeps every entity.
+\item \textbf{Queue group gap} $\Delta$: 24\,h (from 1\,h), selected on the tuning set; longer gaps tie.
+\item \textbf{Near-empty windows:} variants that ignore window size were rejected; their gain came from quiet-host inflation.
+\item \textbf{Per-item explanation} is implemented (top contributing terms and window features).
+\end{itemize}
+
+\appendix
+\section{Per-stage first-item ranks on the tuning set}
+
+Mean over five seeds (deterministic systems: one run). Lower is better. Queue sizes: harrison 56 items, russellmitchell 68, shaw 51, wheeler 85.
+
+\begin{center}\small\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{@{}l l r r r r r r@{}}
+\toprule
+Scenario & Stage & B2 & B0$_\mathrm{host}$ & B0$_\mathrm{rank}$ & B2$'$ & B2$_\mathrm{nov+}$ & B3 \\
+\midrule
+harrison & DNS exfiltration & 31.0 & 17.0 & 32.0 & 25.5 & 24.2 & 25.8 \\
+harrison & user change & 1.3 & 8.5 & 32.0 & 5.5 & 1.3 & 1.5 \\
+harrison & sudo escalation & 1.5 & 8.5 & 5.5 & 5.5 & 1.5 & 1.5 \\
+russellmitchell & user change & 3.2 & 15.0 & 43.0 & 10.5 & 3.2 & 4.4 \\
+russellmitchell & sudo escalation & 13.4 & 15.0 & 43.0 & 22.5 & 12.7 & 11.8 \\
+shaw & user change & 4.3 & 9.0 & 30.0 & 3.0 & 4.3 & 1.5 \\
+shaw & sudo escalation & 4.3 & 9.0 & 4.5 & 3.0 & 4.3 & 1.5 \\
+wheeler & user change & 18.2 & 16.5 & 50.5 & 7.5 & 15.0 & 18.0 \\
+wheeler & sudo escalation & 26.4 & 16.5 & 9.0 & 7.5 & 20.2 & 25.4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The harrison exfiltration is a 486-alert group that $\pi$'s size correction pushes down (it ranks 11 under the group maximum). The wheeler stages are the only ones whose host has its own calibration; there a benign maintenance episode in the host's baseline outscores the attack windows in some seeds, and benign novelty on busy hosts fills the top of the queue.
+
+\section{Where the evidence is}
+
+All numbers come from committed scripts and outputs; \texttt{provenance/ait/README.md} maps each to its command.
+
+\begin{center}\small
+\begin{tabular}{@{}p{0.34\linewidth} p{0.62\linewidth}@{}}
+\toprule
+Topic & File (under \texttt{provenance/}) \\
+\midrule
+Main table, all systems, robustness, per day & \texttt{ait/eval\_tuning\_set\_report.txt} \\
+Holm family on the tuning set & \texttt{ait/eval\_tuning\_set\_holm.txt} \\
+Window and group-score tuning, veto & \texttt{ait/tuning\_objective\_report.txt}\newline\texttt{ait/tuning\_veto\_report.txt} \\
+$\Delta$ and accumulator constants & \texttt{ait/param\_lab\_verdict.txt} \\
+Window expiry $T$ & \texttt{ait/window\_T\_verdict.txt} \\
+Novelty term, quiet-host rates & \texttt{ait/diag\_novelty\_lab\_verdict.txt}\newline\texttt{ait/diag\_novelty\_check.txt} \\
+Calibration variants, blockers, within-host & \texttt{ait/diag\_calib\_lab\_report.txt}\newline\texttt{ait/diag\_blockers\_report.txt} \\
+Contaminated harrison & \texttt{ait/eval\_harrison\_recorded\_report.txt} \\
+Workstation & \texttt{workstation/ws\_eval.json}\newline\texttt{workstation/ws\_eval\_log.txt} \\
+Throughput & \texttt{ait/throughput\_harrison.txt} \\
+Pre-registration & \texttt{ait/PREREGISTRATION.md} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
+
