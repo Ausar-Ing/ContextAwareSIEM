@@ -8,20 +8,23 @@ within a group because its members share host and rule):
   B0_rank   S_rule as the mid-rank percentile of the level among the host's baseline alerts
   B0_host   host rarity: 100 * (1 - host's share of baseline alerts); no temporal context
   B1        0.8 S_rule + 0.2 S_exp          (best static weights on the tuning set)
-  B2        sequence term = group maximum of S_seq (seq_scoring.GROUP_SCORE; "pi": 100 min(1, pi(g)/8)),
-            entries N=20 delta=60 s, host windows (tuned: w_r = w_c = 0)
-  B2_novterm  candidate (2026-10-25, not the method): (1 - w) * 100 min(1, pi/8) + w * 100 * [a member's
-            host window flags its rule as novel], w = 0.2 (CONTEXTSIEM_NOVELTY_W)
-  B2_pi     B2 with the surprise group score pi(g) instead of the maximum (ablation; B2_max when GROUP_SCORE=pi)
+  B2        THE METHOD (from 2026-10-27, provisional decision on Q1/Q8): (1 - w) * sequence term
+            + w * 100 nu(g), w = 0.2 (CONTEXTSIEM_NOVELTY_W; 0 reproduces every earlier B2), where the
+            sequence term is 100 min(1, pi(g)/8) of S_seq (seq_scoring.GROUP_SCORE) over entries
+            N=20 delta=60 s, host windows, and nu(g) = 1 when a member's host window flags its rule as
+            novel; rule and exposure weights 0 (tuned: ait_weight_lab.py)
+  B2_seq    the sequence term alone (the method before 2026-10-27; ablation of the novelty term)
+  B2_max    B2 with the group maximum of S_seq instead of pi(g) in the sequence term (B2_pi when GROUP_SCORE=max)
   B2_def    0.3 S_rule + 0.2 S_exp + 0.5 * sequence term                 (former default weights)
   B2'       B2 with the forest replaced by a robust z-score
-  B2_nov    B2 with the sequence term replaced by 100 * [any member's rule is novel for its entity]
-  B2_alert  B2 with the window of the last 5 alerts
+  B2_nov    the novelty flag alone: 100 * [any member's rule is novel for its entity]
+  B2_alert  B2 with the window of the last 5 alerts in the sequence term
+  B_RBA     risk-based alerting after Uetz et al. 2026 (tools/rba.py), configuration fixed on the tuning
+            set in <wb_dir>/rba_config.json (ait_rba_tune.py); trailing windows, group maximum
   B3        B2 + risk notables (Component 8) absorbing their contributing groups, ranked by the
             baseline percentile of R (the working assumption)
   B3_bestgrp  B3 with each notable ranked at its best absorbed group's priority (no promotion)
   B3_noabs    B3 with notables added beside their groups instead of absorbing them
-  B3_novterm  B3 with the groups ranked as in the candidate arm B2_novterm
 
 Guard: test scenarios (fox, santos, wardbeck, wilson) are refused unless
 --allow-test is given. The protocol is run on them once, after every choice is
@@ -59,7 +62,8 @@ DELTA_Q = C6.GROUP_GAP_S     # repeat-group gap Delta (seq_scoring.GROUP_GAP_S)
 # "host" from 2026-10-24, "all" for earlier results (CONTEXTSIEM_SEQ_ENTITIES). C8 keeps every type.
 SEQ_ENTITIES = C6.SEQ_ENTITIES
 CUR_HOSTS = None        # host of each evaluation alert, set per scenario (within-host AUC)
-NOVELTY_W = float(os.environ.get("CONTEXTSIEM_NOVELTY_W", 0.2))   # weight of the novelty term in arm B2_novterm
+NOVELTY_W = float(os.environ.get("CONTEXTSIEM_NOVELTY_W", 0.2))   # weight of the novelty term in B2 (0: the sequence term alone)
+RBA_CFG = os.path.join(args.wb_dir, "rba_config.json")
 CUR_DAYS = None         # UTC day of each queue group's first member, set per scenario (per-day ranking)
 phases = collections.defaultdict(list)
 for r in csv.DictReader(open(args.labels)):
@@ -261,14 +265,29 @@ for sc in args.scenarios:
     for et, d in rows_e.items():
         np.maximum.at(nov, d["j"], d["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")])
     res["deterministic"]["B2_nov"] = queue_metrics(100 * group_max(gid, G, nov[ev]), stages, nov[ev], L)
-    # host-window novelty, for the candidate arm B2_novterm
+    # host-window novelty nu(g), the novelty term of B2
     nov_h = np.zeros(n)
     dh_ = rows_e["host"]
     np.maximum.at(nov_h, dh_["j"], np.where(dh_["ok"], dh_["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")], 0.0))
     g_novh = group_max(gid, G, nov_h[ev])
+
+    def mix(seq):
+        """the method's priority from a sequence term: (1 - w) seq + w * 100 nu(g)"""
+        return (1 - NOVELTY_W) * seq + NOVELTY_W * 100 * g_novh
+    # B_RBA: risk-based alerting comparator, configuration fixed on the tuning set
+    if os.path.exists(RBA_CFG):
+        import rba
+        rcfg = json.load(open(RBA_CFG))
+        adm = [j for j, a in enumerate(A) if a.admissible]
+        apos = {j: i for i, j in enumerate(adm)}
+        S_rba = rba.module_scores(np.array([A[j].ts for j in adm]), np.array([host_of(A[j]) for j in adm], dtype=object),
+                                  np.array([A[j].rule_id for j in adm], dtype=object), np.array([A[j].rule_level for j in adm], float),
+                                  t_atk, np.array([apos[j] for j in ev]), variants=list(rcfg["variants"].values()))
+        s_rba = rba.combine(S_rba, rcfg)
+        res["deterministic"]["B_RBA"] = queue_metrics(group_max(gid, G, s_rba), stages, s_rba, L)
     rz = score_types(rows_e, A, t_atk, C6.RobustZModel, 0, True)
     s_rz = alert_max(seq_rows(rows_e), rz, n)[ev]
-    res["deterministic"]["B2'"] = queue_metrics(seq_term(gid, G, k, s_rz), stages, s_rz, L)
+    res["deterministic"]["B2'"] = queue_metrics(mix(seq_term(gid, G, k, s_rz)), stages, s_rz, L)
     # seeded systems
     per_seed = collections.defaultdict(list)
     for seed in range(args.seeds):
@@ -300,12 +319,13 @@ for sc in args.scenarios:
         Sa = score_types(rows_a, A, t_atk, C6.TypeModel, seed, False)
         se_all = alert_max(seq_rows(rows_e), Se, n); se = se_all[ev]
         sa = alert_max(seq_rows(rows_a), Sa, n)[ev]
-        b2 = seq_term(gid, G, k, se)
+        b2s = seq_term(gid, G, k, se)
+        b2 = mix(b2s)
         per_seed["B2"].append(queue_metrics(b2, stages, se, L))
-        b2n = (1 - NOVELTY_W) * pi_term(gid, G, k, se) + NOVELTY_W * 100 * g_novh
-        per_seed["B2_novterm"].append(queue_metrics(b2n, stages))
+        if NOVELTY_W > 0:
+            per_seed["B2_seq"].append(queue_metrics(b2s, stages, se, L))
         per_seed["B2_pi" if C6.GROUP_SCORE == "max" else "B2_max"].append(
-            queue_metrics((pi_term if C6.GROUP_SCORE == "max" else lambda g, G_, k_, s_: group_max(g, G_, np.where(s_ < 0, 50.0, s_)))(gid, G, k, se), stages))
+            queue_metrics(mix((pi_term if C6.GROUP_SCORE == "max" else lambda g, G_, k_, s_: group_max(g, G_, np.where(s_ < 0, 50.0, s_)))(gid, G, k, se)), stages))
         if os.environ.get("DUMP_DIR"):
             # per-alert and per-group arrays for diagnosis (ait_blockers.py); no effect on results
             os.makedirs(os.environ["DUMP_DIR"], exist_ok=True)
@@ -322,8 +342,8 @@ for sc in args.scenarios:
                                 raw_srcip=(alert_max({"srcip": rows_e["srcip"]}, {"srcip": np.nan_to_num(cal_info["raw:srcip"], nan=-1.0)}, n)[ev]
                                            if "raw:srcip" in cal_info else np.full(len(ev), -1.0)),
                                 held=np.array([json.dumps({k: cal_info.get(k) for k in cal_info if k.startswith(("held:", "pool:"))})], dtype=object))
-        per_seed["B2_def"].append(queue_metrics(0.3 * g_rule + 0.2 * g_exp + 0.5 * b2, stages, None))
-        per_seed["B2_alert"].append(queue_metrics(seq_term(gid, G, k, sa), stages, sa, L))
+        per_seed["B2_def"].append(queue_metrics(0.3 * g_rule + 0.2 * g_exp + 0.5 * b2s, stages, None))
+        per_seed["B2_alert"].append(queue_metrics(mix(seq_term(gid, G, k, sa)), stages, sa, L))
         # ---- Component 8: one stream of (alert, entity) in time order, baseline and evaluation
         stream = []
         RUN = W.ENTRY_FEATURE_NAMES.index("current_run_length")
@@ -362,7 +382,6 @@ for sc in args.scenarios:
         best = [max(b2[g] for g in inc["gids"]) for inc in incidents]
         nprio = prio3[int(keep.sum()):]
         per_seed["B3_bestgrp"].append(queue_metrics(np.array(list(b2[keep]) + best), st3, days=days3))
-        per_seed["B3_novterm"].append(queue_metrics(np.array(list(b2n[keep]) + nprio), st3, days=days3))
         per_seed["B3_noabs"].append(queue_metrics(np.array(list(b2) + nprio),
                                                   list(stages) + st3[int(keep.sum()):],
                                                   days=list(CUR_DAYS) + days3[int(keep.sum()):]))

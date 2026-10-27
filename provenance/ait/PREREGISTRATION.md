@@ -5,6 +5,12 @@ test scenarios were read once, untuned, for the preliminary check (Deliverable 3
 Table V); nothing since. This document fixes what the locked run does and what may be
 claimed from it. It is frozen by tagging the commit that resolves Section 7.
 
+Revised 2026-10-27: Section 7 closed by provisional decisions taken by the student while the
+supervisor was unavailable (the planned meeting was cancelled). They are marked
+**provisional** and are to be confirmed or changed by the supervisor before the freeze tag.
+The pre-decision version is at git tag `checkpoint-2026-10-27-before-decisions` and in
+`References/checkpoints/2026-10-27_before_provisional_decisions/`.
+
 ## 1. Data
 
 | File | SHA-256 |
@@ -23,12 +29,16 @@ The configuration at the freeze tag, with the defaults of `tools/seq_scoring.py`
 - calibration: `shrink`, n0 = 100;
 - sequence entities: `host`;
 - group score: `pi`, lambda = 8;
-- weights (0, 0, 1);
+- priority: (1 - w) * sequence term + w * 100 * nu(g), with w = 0.2 and nu(g) = 1 when a member's
+  host window flags its rule as novel; rule and exposure weights 0, i.e. weights
+  (rule, exposure, sequence, novelty) = (0, 0, 0.8, 0.2) (**provisional**, Q1/Q8; selected on the
+  tuning set by `tools/ait_weight_lab.py`, `provenance/ait/weight_lab_verdict.txt`);
 - entries N = 20, delta = 60 s;
 - Delta = 24 h (repeat-group gap);
 - Component 8: half-life h = 1 h, theta at the 99.9th baseline percentile, contribution floor 10%, lambda = 4, weights (0.3, 0.2, 0.5);
 - window expiry T = 24 h;
-- all tuned on the tuning set on 2026-10-25 (`provenance/ait/param_lab_verdict.txt`, `provenance/ait/window_T_verdict.txt`);
+- all tuned on the tuning set on 2026-10-25 and 2026-10-27 (`provenance/ait/param_lab_verdict.txt`, `provenance/ait/window_T_verdict.txt`, `provenance/ait/weight_lab_verdict.txt`);
+- the risk-based alerting comparator B_RBA with the configuration in `tools/rba_config.json`, fixed on the tuning set (`tools/ait_rba_tune.py`, `provenance/ait/rba_tune_report.txt`);
 - seeds 0-9.
 
 No environment override is set. `ait_eval.py` records the configuration in each
@@ -37,11 +47,16 @@ scenario's `meta`; the report must show it unchanged.
 ## 3. Runs
 
 `tools/ait_locked_run.sh` performs, in order:
-1. it verifies the checksums above and that the working tree is clean at the freeze tag;
-2. it runs `ait_eval.py --allow-test --seeds 10` on the four test scenarios with oracle-cleaned baselines (the tuning convention);
-3. it runs santos again with `--recorded` (its designed exfiltration stays in the baseline);
-4. it runs `ait_report.py` and `ait_holm.py` on each;
+1. it verifies the checksums above, that the working tree is clean at the freeze tag and that `tools/rba_config.json` exists;
+2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, provisional decision on Q4);
+3. it runs santos again with the oracle-cleaned baseline (its labelled exfiltration alerts removed from training), reported beside the headline;
+4. it runs `ait_report.py` and `ait_holm.py` on the headline run and `ait_report.py` on the cleaned santos run;
 5. it writes everything under `provenance/ait/test/`.
+
+The tuning scenarios were tuned with oracle-cleaned baselines (harrison cleaned; the other three
+tuning scenarios have no labelled attack alerts before their first attack step). Harrison's
+recorded run (`provenance/ait/eval_harrison_recorded_report.txt`) is the tuning-set evidence for
+the recorded condition.
 
 The run happens once. A crash is fixed and the run repeated from scratch. Any other
 repeat, and any change of code or parameters after seeing a test number, is a deviation
@@ -57,36 +72,37 @@ queue (average ranks for ties); seeded systems enter by their mean rank over 10 
 number of occurrences where B2 is earlier / later / tied, and the two-sided Wilcoxon
 signed-rank p.
 
-**Family and correction (as Deliverable 3 states):** Holm step-down over the whole
-family: the 2 primary comparisons and the 9 secondary ones in `tools/ait_holm.py`:
+**Families and correction (provisional decision on Q3):** Holm step-down within the
+**primary family** (the 2 comparisons above; confirmatory) and, separately, within the
+**secondary family** (exploratory), as implemented in `tools/ait_holm.py`:
 
 | Secondary comparison |
 |---|
 | B2 vs B0 |
 | B2 vs B1 |
+| B2 vs B_RBA (risk-based alerting, Uetz et al. 2026; provisional decision on Q9) |
 | B2 vs B2' |
 | B2 vs B2_nov |
+| B2 vs B2_seq (the sequence term without the novelty term) |
 | B2 vs B2_alert |
 | B2 vs B2_max |
 | B3 vs B2 |
 | B3 vs B3_bestgrp |
 | B3 vs B3_noabs |
 
-If the novelty term is adopted (Section 7), "B2 vs B2_max" stays and "B2_nov+" becomes B2;
-the family size does not change.
+**What this permits (stated now, so it cannot be bent later).** In the primary family the
+smaller p must be below 0.05/2 = 0.025 and the larger below 0.05. The exact two-sided Wilcoxon p
+for n pairs is:
 
-**What this permits (stated now, so it cannot be bent later).** With 11 comparisons the
-smallest Holm threshold is 0.05/11 = 0.0045. The exact Wilcoxon p for n pairs all
-favouring one side is 2/2^n:
+| n | all one side | one loss at the smallest rank | two losses | three losses |
+|---|---|---|---|---|
+| 9 | 0.0039 | 0.0078 | 0.020 | 0.055 |
+| 10 | 0.0020 | 0.0039 | 0.0098 | 0.027 |
 
-| n | all one side | one loss at the smallest rank | two losses |
-|---|---|---|---|
-| 9 | 0.0039 | 0.0078 | 0.020 |
-| 10 | 0.0020 | 0.0039 | 0.0098 |
-
-So a primary comparison can be significant only if B2 wins essentially every stage.
-Anything less is reported as a direction with counts, never as a significant
-improvement.
+So with about ten occurrences a primary comparison can be significant with up to two losses at
+the smallest rank differences. Anything less is reported as a direction with counts, never as a
+significant improvement. Secondary comparisons (11, smallest threshold 0.0045) are exploratory
+whatever their p.
 
 ## 5. Secondary measures (reported, not tested)
 
@@ -103,19 +119,23 @@ improvement.
 
 ## 6. Claims allowed
 
-- **"Temporal context improves on static severity"** only if B2 vs B0 is significant after Holm. Otherwise: "B2 placed k of n stages earlier than severity".
-- **"Temporal context improves on host rarity"** only if B2 vs B0_host is significant after Holm. Otherwise the paper reports the counts, the within-host AUC (host rarity is 0.5 there by construction) and the calibration split, and states that AIT-ADS cannot separate the two.
-- **"The forest earns its place"** only if B2 vs B2' is significant after Holm. Otherwise the robust z-score is reported as an equal alternative.
-- **Santos:** both the cleaned and the recorded results are reported. Which one is the headline is decided before the run (Section 7).
+- **"Temporal context improves on host rarity"** only if B2 vs B0_host is significant after Holm in the primary family. Otherwise the paper reports the counts, the within-host AUC (host rarity is 0.5 there by construction) and the calibration split, and states that AIT-ADS cannot separate the two. In both cases the paper states that host rarity is strong on AIT-ADS because of how the dataset is built (every attack lands on its least active host), not as a general property of attacks (provisional decision on Q2).
+- **"Temporal context improves on level rarity"** only if B2 vs B0_rank is significant after Holm in the primary family.
+- **Secondary comparisons** (including static severity, B0, and risk-based alerting, B_RBA) are reported with counts and p-values and labelled exploratory; none is stated as a confirmed improvement.
+- **"The forest earns its place"** only if B2 vs B2' is significant after Holm in the secondary family. Otherwise the robust z-score is reported as an equal alternative and the result is credited to the window representation, not to the forest (provisional decision on Q6); the method itself is not changed after the run.
+- **Santos:** the recorded result is the headline; the cleaned result is reported beside it.
 - **Tuning-set numbers** are never presented as results.
 
-## 7. Open before the freeze (decided by the supervisor, then this section is closed)
+## 7. Decisions before the freeze (closed provisionally on 2026-10-27)
 
-1. Novelty term (`B2_nov+`, w = 0.2): method or arm.
-2. Santos headline: recorded or cleaned.
-3. Family for Holm: whole family (as written) or the 2 primary comparisons only, with the secondary family corrected separately. The power consequence is in Section 4: under the primary-only family the threshold for the smaller p is 0.025, which n = 10 meets with up to two losses at the smallest ranks.
-4. Grades (Table VI) confirmed.
-5. Whether to run the workstation false-promotion analysis before or after the test run. It does not touch the test scenarios.
+1. Novelty term: **adopted** (w = 0.2; Q1). Weights with the novelty term were searched (286 configurations); rule and exposure weights stay 0, and the rule and exposure scores are still shown to the analyst in every item's explanation (Q8).
+2. Santos headline: **recorded**; cleaned reported beside it (Q4).
+3. Holm: **primary family (2) and secondary family (11) corrected separately** (Q3).
+4. Grades (Table VI): **confirmed** (Q5). Every event label that occurs among the Wazuh alerts of the eight scenarios has a grade: service, directory and WordPress scans, online password cracking, user change, sudo escalation and DNS exfiltration.
+5. Workstation analysis: run before the test run (done 2026-10-25, `provenance/workstation/`).
+6. Forest vs robust z-score: pre-committed claim as in Section 6 (Q6).
+7. Tie rule and first-item veto: **accepted** as written in Deliverable 3, Sec. IV-C (Q7).
+8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9).
 
 ## 8. Deviations
 

@@ -1,0 +1,1074 @@
+{
+ "single_modules": {
+  "level": {
+   "andcg20": 0.2243526885869116,
+   "mrr": 0.02896527573716028,
+   "per_scenario": {
+    "harrison": 0.2509791882063674,
+    "russellmitchell": 0.16498587890426467,
+    "shaw": 0.29361219469067856,
+    "wheeler": 0.18783349254633577
+   }
+  },
+  "accumulation_1m_box": {
+   "andcg20": 0.26568286369793415,
+   "mrr": 0.03258065447411563,
+   "per_scenario": {
+    "harrison": 0.31341527310399453,
+    "russellmitchell": 0.2502469947955425,
+    "shaw": 0.22781280800005155,
+    "wheeler": 0.271256378892148
+   }
+  },
+  "accumulation_1m_triangle": {
+   "andcg20": 0.2662195675890556,
+   "mrr": 0.033315304017274464,
+   "per_scenario": {
+    "harrison": 0.3139519949816247,
+    "russellmitchell": 0.2502469947955425,
+    "shaw": 0.22930288902598966,
+    "wheeler": 0.27137639155306537
+   }
+  },
+  "accumulation_1h_box": {
+   "andcg20": 0.6153120372098236,
+   "mrr": 0.119482331751546,
+   "per_scenario": {
+    "harrison": 0.6863099679671326,
+    "russellmitchell": 0.7025994680406386,
+    "shaw": 0.7750553685924421,
+    "wheeler": 0.29728334423908126
+   }
+  },
+  "accumulation_1h_triangle": {
+   "andcg20": 0.6193798384600652,
+   "mrr": 0.11945588512084676,
+   "per_scenario": {
+    "harrison": 0.6863099679671326,
+    "russellmitchell": 0.7025994680406386,
+    "shaw": 0.7751865844926827,
+    "wheeler": 0.31342333333980654
+   }
+  },
+  "accumulation_1d_box": {
+   "andcg20": 0.7438507671546877,
+   "mrr": 0.4309232026143791,
+   "per_scenario": {
+    "harrison": 0.6154767691247789,
+    "russellmitchell": 0.8432916927716809,
+    "shaw": 0.8266257505527286,
+    "wheeler": 0.6900088561695625
+   }
+  },
+  "accumulation_1d_triangle": {
+   "andcg20": 0.7066823937137201,
+   "mrr": 0.21249999999999997,
+   "per_scenario": {
+    "harrison": 0.6154767691247789,
+    "russellmitchell": 0.7581927845417912,
+    "shaw": 0.7630511650187479,
+    "wheeler": 0.6900088561695625
+   }
+  },
+  "variety_1m_box": {
+   "andcg20": 0.47529079368025995,
+   "mrr": 0.08411706349206349,
+   "per_scenario": {
+    "harrison": 0.46198228795811075,
+    "russellmitchell": 0.35697217200720993,
+    "shaw": 0.5802802839399684,
+    "wheeler": 0.5019284308157507
+   }
+  },
+  "variety_1m_triangle": {
+   "andcg20": 0.4903259255385475,
+   "mrr": 0.08018010422901728,
+   "per_scenario": {
+    "harrison": 0.5373527019812033,
+    "russellmitchell": 0.32834985321727567,
+    "shaw": 0.5343684904485313,
+    "wheeler": 0.5612326565071798
+   }
+  },
+  "variety_1h_box": {
+   "andcg20": 0.6947509226334287,
+   "mrr": 0.5355769230769231,
+   "per_scenario": {
+    "harrison": 0.765903632043701,
+    "russellmitchell": 0.8370107839242528,
+    "shaw": 0.9522290178328062,
+    "wheeler": 0.22386025673295495
+   }
+  },
+  "variety_1h_triangle": {
+   "andcg20": 0.5068411522743982,
+   "mrr": 0.2353891618439032,
+   "per_scenario": {
+    "harrison": 0.4157325824363095,
+    "russellmitchell": 0.5219566054263025,
+    "shaw": 0.8035179410476873,
+    "wheeler": 0.28615748018729364
+   }
+  },
+  "variety_1d_box": {
+   "andcg20": 0.6329829644268616,
+   "mrr": 0.4620726495726496,
+   "per_scenario": {
+    "harrison": 0.5222149044277373,
+    "russellmitchell": 0.4389627031313234,
+    "shaw": 0.9282997781885581,
+    "wheeler": 0.6424544719598276
+   }
+  },
+  "variety_1d_triangle": {
+   "andcg20": 0.7294013052254313,
+   "mrr": 0.6402777777777777,
+   "per_scenario": {
+    "harrison": 0.5814991671648713,
+    "russellmitchell": 0.7855286512233323,
+    "shaw": 0.9399764951958413,
+    "wheeler": 0.6106009073176805
+   }
+  },
+  "rarity_1m_box": {
+   "andcg20": 0.3324301360087922,
+   "mrr": 0.03978411513859275,
+   "per_scenario": {
+    "harrison": 0.4092749881429893,
+    "russellmitchell": 0.3309100807857687,
+    "shaw": 0.30272168829190355,
+    "wheeler": 0.28681378681450714
+   }
+  },
+  "rarity_1m_triangle": {
+   "andcg20": 0.30416908255469344,
+   "mrr": 0.04014058857808858,
+   "per_scenario": {
+    "harrison": 0.4092749881429893,
+    "russellmitchell": 0.34947373056804465,
+    "shaw": 0.16018489812438352,
+    "wheeler": 0.2977427133833563
+   }
+  },
+  "rarity_1h_box": {
+   "andcg20": 0.3963538443913392,
+   "mrr": 0.05168680601774698,
+   "per_scenario": {
+    "harrison": 0.43545189407596957,
+    "russellmitchell": 0.39178126287592574,
+    "shaw": 0.36121898006378267,
+    "wheeler": 0.39696324054967874
+   }
+  },
+  "rarity_1h_triangle": {
+   "andcg20": 0.418402037806538,
+   "mrr": 0.05598877708978328,
+   "per_scenario": {
+    "harrison": 0.43545189407596957,
+    "russellmitchell": 0.40204151489599255,
+    "shaw": 0.4240761975316103,
+    "wheeler": 0.41203854472257967
+   }
+  },
+  "rarity_1d_box": {
+   "andcg20": 0.5455559915906073,
+   "mrr": 0.09368591934381407,
+   "per_scenario": {
+    "harrison": 0.6472557605591832,
+    "russellmitchell": 0.4159372657754007,
+    "shaw": 0.5021581992013231,
+    "wheeler": 0.6168727408265223
+   }
+  },
+  "rarity_1d_triangle": {
+   "andcg20": 0.5574095951282534,
+   "mrr": 0.09666210982000456,
+   "per_scenario": {
+    "harrison": 0.6472557605591832,
+    "russellmitchell": 0.41554099419315377,
+    "shaw": 0.5499688849341545,
+    "wheeler": 0.6168727408265223
+   }
+  },
+  "aperiodicity_1m": {
+   "andcg20": 0.31499335432845055,
+   "mrr": 0.03166395449548229,
+   "per_scenario": {
+    "harrison": 0.4035178716614618,
+    "russellmitchell": 0.28434912660930683,
+    "shaw": 0.2939717084496922,
+    "wheeler": 0.2781347105933413
+   }
+  },
+  "aperiodicity_1h": {
+   "andcg20": 0.3158549460007301,
+   "mrr": 0.032118616677440204,
+   "per_scenario": {
+    "harrison": 0.4039320446860703,
+    "russellmitchell": 0.28821029570705337,
+    "shaw": 0.2939717084496922,
+    "wheeler": 0.2773057351601045
+   }
+  },
+  "aperiodicity_1d": {
+   "andcg20": 0.3735109507910895,
+   "mrr": 0.04042172424525366,
+   "per_scenario": {
+    "harrison": 0.48362341365541994,
+    "russellmitchell": 0.32923191541106606,
+    "shaw": 0.3473097885171707,
+    "wheeler": 0.33387868558070116
+   }
+  }
+ },
+ "best_variant": {
+  "level": "level",
+  "accumulation": "accumulation_1d_box",
+  "variety": "variety_1d_triangle",
+  "rarity": "rarity_1d_triangle",
+  "aperiodicity": "aperiodicity_1d"
+ },
+ "top_combinations": [
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.0,
+    "variety": 0.9,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7918244901331606,
+   "mrr": 0.7569444444444444,
+   "per_scenario": {
+    "harrison": 0.5639056871439457,
+    "russellmitchell": 0.776942799595656,
+    "shaw": 0.9374554808658266,
+    "wheeler": 0.888993992927214
+   },
+   "first": {
+    "harrison/dnsteal": 12.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.2,
+    "variety": 0.7,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7626916326956383,
+   "mrr": 0.6921296296296297,
+   "per_scenario": {
+    "harrison": 0.5619965618064726,
+    "russellmitchell": 0.8020975338274469,
+    "shaw": 0.8151318043144378,
+    "wheeler": 0.8715406308341961
+   },
+   "first": {
+    "harrison/dnsteal": 18.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 2.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.1,
+    "variety": 0.8,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7623273162844421,
+   "mrr": 0.6924019607843137,
+   "per_scenario": {
+    "harrison": 0.5641567223284829,
+    "russellmitchell": 0.7995498516370924,
+    "shaw": 0.8151318043144378,
+    "wheeler": 0.8704708868577554
+   },
+   "first": {
+    "harrison/dnsteal": 17.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 2.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.3,
+    "variety": 0.7,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.759873277511242,
+   "mrr": 0.6363304093567251,
+   "per_scenario": {
+    "harrison": 0.5910284810054971,
+    "russellmitchell": 0.8426631051418723,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.6594790344816603
+   },
+   "first": {
+    "harrison/dnsteal": 19.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.0,
+    "variety": 0.8,
+    "rarity": 0.2,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7555218312319953,
+   "mrr": 0.6715686274509803,
+   "per_scenario": {
+    "harrison": 0.5680797684645265,
+    "russellmitchell": 0.7825159671606412,
+    "shaw": 0.7810343825251751,
+    "wheeler": 0.8904572067776385
+   },
+   "first": {
+    "harrison/dnsteal": 17.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.2,
+    "variety": 0.8,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.756042814300625,
+   "mrr": 0.6363304093567251,
+   "per_scenario": {
+    "harrison": 0.5766718565098431,
+    "russellmitchell": 0.8416978767950585,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.6594790344816603
+   },
+   "first": {
+    "harrison/dnsteal": 19.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.6,
+    "variety": 0.3,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7535443045521335,
+   "mrr": 0.6691176470588235,
+   "per_scenario": {
+    "harrison": 0.513495867257763,
+    "russellmitchell": 0.8174202968681001,
+    "shaw": 0.7761460295061726,
+    "wheeler": 0.9071150245764985
+   },
+   "first": {
+    "harrison/dnsteal": 34.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.0,
+    "variety": 0.7,
+    "rarity": 0.0,
+    "aperiodicity": 0.3
+   },
+   "andcg20": 0.7534281772714266,
+   "mrr": 0.6576797385620915,
+   "per_scenario": {
+    "harrison": 0.5886433052485109,
+    "russellmitchell": 0.7536855187208402,
+    "shaw": 0.7916108863024504,
+    "wheeler": 0.8797729988139047
+   },
+   "first": {
+    "harrison/dnsteal": 17.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.5,
+    "variety": 0.4,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7518487331604808,
+   "mrr": 0.6697530864197531,
+   "per_scenario": {
+    "harrison": 0.5108265218791537,
+    "russellmitchell": 0.814089318309743,
+    "shaw": 0.7753640678765288,
+    "wheeler": 0.9071150245764985
+   },
+   "first": {
+    "harrison/dnsteal": 27.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.0,
+    "variety": 0.8,
+    "rarity": 0.1,
+    "aperiodicity": 0.1
+   },
+   "andcg20": 0.7510124311397048,
+   "mrr": 0.6510416666666666,
+   "per_scenario": {
+    "harrison": 0.5702171393753932,
+    "russellmitchell": 0.7583709789345239,
+    "shaw": 0.7860812401324945,
+    "wheeler": 0.8893803661164078
+   },
+   "first": {
+    "harrison/dnsteal": 16.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.4,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.5
+   },
+   "andcg20": 0.74910121410059,
+   "mrr": 0.6554659498207885,
+   "per_scenario": {
+    "harrison": 0.5449639961937041,
+    "russellmitchell": 0.7855826806743399,
+    "shaw": 0.7764576026867589,
+    "wheeler": 0.8894005768475576
+   },
+   "first": {
+    "harrison/dnsteal": 31.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.4,
+    "variety": 0.5,
+    "rarity": 0.1,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7475134251261992,
+   "mrr": 0.6698717948717948,
+   "per_scenario": {
+    "harrison": 0.5100753799108926,
+    "russellmitchell": 0.809610284827774,
+    "shaw": 0.7756028616426067,
+    "wheeler": 0.8947651741235236
+   },
+   "first": {
+    "harrison/dnsteal": 26.0,
+    "harrison/attacker_change_user": 4.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.3,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.6
+   },
+   "andcg20": 0.7484537331275605,
+   "mrr": 0.6555555555555556,
+   "per_scenario": {
+    "harrison": 0.5449639961937041,
+    "russellmitchell": 0.7830620872233877,
+    "shaw": 0.7768021090073769,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 30.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.4,
+    "variety": 0.3,
+    "rarity": 0.0,
+    "aperiodicity": 0.3
+   },
+   "andcg20": 0.7465827147146624,
+   "mrr": 0.6555555555555556,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7825689180703391,
+    "shaw": 0.7793178928265589,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 30.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.5,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.4
+   },
+   "andcg20": 0.7466762356058729,
+   "mrr": 0.6553819444444444,
+   "per_scenario": {
+    "harrison": 0.5357572018365471,
+    "russellmitchell": 0.7854011342332149,
+    "shaw": 0.7761460295061725,
+    "wheeler": 0.8894005768475576
+   },
+   "first": {
+    "harrison/dnsteal": 32.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.6,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.3
+   },
+   "andcg20": 0.7466301053719372,
+   "mrr": 0.6553030303030303,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7855165072580407,
+    "shaw": 0.7761460295061725,
+    "wheeler": 0.8894005768475576
+   },
+   "first": {
+    "harrison/dnsteal": 33.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.7,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.1
+   },
+   "andcg20": 0.7468309686096887,
+   "mrr": 0.6553030303030303,
+   "per_scenario": {
+    "harrison": 0.5386580171363234,
+    "russellmitchell": 0.7824727612369662,
+    "shaw": 0.7764576026867589,
+    "wheeler": 0.8897354933787062
+   },
+   "first": {
+    "harrison/dnsteal": 33.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.8,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.1
+   },
+   "andcg20": 0.7474706221809537,
+   "mrr": 0.6552287581699346,
+   "per_scenario": {
+    "harrison": 0.5386580171363234,
+    "russellmitchell": 0.7857461135186351,
+    "shaw": 0.7753640678765289,
+    "wheeler": 0.8901142901923276
+   },
+   "first": {
+    "harrison/dnsteal": 34.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.7,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.2
+   },
+   "andcg20": 0.7468808394653186,
+   "mrr": 0.6551587301587302,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7855165072580407,
+    "shaw": 0.7761460295061725,
+    "wheeler": 0.8904035132210829
+   },
+   "first": {
+    "harrison/dnsteal": 35.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.1,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.8
+   },
+   "andcg20": 0.7456282084135288,
+   "mrr": 0.6556513409961686,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7787508928658046,
+    "shaw": 0.7793178928265589,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 29.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.2,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.6
+   },
+   "andcg20": 0.7456282084135288,
+   "mrr": 0.6556513409961686,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7787508928658046,
+    "shaw": 0.7793178928265589,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 29.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.2,
+    "variety": 0.1,
+    "rarity": 0.0,
+    "aperiodicity": 0.7
+   },
+   "andcg20": 0.7461357197174225,
+   "mrr": 0.6555555555555556,
+   "per_scenario": {
+    "harrison": 0.5357572018365471,
+    "russellmitchell": 0.7826131297689359,
+    "shaw": 0.7771858071784336,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 30.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.3,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.5
+   },
+   "andcg20": 0.7463545777024954,
+   "mrr": 0.6554659498207885,
+   "per_scenario": {
+    "harrison": 0.5357572018365471,
+    "russellmitchell": 0.7825689180703391,
+    "shaw": 0.7781054508173222,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 31.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.4,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.4
+   },
+   "andcg20": 0.7460607462272804,
+   "mrr": 0.6553819444444444,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7826131297689359,
+    "shaw": 0.7771858071784336,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 32.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.5,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.3
+   },
+   "andcg20": 0.7460167172204357,
+   "mrr": 0.6553030303030303,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7828207119126145,
+    "shaw": 0.7768021090073769,
+    "wheeler": 0.8889867400857734
+   },
+   "first": {
+    "harrison/dnsteal": 33.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.6,
+    "variety": 0.2,
+    "rarity": 0.0,
+    "aperiodicity": 0.2
+   },
+   "andcg20": 0.7463277951415104,
+   "mrr": 0.6552287581699346,
+   "per_scenario": {
+    "harrison": 0.5354573078759783,
+    "russellmitchell": 0.7830620872233877,
+    "shaw": 0.7768021090073769,
+    "wheeler": 0.8899896764592987
+   },
+   "first": {
+    "harrison/dnsteal": 34.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 3.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 3.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 1.0,
+    "wheeler/escalated_sudo_command": 1.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.1,
+    "variety": 0.9,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7456082032241903,
+   "mrr": 0.639520202020202,
+   "per_scenario": {
+    "harrison": 0.5755689346242255,
+    "russellmitchell": 0.8036874095106351,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.656853979345962
+   },
+   "first": {
+    "harrison/dnsteal": 11.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.5,
+    "variety": 0.5,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7456210430087598,
+   "mrr": 0.6354166666666667,
+   "per_scenario": {
+    "harrison": 0.5349760365992166,
+    "russellmitchell": 0.8417066115382237,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.6594790344816603
+   },
+   "first": {
+    "harrison/dnsteal": 24.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.6,
+    "variety": 0.4,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7459862801073148,
+   "mrr": 0.6352777777777778,
+   "per_scenario": {
+    "harrison": 0.5348880329808493,
+    "russellmitchell": 0.8432555635508113,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.6594790344816603
+   },
+   "first": {
+    "harrison/dnsteal": 25.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  },
+  {
+   "weights": {
+    "level": 0.0,
+    "accumulation": 0.7,
+    "variety": 0.3,
+    "rarity": 0.0,
+    "aperiodicity": 0.0
+   },
+   "andcg20": 0.7459771983291559,
+   "mrr": 0.6348180076628352,
+   "per_scenario": {
+    "harrison": 0.534683372788444,
+    "russellmitchell": 0.8434238966305808,
+    "shaw": 0.9463224894159383,
+    "wheeler": 0.6594790344816603
+   },
+   "first": {
+    "harrison/dnsteal": 29.0,
+    "harrison/attacker_change_user": 3.0,
+    "harrison/escalated_sudo_command": 2.0,
+    "russellmitchell/attacker_change_user": 2.0,
+    "russellmitchell/escalated_sudo_command": 1.0,
+    "shaw/attacker_change_user": 1.0,
+    "shaw/escalated_sudo_command": 1.0,
+    "wheeler/attacker_change_user": 2.0,
+    "wheeler/escalated_sudo_command": 2.0
+   }
+  }
+ ],
+ "n_combinations": 1001
+}

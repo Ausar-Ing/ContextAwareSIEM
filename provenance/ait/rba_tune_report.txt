@@ -1,0 +1,20 @@
+harrison: 426867 evaluation alerts, 56 groups, module scores 105s
+russellmitchell: 13877 evaluation alerts, 68 groups, module scores 60s
+shaw: 23149 evaluation alerts, 51 groups, module scores 121s
+wheeler: 466383 evaluation alerts, 85 groups, module scores 144s
+best variant per module (alone):
+  level         level                      aNDCG@20 0.224 MRR 0.029
+  accumulation  accumulation_1d_box        aNDCG@20 0.744 MRR 0.431
+  variety       variety_1d_triangle        aNDCG@20 0.729 MRR 0.640
+  rarity        rarity_1d_triangle         aNDCG@20 0.557 MRR 0.097
+  aperiodicity  aperiodicity_1d            aNDCG@20 0.374 MRR 0.040
+top weight combinations:
+  {'level': 0.0, 'accumulation': 0.0, 'variety': 0.9, 'rarity': 0.1, 'aperiodicity': 0.0} aNDCG@20 0.792 MRR 0.757
+  {'level': 0.0, 'accumulation': 0.2, 'variety': 0.7, 'rarity': 0.1, 'aperiodicity': 0.0} aNDCG@20 0.763 MRR 0.692
+  {'level': 0.0, 'accumulation': 0.1, 'variety': 0.8, 'rarity': 0.1, 'aperiodicity': 0.0} aNDCG@20 0.762 MRR 0.692
+  {'level': 0.0, 'accumulation': 0.3, 'variety': 0.7, 'rarity': 0.0, 'aperiodicity': 0.0} aNDCG@20 0.760 MRR 0.636
+  {'level': 0.0, 'accumulation': 0.0, 'variety': 0.8, 'rarity': 0.2, 'aperiodicity': 0.0} aNDCG@20 0.756 MRR 0.672
+  {'level': 0.0, 'accumulation': 0.2, 'variety': 0.8, 'rarity': 0.0, 'aperiodicity': 0.0} aNDCG@20 0.756 MRR 0.636
+  {'level': 0.0, 'accumulation': 0.6, 'variety': 0.3, 'rarity': 0.1, 'aperiodicity': 0.0} aNDCG@20 0.754 MRR 0.669
+  {'level': 0.0, 'accumulation': 0.0, 'variety': 0.7, 'rarity': 0.0, 'aperiodicity': 0.3} aNDCG@20 0.753 MRR 0.658
+chosen: {'level': 0.0, 'accumulation': 0.0, 'variety': 0.9, 'rarity': 0.1, 'aperiodicity': 0.0}
