@@ -3,7 +3,9 @@
 priority above which half of the non-scan stages' first items fall on the AIT tuning
 set, i.e. the median, over non-scan stage occurrences and seeds, of the priority of each
 stage's first queue item. Uses the caches of ait_param_lab.py (plabrows_*, plabfit_*),
-the method as specified (Delta 1 h, host windows, pi, Component 8 defaults).
+the method as specified (Delta = seq_scoring.GROUP_GAP_S, 24 h from 2026-10-25; host windows; pi;
+the novelty term from 2026-10-27, with the sequence term alone as B2_seq; Component 8 defaults) and B_RBA
+(rba_config.json in <wb_dir>, rbacache_* from ait_rba_tune.py).
 
 usage: ait_thresholds.py <wb_dir> <host_roles.json> <out.json> [--seeds 5]
 """
@@ -39,7 +41,9 @@ def first_prio(prio, stages):
     return list(out.values())
 
 
-vals = {k: [] for k in ("B0", "B0_rank", "B2", "B2_novterm", "B3")}
+vals = {k: [] for k in ("B0", "B0_rank", "B2", "B2_seq", "B3", "B_RBA")}
+RBA_CFG = json.load(open(f"{args.wb}/rba_config.json"))
+import rba
 for sc in SCS:
     P = pickle.load(open(f"plabrows_{sc}.pkl", "rb"))
     A, labels, t_atk = pickle.load(open(f"evalcache_{sc}_clean_sid1.pkl", "rb"))
@@ -74,8 +78,9 @@ for sc in SCS:
         se_all = np.full(len(a["ts"]), -1.0); np.maximum.at(se_all, dh["j"], Se["host"])
         se = np.where(se_all[ev] < 0, 50.0, se_all[ev])
         b2 = 100 * np.minimum(1, surprise(gmax(se) / 100, k) / 8.0)
+        vals["B2_seq"] += first_prio(b2, stages)
+        b2 = 0.8 * b2 + 20 * gmax(nv[ev])          # the method from 2026-10-27: novelty term, w = 0.2
         vals["B2"] += first_prio(b2, stages)
-        vals["B2_novterm"] += first_prio(0.8 * b2 + 20 * gmax(nv[ev]), stages)
         stream = []
         for et, d in P["rows"].items():
             for i in range(len(d["j"])):
@@ -101,6 +106,11 @@ for sc in SCS:
                              for et in x["etypes"] if et in sortedR))
             st3.append(set().union(*[stages[g] for g in x["gids"]]))
         vals["B3"] += first_prio(np.array(prio3), st3)
+    # B_RBA (deterministic): the comparator's group priority from ait_rba_tune.py's cache
+    D = pickle.load(open(f"rbacache_{sc}.pkl", "rb"))
+    assert len(D["L"]) == len(ev) and D["G"] == G
+    sr = rba.combine(D["S"], RBA_CFG)
+    vals["B_RBA"] += first_prio(gmax(sr), stages)
     print(sc, "done", flush=True)
 th = {k: float(np.median(v)) for k, v in vals.items()}
 th["_n"] = {k: len(v) for k, v in vals.items()}

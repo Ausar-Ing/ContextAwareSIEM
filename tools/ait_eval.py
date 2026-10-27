@@ -64,6 +64,9 @@ SEQ_ENTITIES = C6.SEQ_ENTITIES
 CUR_HOSTS = None        # host of each evaluation alert, set per scenario (within-host AUC)
 NOVELTY_W = float(os.environ.get("CONTEXTSIEM_NOVELTY_W", 0.2))   # weight of the novelty term in B2 (0: the sequence term alone)
 RBA_CFG = os.path.join(args.wb_dir, "rba_config.json")
+# Stress condition (2026-10-27): drop alerts whose event label is in this comma list from the whole stream,
+# e.g. "service_scan,dirb,wpscan" for an attacker who skips noisy reconnaissance. Off by default.
+DROP_LABELS = set(x for x in os.environ.get("CONTEXTSIEM_DROP_LABELS", "").split(",") if x)
 CUR_DAYS = None         # UTC day of each queue group's first member, set per scenario (per-day ranking)
 phases = collections.defaultdict(list)
 for r in csv.DictReader(open(args.labels)):
@@ -209,6 +212,9 @@ RESULTS = json.load(open(args.out)) if os.path.exists(args.out) else {}
 for sc in args.scenarios:
     t0 = time.time()
     A, labels, t_atk = load(sc)
+    if DROP_LABELS:
+        keep_ = [j for j in range(len(A)) if labels[j] not in DROP_LABELS]
+        A = [A[j] for j in keep_]; labels = [labels[j] for j in keep_]
     n = len(A)
     ev = np.array([j for j, a in enumerate(A) if a.ts >= t_atk and a.admissible])
     L = np.array([labels[j] for j in ev], dtype=object)
@@ -244,7 +250,8 @@ for sc in args.scenarios:
     g_rule, g_rank, g_exp = group_max(gid, G, s_rule), group_max(gid, G, s_rank), group_max(gid, G, s_exp)
     res = {"meta": {"alerts": n, "eval_admitted": int(len(ev)), "queue_items": int(G),
                     "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds,
-                    "seq_entities": SEQ_ENTITIES, "group_score": C6.GROUP_SCORE}}
+                    "seq_entities": SEQ_ENTITIES, "group_score": C6.GROUP_SCORE,
+                    "dropped_labels": sorted(DROP_LABELS), "novelty_w": NOVELTY_W}}
     # B0_host: host rarity -- groups ranked by how rarely their host alerted in the baseline
     base_host = collections.Counter(host_of(a) for a in A if a.ts < t_atk and a.admissible)
     tot_host = max(1, sum(base_host.values()))

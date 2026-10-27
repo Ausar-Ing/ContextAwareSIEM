@@ -13,15 +13,17 @@
   "thresholds": {
    "B0": 20.0,
    "B0_rank": 50.0,
-   "B2": 54.47175642364389,
-   "B2_novterm": 63.57740513891511,
-   "B3": 62.500000000024706,
+   "B2": 63.57740513891511,
+   "B2_seq": 54.47175642364389,
+   "B3": 70.00000000001977,
+   "B_RBA": 0.6596226584065875,
    "_n": {
     "B0": 9,
     "B0_rank": 9,
     "B2": 45,
-    "B2_novterm": 45,
-    "B3": 45
+    "B2_seq": 45,
+    "B3": 45,
+    "B_RBA": 9
    }
   },
   "downtime_intervals_holdout": 7,
@@ -40,7 +42,7 @@
    },
    "groups_holdout": 2
   },
-  "seconds": 87
+  "seconds": 257
  },
  "deterministic": {
   "B0": {
@@ -49,6 +51,16 @@
   },
   "B0_rank": {
    "load_per_awake_h": 0.9141728350160818
+  },
+  "B_RBA": {
+   "load_per_awake_h": 0.0,
+   "groups_at_or_above_threshold": 0,
+   "group_score_quantiles": [
+    0.5276511723511486,
+    0.5774375317735712,
+    0.5914553709896073,
+    0.5933048623852676
+   ]
   }
  },
  "seeded": {
@@ -67,8 +79,8 @@
      13163
     ],
     "B2_load": 0.0,
-    "B2_novterm_load": 0.0,
-    "B2_top_share_100": 0.0,
+    "B2_seq_load": 0.0,
+    "B2_groups_at_or_above_threshold": 0,
     "B3_load": 0.014510679920890189,
     "notables": 1,
     "notables_per_awake_h": 0.014510679920890189,
@@ -112,8 +124,8 @@
      13163
     ],
     "B2_load": 0.0,
-    "B2_novterm_load": 0.0,
-    "B2_top_share_100": 0.0,
+    "B2_seq_load": 0.0,
+    "B2_groups_at_or_above_threshold": 0,
     "B3_load": 0.014510679920890189,
     "notables": 1,
     "notables_per_awake_h": 0.014510679920890189,
@@ -157,8 +169,8 @@
      13163
     ],
     "B2_load": 0.0,
-    "B2_novterm_load": 0.0,
-    "B2_top_share_100": 0.0,
+    "B2_seq_load": 0.0,
+    "B2_groups_at_or_above_threshold": 0,
     "B3_load": 0.014510679920890189,
     "notables": 1,
     "notables_per_awake_h": 0.014510679920890189,
@@ -202,8 +214,8 @@
      13163
     ],
     "B2_load": 0.0,
-    "B2_novterm_load": 0.0,
-    "B2_top_share_100": 0.0,
+    "B2_seq_load": 0.0,
+    "B2_groups_at_or_above_threshold": 0,
     "B3_load": 0.014510679920890189,
     "notables": 1,
     "notables_per_awake_h": 0.014510679920890189,
@@ -247,8 +259,8 @@
      13163
     ],
     "B2_load": 0.0,
-    "B2_novterm_load": 0.0,
-    "B2_top_share_100": 0.0,
+    "B2_seq_load": 0.0,
+    "B2_groups_at_or_above_threshold": 0,
     "B3_load": 0.014510679920890189,
     "notables": 1,
     "notables_per_awake_h": 0.014510679920890189,

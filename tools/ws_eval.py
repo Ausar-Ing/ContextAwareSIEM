@@ -6,8 +6,10 @@ Corpus: the frozen baseline (COLLECTION_RECORD.md Part E), agents 001 + 002 alia
 one host, T0 <= t < T1. The hold-out is the final week before T1; the layer is fitted on
 the rest. Configuration inherited from the AIT tuning set and frozen (Table III): entries
 N = 20, delta = 60 s, active-time correction on (G = 1800 s, site zone UTC+7), shrinkage
-calibration, host windows for the queue's sequence term, pi group score, Delta = 1 h,
-Component 8 with every entity type and theta at the 99.9th baseline percentile.
+calibration, host windows for the queue's sequence term, pi group score, Delta = seq_scoring.GROUP_GAP_S
+(24 h from 2026-10-25), the novelty term (w = 0.2, from 2026-10-27; the sequence term alone is B2_seq),
+Component 8 with every entity type and theta at the 99.9th baseline percentile. B_RBA, the risk-based
+alerting comparator, with the configuration fixed on the AIT tuning set (<wb_dir>/rba_config.json).
 
 Measures, per seed (forest seeds 0..S-1):
   drift     share of hold-out windows (host; user) above the 99th baseline percentile,
@@ -137,6 +139,20 @@ res = {"meta": {"alerts": len(A), "admitted": int(adm.sum()), "unparseable": bad
 g_rule, g_rank = gmax(s_rule), gmax(s_rank)
 res["deterministic"]["B0"] = {"load_per_awake_h": load_per_hour(g_rule, "B0"), "items": int(G_)}
 res["deterministic"]["B0_rank"] = {"load_per_awake_h": load_per_hour(g_rank, "B0_rank")}
+# B_RBA: per-alert module scores, normalizers from the period before the hold-out
+if os.path.exists(f"{args.wb}/rba_config.json"):
+    import rba
+    rcfg = json.load(open(f"{args.wb}/rba_config.json"))
+    admj = [j for j in range(len(A)) if A[j].admissible]
+    apos = {j: i for i, j in enumerate(admj)}
+    S_rba = rba.module_scores(ts[admj], hosts[admj], np.array([A[j].rule_id for j in admj], dtype=object),
+                              np.array([A[j].rule_level for j in admj], float), HOLD,
+                              np.array([apos[j] for j in ev]), variants=list(rcfg["variants"].values()))
+    g_rba = gmax(rba.combine(S_rba, rcfg))
+    res["deterministic"]["B_RBA"] = {"load_per_awake_h": load_per_hour(g_rba, "B_RBA"),
+                                     "groups_at_or_above_threshold": int((g_rba >= TH["B_RBA"]).sum()),
+                                     "group_score_quantiles": [float(np.quantile(g_rba, q)) for q in (0.5, 0.9, 0.99, 1.0)]}
+    print("B_RBA:", res["deterministic"]["B_RBA"], flush=True)
 # vulnerability-detector profile
 vj = [j for j in range(len(A)) if vuln[j]]
 vts = ts[vj] if vj else np.array([])
@@ -181,9 +197,10 @@ for seed in range(args.seeds):
     se = np.where(se_all[ev] < 0, 50.0, se_all[ev])
     b2 = 100 * np.minimum(1, surprise(gmax(se) / 100, k) / LAMBDA_Q)
     nv = np.zeros(len(A)); np.maximum.at(nv, dh["j"], np.where(dh["ok"], dh["F"][:, NOV], 0.0))
-    b2n = 0.8 * b2 + 20 * gmax(nv[ev])
-    r["B2_load"] = load_per_hour(b2, "B2"); r["B2_novterm_load"] = load_per_hour(b2n, "B2_novterm")
-    r["B2_top_share_100"] = float((b2 >= 62.4).mean())
+    b2s = b2
+    b2 = 0.8 * b2s + 20 * gmax(nv[ev])            # the method: novelty term, w = 0.2
+    r["B2_load"] = load_per_hour(b2, "B2"); r["B2_seq_load"] = load_per_hour(b2s, "B2_seq")
+    r["B2_groups_at_or_above_threshold"] = int((b2 >= TH["B2"]).sum())
     # B3: Component 8 over every entity type, baseline + hold-out
     RUN = W.ENTRY_FEATURE_NAMES.index("current_run_length")
     stream = []
