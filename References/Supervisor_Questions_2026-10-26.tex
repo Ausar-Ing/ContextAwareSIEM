@@ -3,6 +3,7 @@
 \usepackage{times}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{array}
 \usepackage{amsmath,amssymb}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
@@ -25,7 +26,7 @@
 
 The design is complete and has been tuned on the four AIT-ADS tuning scenarios; the four test scenarios have not been touched since the untuned preliminary check in Deliverable~3. The test run happens \emph{once}, under a written pre-registration (\texttt{provenance/ait/PREREGISTRATION.md}), and its results are the only numbers the paper may call results. Before it can run, a set of choices has to be fixed, and several of them are judgement calls about what the paper should claim rather than technical questions. This document lists them.
 
-Section~1 summarises where the project stands. Section~2 defines the terms used in the questions. Sections~3 and 4 are the questions: Section~3 the nine that \textbf{block the test run}, Section~4 the eight that concern how the design is presented and can be settled later. Each question gives the background, the evidence, the options with their consequences, and a recommendation. Section~5 lists open points from Deliverable~3 that have since been resolved, and the appendix holds the per-stage numbers.
+Section~\ref{sec:status} summarises where the project stands. Section~\ref{sec:ait} explains the AIT-ADS dataset: how it is built, how its labels are made, what we use from it, and why we chose it. Section~\ref{sec:terms} defines the terms used in the questions. Sections~\ref{sec:blocking} and \ref{sec:presentation} are the questions: Section~\ref{sec:blocking} the nine that \textbf{block the test run}, Section~\ref{sec:presentation} the eight that concern how the design is presented and can be settled later. Each question gives the background, the evidence, the options with their consequences, and a recommendation. Section~\ref{sec:resolved} lists open points from Deliverable~3 that have since been resolved, and the appendix holds the per-stage numbers.
 
 \begin{table}[h]
 \centering\small
@@ -56,6 +57,7 @@ Q17 & Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set? & AIT-ADS;
 \end{table}
 
 \section{Where the project stands}
+\label{sec:status}
 
 \sub{Method (as tuned).} Each admitted Wazuh alert updates a window of the last 20 \emph{entries} (runs of one rule, collapsed when repeats are less than 60\,s apart, expiring after 24\,h) for each entity it concerns. A fourteen-feature vector of the window is scored by an Isolation Forest per entity type, trained on the scenario's pre-attack period, and the raw score is turned into a percentile $S_\mathrm{seq}$ by calibrating against held-out baseline windows. Calibration mixes the host's own distribution with the pooled one, weighted by how many windows the host has (``shrinkage'', $w = n/(n+100)$). The queue shows \emph{repeat groups}, alerts with the same host and rule less than $\Delta = 24$\,h apart, ranked by $\pi(g) = -\log_{10}(1-u^{k})$, the improbability that a group of $k$ benign alerts reaches its highest $S_\mathrm{seq}$. Only the host window feeds the queue; source-address and user windows feed the accumulator (Component~8), which keeps a decaying risk per entity (half-life 1\,h) and raises a \emph{notable} that absorbs its contributing groups when risk crosses the 99.9th baseline percentile with evidence from two rules and two tactics.
 
@@ -65,7 +67,7 @@ Q17 & Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set? & AIT-ADS;
 
 \begin{table}[h]
 \centering\small
-\caption{Tuning set, five seeds (not results). $\alpha$-nDCG@20 is the primary metric; MRR and within-host AUC are defined in Section 2; ``vs B2'' counts the nine non-scan stage occurrences where the system meets the stage earlier / later than B2.}
+\caption{Tuning set, five seeds (not results). $\alpha$-nDCG@20 is the primary metric; MRR and within-host AUC are defined in Section~\ref{sec:terms}; ``vs B2'' counts the nine non-scan stage occurrences where the system meets the stage earlier / later than B2.}
 \label{tab:main}
 \begin{tabular}{@{}l l c c c c@{}}
 \toprule
@@ -87,7 +89,90 @@ B2$_\mathrm{nov+}$ & B2 + novelty term (candidate, Q1) & 0.526 & 0.261 & --- & 4
 
 \sub{Throughput.} The reference implementation (Python, one core) processes about 68 alerts per second online (12\,ms per alert at the median), far above the workstation's 0.07 per second but below the 276 per second of the largest AIT burst.
 
+\section{The AIT-ADS dataset}
+\label{sec:ait}
+
+\sub{What it is.} The AIT Alert Data Set (AIT-ADS; Landauer, Skopik and Wurzenberger, CSET 2024; Zenodo record 8263181, August 2023) is a public collection of alerts produced by replaying the logs of the AIT Log Data Set v2.0 (Landauer et al., IEEE TDSC 2023) through three detectors: Wazuh, Suricata and the log-anomaly detector AMiner. It was built for research on alert aggregation and multi-step attack analysis.
+
+\sub{How the underlying logs were produced.} The AIT authors generate eight testbeds from one model, each a small simulated company with 9--11 monitored Ubuntu servers, and run each for 4--6 days. Simulated employees (scripted state machines) send and read mail, browse and edit the intranet site, use the file shares and log in over the VPN. After 1.9--4.3 days of this normal activity, a scripted attacker carries out one multi-step attack. The same attack chain runs in every testbed, with variations in parameters, timing and tools, so the eight scenarios are independent replicas rather than one recording.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Host role & What it does in the simulated company \\
+\midrule
+intranet server & internal web server (WordPress); the attack's main target, rarely active otherwise \\
+internal share, cloud share & file shares used by employees \\
+mail; external mail servers & company mail server; mail servers of outside correspondents \\
+VPN & remote access; the attacker's entry point \\
+web server, firewall, DNS & public web site, Internet firewall (runs Suricata), name server \\
+monitoring & the testbed's own monitoring host \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\sub{The attack.} Ten steps, in order: network scan, service scan, directory brute force (dirb), WordPress scan (wpscan), webshell upload, password cracking (offline in most scenarios, online against a service in two), reverse shell, privilege escalation (the attacker changes user and runs a command with sudo), service stop, and DNS exfiltration. By design the exfiltration starts at the beginning of each simulation, so it runs through the ``normal'' period and contaminates it wherever a detector rule fires on it.
+
+\sub{Files and what we use.}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}p{3.3cm} >{\raggedright\arraybackslash}X p{2.5cm}@{}}
+\toprule
+File & Content & Used \\
+\midrule
+\texttt{ait\_ads.zip} (Zenodo) & per scenario, the Wazuh alerts (\texttt{alerts.json} lines, 45--674\,MB, including the Suricata alerts that Wazuh reads) and the AMiner alerts & Wazuh alerts only \\
+\texttt{labels.csv} (Zenodo) & start and end time of each attack step per scenario (time-interval labels) & attack start time only \\
+\texttt{<scenario>\_}\allowbreak\texttt{alerts.txt} (GitHub \texttt{ait-aecid/} \texttt{alert-data-set}) & one row per alert: time, alert name, IP, host, short name, time label, \textbf{event label} & event labels, host names \\
+\bottomrule
+\end{tabularx}
+\end{center}
+Wazuh reads each Suricata alert twice (from \texttt{eve.json} and \texttt{fast.log}); we drop the \texttt{fast.log} copy at admission. AMiner alerts are not used because they are not Wazuh output.
+
+\sub{How the labels are made, and which ones we use.} The ground truth is a record of the attack, not an analyst's opinion. Each run records its own facts (attacker IP and domains, start and stop time of every step); labelling rules filled in with those facts select the log lines each step caused, for example ``DNS queries to the attacker's domain''. An alert carries the label of the step whose log lines triggered it. AIT-ADS therefore offers two labels per alert:
+\begin{itemize}
+\item a \emph{time label}: attack if the alert falls inside a step's time interval;
+\item an \emph{event label}: the step that actually caused the alert, or none.
+\end{itemize}
+We use event labels. Most alerts inside the later attack intervals are benign mail logins and antivirus updates that happened to occur then, which time labels would count as attack; and an exfiltration alert raised days before the attack interval is benign under its time label but \texttt{dnsteal} under its event label (a real row: \texttt{Suricata: ET INFO Observed DNS Query to .biz TLD}, host internal share, time label \texttt{false\_positive}, event label \texttt{dnsteal}).
+
+\sub{What reaches Wazuh.} A ranking layer can only rank alerts that exist. Four steps (network scan, webshell upload, reverse shell, service stop) raise no Wazuh or Suricata alert in any scenario; password cracking does only when online (two scenarios), the exfiltration only in harrison and santos. Directory and WordPress scans and privilege escalation alert in all eight, the service scan in seven. Each scenario therefore holds 6--14 non-scan attack alerts among 32{,}000--560{,}000 admitted alerts, often next to scan floods of hundreds of thousands.
+
+\begin{center}\small
+\begin{tabular}{@{}l l r r r r r@{}}
+\toprule
+Scenario & Set & Hosts & Days & Admitted & Before attack & Non-scan attack \\
+\midrule
+harrison & tuning & 9 & 5.0 & 516{,}343 & 89{,}476$^\ast$ & 13 (+47{,}183 exfil.) \\
+wheeler & tuning & 11 & 5.0 & 535{,}265 & 68{,}882 & 9 \\
+russellmitchell & tuning & 10 & 4.0 & 32{,}302 & 18{,}425 & 6 \\
+shaw & tuning & 11 & 6.0 & 51{,}831 & 28{,}682 & 10 \\
+fox & test & 11 & 4.9 & 451{,}439 & 18{,}790 & 12 \\
+wilson & test & 10 & 6.0 & 560{,}265 & 79{,}901 & 10 \\
+santos & test & 10 & 3.9 & 82{,}401 & 52{,}121$^\ast$ & 14 (+25{,}707 exfil.) \\
+wardbeck & test & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize $^\ast$about half of these are exfiltration alerts (the designed contamination, Q4).
+\end{center}
+
+\sub{How we use it.} For each scenario, the model is trained on the alerts before the first attack step and the queue is evaluated on everything after it. The four tuning and four test scenarios were fixed before any tuning (two large, two small and one contaminated in each half). Host roles from the dataset documentation give the exposure score. The unit of the paired tests is a non-scan stage in one scenario: nine on the tuning set, about ten on the test set.
+
+\sub{Why we chose it.}
+\begin{enumerate}
+\item \textbf{Native Wazuh alerts.} The same alert format and stock ruleset as our deployment: real rule IDs, levels, decoders and agents, with no conversion step that could distort what the layer sees.
+\item \textbf{Ground truth per alert, from the attack itself.} Every alert is labelled with the step that caused it, by rules derived from the attack's own record, not by a person. This is what graded $\alpha$-nDCG and per-stage first-item ranks need.
+\item \textbf{A multi-step attack with steps of different weight.} Scans, a credential attack, privilege escalation and exfiltration: the setting in which temporal context should help most, since the important steps raise low-level alerts (privilege escalation is level 3, like a routine login).
+\item \textbf{An attack-free period before each attack.} 1.9--4.3 days per scenario to learn each host's normal behaviour, which an unsupervised per-host model needs.
+\item \textbf{Real host identities and roles.} Per-host windows, per-host calibration and the exposure score all require them.
+\item \textbf{Eight independent replicas.} Enough for a tuning/test split fixed in advance and for paired per-stage tests, instead of tuning and testing on one recording.
+\item \textbf{Public, citable and used by others.} A DOI, a stable release, and independent use for alert prioritization (Uetz et al., 2026) and alert screening (Ndichu et al., 2026), so the results can be reproduced and compared.
+\item \textbf{Realistic volume and noise.} Up to 560{,}000 alerts per scenario with scan floods, which tests the repeat-group queue under load.
+\end{enumerate}
+None of the alternatives we checked has both of the first two: GUIDE and SALAD are not Wazuh output, and the Hugging Face Wazuh set has no attack ground truth (Q17).
+
+\sub{Limitations we report.} Users are simulated and the hosts are Ubuntu servers; the normal periods are short (no weekly cycle); in every scenario the privilege escalation lands on the rarely active intranet server, which is the host-rarity confound (Q2); there are few non-scan attack alerts per scenario; two scenarios are contaminated by design (Q4); and there are no analyst triage decisions. The workstation corpus covers the first two points for false promotion only: a real user on Windows over five weeks, without attacks.
+
 \section{Terms used below}
+\label{sec:terms}
 
 \begin{description}[leftmargin=1.2em,style=nextline]
 \item[Non-scan stage occurrence] One attack stage other than reconnaissance (user change, sudo escalation, DNS exfiltration, password cracking) in one scenario. The tuning set has nine; the test set about ten. They are the unit of every paired test.
@@ -100,6 +185,7 @@ B2$_\mathrm{nov+}$ & B2 + novelty term (candidate, Q1) & 0.526 & 0.261 & --- & 4
 \end{description}
 
 \section{Questions that block the test run}
+\label{sec:blocking}
 
 \subsection*{Q1. Should an explicit novelty term enter the priority?}
 
@@ -220,6 +306,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 \ask{(a), (b) or (c).}
 
 \section{Questions about presentation (not blocking)}
+\label{sec:presentation}
 
 \subsection*{Q10. Entry windows instead of alert windows}
 Windows hold the last 20 \emph{entries} (collapsed runs of one rule) rather than the last 20 alerts, so that one flood cannot fill the window. On the tuning set entries lead every alert-window configuration (0.478--0.525 against at most 0.491), and every alert-window configuration places five to eight of nine first items later. Alert-level AUC is slightly higher for short alert windows (0.981 for 5 alerts against 0.973 for entries), which is why the 5-alert window is kept as the ablation arm B2$_\mathrm{alert}$.
@@ -255,7 +342,7 @@ Like the configuration-assessment (SCA) alerts already excluded, vulnerability-d
 
 \sub{Background.} Related work evaluates on three kinds of data: the authors' own Wazuh labs (not public, typically small: 55 alerts, 15{,}427 alerts, 46{,}454 events), network-flow datasets (CICIDS2017, UNSW-NB15, NSL-KDD, which are flows, not SIEM alerts), and proprietary company data (DeepCASE's Lastline data). The SOC-screening survey in our references (Ndichu et al., 2026) names AIT-ADS and SABU as the public resources closest to SIEM alerts and notes that no public corpus has real analyst dispositions.
 
-\sub{How AIT-ADS knows which alerts are attacks.} Its ground truth is a record of the attack, not an analyst's opinion. The attacks are executed by scripted attacker models; labelling rules, filled in from each run's execution facts (attacker addresses and domains, start and stop time of each step), mark the log events each attack step caused, and alerts take their labels from those events. We use these event-level labels, not the coarser time-interval labels. ``No analyst labels'' therefore means there is no record of how an analyst would have triaged each alert (true, false or benign positive), not that the attack ground truth is uncertain.
+\sub{How AIT-ADS knows which alerts are attacks.} From the attack's own record, not from an analyst (Section~\ref{sec:ait}). ``No analyst labels'' therefore means there is no record of how an analyst would have triaged each alert (true, false or benign positive), not that the attack ground truth is uncertain. The structure of the dataset and the full list of reasons for choosing it are in Section~\ref{sec:ait}.
 
 \sub{Alternatives checked (October 2026).}
 \begin{itemize}
@@ -268,6 +355,7 @@ Like the configuration-assessment (SCA) alerts already excluded, vulnerability-d
 \rec{AIT-ADS as the primary corpus, with the alternatives and the reason each does not fit stated in Related Work (done in the main document).}
 
 \section{Resolved since Deliverable 3's open points}
+\label{sec:resolved}
 
 \begin{itemize}
 \item \textbf{The accumulator's surprise correction} (open point 3) is implemented and measured; its constants ($\lambda$, $\theta$, contribution floor, weights, half-life) were tuned on the tuning set. $\theta$ between the 99th and 99.99th percentile, and $\lambda$ between 2 and 8, give the same notables; a 5\% contribution floor would raise $\alpha$-nDCG@20 to 0.697 but doubles the benign notables and was rejected by the false-notable guard.
