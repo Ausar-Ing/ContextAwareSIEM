@@ -11,6 +11,7 @@
 \setlist{itemsep=2pt,topsep=3pt}
 \newcommand{\rec}[1]{\par\smallskip\noindent\colorbox{gray!12}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textbf{Recommendation.} #1}}\par\smallskip}
 \newcommand{\ask}[1]{\par\noindent\textbf{Decision needed:} #1\par\medskip}
+\newcommand{\dec}[1]{\par\smallskip\noindent\colorbox{blue!8}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textbf{Provisional decision (27 October).} #1}}\par\medskip}
 \newcommand{\sub}[1]{\par\smallskip\noindent\textbf{#1}\quad}
 
 \title{\textbf{Context-Aware Alert Prioritization for Wazuh}\\[2pt]
@@ -55,6 +56,29 @@ Q17 & Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set? & AIT-ADS;
 \bottomrule
 \end{tabularx}
 \end{table}
+
+
+\section*{Provisional decisions taken on 27 October 2026}
+
+The meeting planned for 27 October did not take place. To keep the project moving, the questions that block the test run were decided provisionally on that date, before any test result, following the recommendation given under each question. Each decision is shown in a blue box under its question; all are recorded in the pre-registration (Section~7 of \texttt{PREREGISTRATION.md}), and the state before them is preserved at the git tag\linebreak \texttt{checkpoint-2026-10-27-before-decisions}. Nothing is frozen until the supervisor has confirmed or changed them. Questions Q10--Q17 remain open.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}c X@{}}
+\toprule
+& \textbf{Decision} \\
+\midrule
+Q1 & novelty term adopted ($w = 0.2$) \\
+Q2 & (a): confound stated; host rarity stays a primary comparator, its strength stated as a property of AIT-ADS \\
+Q3 & (b): Holm within the primary and secondary families separately \\
+Q4 & recorded is the headline \\
+Q5 & grades confirmed \\
+Q6 & (a): forest and z-score reported as equal unless the forest wins after correction \\
+Q7 & tie rule and veto accepted \\
+Q8 & hybrid form kept; rule and exposure weights 0 after a search that included the novelty term \\
+Q9 & comparator added; \textbf{it outperforms the method on the tuning set, and with variety as a term the protocol drops the forest}; response pending \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
 \section{Where the project stands}
 \label{sec:status}
@@ -198,6 +222,7 @@ None of the alternatives we checked has both of the first two: GUIDE and SALAD a
 
 \rec{(a), if a four-term hybrid is acceptable for the paper's story. It is the strongest variant measured and the only one never worse than the method on any stage. The quiet-host bias is real but is exactly what the within-host AUC and the calibration split are reported to expose, and those will be reported for it too. If the story should stay ``one learned temporal score'', (b).}
 \ask{adopt, keep as arm, or drop.}
+\dec{Adopted, $w = 0.2$. A search over all 286 weightings of rule, exposure, sequence and novelty terms under the tuning protocol selected $(0, 0, 0.8, 0.2)$: $\alpha$-nDCG@20 0.526 against 0.501, four first items earlier and none later; every novelty weight from 0.2 to 0.9 gives the same ranking. The old B2 is reported as the arm B2$_\mathrm{seq}$.}
 
 \subsection*{Q2. How should the paper frame AIT-ADS, given the host-rarity confound?}
 
@@ -215,6 +240,7 @@ None of the alternatives we checked has both of the first two: GUIDE and SALAD a
 
 \rec{(a). It is honest and defensible: the within-host AUC isolates exactly what the paper claims. (b) would be fitting the dataset; (c) is right for future work but no such public alert-level corpus is known to us.}
 \ask{whether (a) is the framing the paper should take.}
+\dec{(a). The strength of host rarity is stated as a property of how AIT-ADS is built; host rarity stays a primary comparator; the temporal claim rests on first-item ranks, the within-host AUC and the calibration split.}
 
 \subsection*{Q3. Which family should the Holm correction cover?}
 
@@ -239,6 +265,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(b). The primary hypotheses were fixed in advance and are few; correcting them together with nine exploratory ablations makes the primary test nearly impossible to pass with ten pairs. The change must be made now, before the run, and the pre-registration states the power table so the choice cannot look convenient afterwards.}
 \ask{(a) or (b).}
+\dec{(b). Holm within the primary family (2) and, separately, within the secondary family (now 11, exploratory).}
 
 \subsection*{Q4. Contaminated scenarios: which version is the headline?}
 
@@ -250,6 +277,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(a). It is what a deployment would face, and the cost is concentrated in one stage, which the paper can show per stage. The pre-registration runs both.}
 \ask{which version is the headline for santos.}
+\dec{(a). Recorded is the headline: the locked run uses recorded baselines for all four test scenarios, and santos is run again oracle-cleaned and reported beside it.}
 
 \subsection*{Q5. Are the relevance grades acceptable?}
 
@@ -259,6 +287,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{Confirm the grades as they are; robustness settings are reported in the paper.}
 \ask{confirm, or name a change before the run.}
+\dec{Confirmed. Every event label that occurs among the Wazuh alerts of the eight scenarios has a grade.}
 
 \subsection*{Q6. What will the paper claim if the forest does not beat a robust z-score?}
 
@@ -270,6 +299,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(a). It is the honest reading of the likely outcome and keeps the method unchanged before the run; (b) would be a post-hoc method change.}
 \ask{which claim is pre-committed.}
+\dec{(a). Pre-committed in the pre-registration.}
 
 \subsection*{Q7. Do you accept the tie rule and the first-item veto?}
 
@@ -279,6 +309,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{Accept both. Under a stricter reading of ``tie'' (each configuration's own SD) the group maximum would have replaced $\pi$; the veto removes that sensitivity because the maximum fails the primary test outright.}
 \ask{accept, or specify a different rule before the run.}
+\dec{Accepted as written.}
 
 \subsection*{Q8. Keep the hybrid priority although rule and exposure receive zero weight?}
 
@@ -290,6 +321,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(a). The form costs nothing, keeps every term inspectable, and a deployment with a real asset inventory may weight exposure differently; (c) would bend the rule just written in Q7.}
 \ask{(a), (b) or (c).}
+\dec{(a), searched together with the novelty term (Q1): rule and exposure weights stay 0 (the best weighting with exposure scores 0.503 and loses), and their scores stay in every item's explanation.}
 
 
 \subsection*{Q9. Add the risk-based alerting baseline of Uetz et al.\ as a comparator?}
@@ -304,6 +336,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(a). It is the strongest hand-designed baseline in the literature, it is cheap to implement on our existing harness, and leaving it out invites the obvious objection. It must be added before the freeze and pre-registered; making it primary (c) would lower the power of the primary test further.}
 \ask{(a), (b) or (c).}
+\dec{(a). Implemented from the authors' public code (past-only windows, normalizers from the pre-attack period) and tuned on the tuning set. \textbf{It outperforms the method there}: $\alpha$-nDCG@20 0.792 and MRR 0.757 against 0.526 and 0.261 for B2; B2 meets only 2 of 9 stages earlier. Almost all of it comes from one module, \emph{variety} (distinct rules on the host in the last day). Its within-host AUC is 0.838 (B2: 0.893), so it is not only host rarity. Adding variety as a fifth priority term and re-running the weight search under the tuning protocol selects (rule, exposure, sequence, novelty, variety) $= (0, 0, 0, 0.1, 0.9)$, $\alpha$-nDCG@20 0.807: the forest's sequence term drops out entirely. How to respond (report the method as specified with this negative finding, adopt variety and novelty as the priority, or carry the variety priority as a reported arm) is pending and is the most important open decision for the supervisor.}
 
 \section{Questions about presentation (not blocking)}
 \label{sec:presentation}

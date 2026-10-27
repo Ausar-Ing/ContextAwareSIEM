@@ -1,0 +1,30 @@
+seed 2 done (19s)
+seed 3 done (26s)
+seed 4 done (33s)
+incumbent (0.0, 0.0, 0.8, 0.2, 0.0): 0.526 (sd 0.020) MRR 0.261 (sd 0.024)
+  (0.0, 0.0, 0.0, 0.1, 0.9) 0.807 0.000 0.715  prefers              earlier 8, later 1, tied 0  <- adopted
+  (0.0, 0.1, 0.0, 0.1, 0.8) 0.788 0.000 0.687  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.0, 0.0, 0.2, 0.8) 0.786 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.1, 0.0, 0.0, 0.1, 0.8) 0.780 0.000 0.621  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.0, 0.0, 0.3, 0.7) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.9, 0.1) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.8, 0.2) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.7, 0.3) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.6, 0.4) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.5, 0.5) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.0, 0.4, 0.6) 0.778 0.000 0.715  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.1, 0.1, 0.8) 0.764 0.016 0.605  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.1, 0.0, 0.2, 0.7) 0.762 0.000 0.687  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.1, 0.0, 0.3, 0.6) 0.759 0.000 0.686  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.0, 0.2, 0.0, 0.8) 0.759 0.016 0.588  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.1, 0.1, 0.1, 0.7) 0.757 0.014 0.604  prefers              earlier 8, later 1, tied 0
+  (0.1, 0.0, 0.1, 0.1, 0.7) 0.754 0.013 0.558  prefers              earlier 8, later 1, tied 0
+  (0.2, 0.0, 0.0, 0.1, 0.7) 0.752 0.000 0.503  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.0, 0.2, 0.1, 0.7) 0.750 0.016 0.569  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.0, 0.3, 0.0, 0.7) 0.746 0.013 0.554  prefers              earlier 8, later 1, tied 0
+  (0.0, 0.1, 0.2, 0.0, 0.7) 0.742 0.014 0.563  prefers              earlier 8, later 1, tied 0
+  (0.1, 0.0, 0.2, 0.0, 0.7) 0.740 0.014 0.553  prefers              earlier 8, later 1, tied 0
+  (0.1, 0.0, 0.1, 0.0, 0.8) 0.738 0.025 0.558  prefers              earlier 8, later 1, tied 0
+  (0.1, 0.0, 0.0, 0.2, 0.7) 0.736 0.000 0.537  prefers              earlier 7, later 2, tied 0
+  (0.0, 0.2, 0.0, 0.1, 0.7) 0.736 0.000 0.599  prefers              earlier 5, later 3, tied 1
+adopted: (0.0, 0.0, 0.0, 0.1, 0.9)

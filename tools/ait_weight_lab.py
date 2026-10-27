@@ -14,7 +14,7 @@ incumbent on a majority of stage occurrences is vetoed. The first candidate that
 adopted; among configurations with identical rankings the one with the smallest novelty weight is listed first. The calibration and within-host guards do not apply: weights change neither the
 forest nor its calibration.
 
-usage: ait_weight_lab.py <wb_dir> <host_roles.json> <out.json> [--seeds 5]
+usage: ait_weight_lab.py <wb_dir> <host_roles.json> <out.json> [--seeds 5] [--variety variety_1d_triangle]
 """
 import sys, os, json, pickle, argparse, itertools, time
 import numpy as np
@@ -23,6 +23,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("wb"); ap.add_argument("roles"); ap.add_argument("out")
 ap.add_argument("--seeds", type=int, default=5)
 ap.add_argument("--delta", type=float, default=86400.0)
+ap.add_argument("--variety", default=None, help="add a fifth term: 100 * group max of this B_RBA module variant (rbacache_*.pkl of ait_rba_tune.py), e.g. variety_1d_triangle")
 args = ap.parse_args()
 sys.path.insert(0, args.wb)
 import window_builder as W
@@ -63,12 +64,18 @@ def terms(sc, seed):
     rule = gmax(gid, G, 100 * a["lvl"][ev] / 15)
     exp_ = gmax(gid, G, a["sexp"][ev])
     stages = M.item_stages(gid, L, G)
-    return np.vstack([rule, exp_, seq, nu]), stages
+    T = [rule, exp_, seq, nu]
+    if args.variety:
+        D = pickle.load(open(f"rbacache_{sc}.pkl", "rb"))
+        assert len(D["S"][args.variety]) == len(ev)
+        T.append(100 * gmax(gid, G, D["S"][args.variety]))
+    return np.vstack(T), stages
 
 
-GRID = [w for w in itertools.product(range(11), repeat=4) if sum(w) == 10]
+NT = 5 if args.variety else 4
+GRID = [w for w in itertools.product(range(11), repeat=NT) if sum(w) == 10]
 GRID = [tuple(x / 10 for x in w) for w in GRID]
-INC = (0.0, 0.0, 1.0, 0.0)
+INC = (0.0, 0.0, 0.8, 0.2, 0.0) if args.variety else (0.0, 0.0, 1.0, 0.0)
 
 t0 = time.time()
 res = {w: {"andcg20": [], "mrr": [], "first": {}} for w in GRID}   # per seed: mean over scenarios
@@ -94,7 +101,7 @@ for w in GRID:
     summ.append({"w": w, "andcg20": float(np.mean(r["andcg20"])), "sd": float(np.std(r["andcg20"])),
                  "mrr": float(np.mean(r["mrr"])), "mrr_sd": float(np.std(r["mrr"])),
                  "first": {k: float(np.mean(v)) for k, v in r["first"].items()}})
-summ.sort(key=lambda x: (-round(x["andcg20"], 12), x["w"][3], x["w"][1], x["w"][0]))
+summ.sort(key=lambda x: (-round(x["andcg20"], 12),) + tuple(x["w"][i] for i in ((4, 3, 1, 0) if NT == 5 else (3, 1, 0))))
 inc = next(x for x in summ if x["w"] == INC)
 
 
@@ -124,8 +131,8 @@ for c in summ:
     c.update({"objective": obj, "earlier": e, "later": l, "tied": t, "vetoed": veto, "passes": ok})
     if ok and adopted is None:
         adopted = c
-out = {"_meta": {"script": "ait_weight_lab.py", "delta_s": args.delta, "seeds": args.seeds, "grid": "simplex step 0.1, 286 configurations",
-                 "incumbent": INC, "order": ["w_rule", "w_exp", "w_seq", "w_novelty"]},
+out = {"_meta": {"script": "ait_weight_lab.py", "delta_s": args.delta, "seeds": args.seeds, "grid": f"simplex step 0.1, {len(GRID)} configurations",
+                 "incumbent": INC, "order": ["w_rule", "w_exp", "w_seq", "w_novelty"] + (["w_variety"] if args.variety else []), "variety_variant": args.variety},
        "incumbent": inc, "adopted": adopted, "all": summ}
 json.dump(out, open(args.out, "w"), indent=1)
 print(f"incumbent {INC}: {inc['andcg20']:.3f} (sd {inc['sd']:.3f}) MRR {inc['mrr']:.3f} (sd {inc['mrr_sd']:.3f})")
