@@ -75,7 +75,7 @@ Q5 & grades confirmed \\
 Q6 & (a): forest and z-score reported as equal unless the forest wins after correction \\
 Q7 & tie rule and veto accepted \\
 Q8 & hybrid form kept; rule and exposure weights 0 after a search that included the novelty term \\
-Q9 & comparator added; \textbf{it outperforms the method on the tuning set, and with variety as a term the protocol drops the forest}; response pending \\
+Q9 & comparator added; it outperforms the method on the tuning set (with variety as a term the protocol would drop the forest); \textbf{the method is kept}, B$_\mathrm{RBA}$ secondary \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -336,7 +336,7 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 
 \rec{(a). It is the strongest hand-designed baseline in the literature, it is cheap to implement on our existing harness, and leaving it out invites the obvious objection. It must be added before the freeze and pre-registered; making it primary (c) would lower the power of the primary test further.}
 \ask{(a), (b) or (c).}
-\dec{(a). Implemented from the authors' public code (past-only windows, normalizers from the pre-attack period) and tuned on the tuning set. \textbf{It outperforms the method there}: $\alpha$-nDCG@20 0.792 and MRR 0.757 against 0.526 and 0.261 for B2; B2 meets only 2 of 9 stages earlier. Almost all of it comes from one module, \emph{variety} (distinct rules on the host in the last day). Its within-host AUC is 0.838 (B2: 0.893), so it is not only host rarity. Adding variety as a fifth priority term and re-running the weight search under the tuning protocol selects (rule, exposure, sequence, novelty, variety) $= (0, 0, 0, 0.1, 0.9)$, $\alpha$-nDCG@20 0.807: the forest's sequence term drops out entirely. How to respond (report the method as specified with this negative finding, adopt variety and novelty as the priority, or carry the variety priority as a reported arm) is pending and is the most important open decision for the supervisor.}
+\dec{(a). Implemented from the authors' public code (past-only windows, normalizers from the pre-attack period) and tuned on the tuning set. \textbf{It outperforms the method there}: $\alpha$-nDCG@20 0.792 and MRR 0.757 against 0.526 and 0.261 for B2; B2 meets only 2 of 9 stages earlier. Almost all of it comes from one module, \emph{variety} (distinct rules on the host in the last day). Its within-host AUC is 0.838 (B2: 0.893), so it is not only host rarity. Adding variety as a fifth priority term and re-running the weight search under the tuning protocol selects (rule, exposure, sequence, novelty, variety) $= (0, 0, 0, 0.1, 0.9)$, $\alpha$-nDCG@20 0.807: the forest's sequence term drops out entirely. \textbf{Decided: the method is kept as specified}, and B$_\mathrm{RBA}$ stays a secondary comparator. Two checks informed the decision (separate results report, \texttt{Results\_Tuning\_2026-10-27}): on the workstation neither B$_\mathrm{RBA}$ nor B2 promotes anything, and with the reconnaissance alerts removed B$_\mathrm{RBA}$ falls from 0.792 to 0.322 while B2 falls from 0.526 to 0.437 and B3 is best on aggregate measures, the per-stage comparison remaining split. Whether robustness to quieter attacks becomes a pre-registered secondary condition is deferred; it must be decided before the test run. The new tuning-set numbers stay in the separate report until reproduced independently.}
 
 \section{Questions about presentation (not blocking)}
 \label{sec:presentation}

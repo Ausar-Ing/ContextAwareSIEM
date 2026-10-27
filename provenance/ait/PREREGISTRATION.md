@@ -135,7 +135,8 @@ whatever their p.
 5. Workstation analysis: run before the test run (done 2026-10-25, `provenance/workstation/`).
 6. Forest vs robust z-score: pre-committed claim as in Section 6 (Q6).
 7. Tie rule and first-item veto: **accepted** as written in Deliverable 3, Sec. IV-C (Q7).
-8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9).
+8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9). It outperforms the method on the tuning set; **the method is kept as specified** (decided 2026-10-27). Tuning-set numbers: `References/Results_Tuning_2026-10-27.pdf`.
+9. Robustness to quieter attacks (alerts labelled service_scan, dirb or wpscan removed from the stream; `CONTEXTSIEM_DROP_LABELS`): explored on the tuning set only, **not part of this protocol**. If it is to be reported as a test-set result it must be added here, with its analysis, before the freeze tag.
 
 ## 8. Deviations
 
