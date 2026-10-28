@@ -23,6 +23,13 @@ import numpy as np
 
 # --- section 4.2.3 admission policy -----------------------------------------
 COMPLIANCE_GROUPS = {"sca", "rootcheck", "policy_monitoring", "ciscat"}
+# Vulnerability-detector results (provisional decision on Q16, 2026-10-27/28): like configuration
+# assessment they describe an exploitable state, not anyone's activity, and on the workstation they
+# arrive in bursts (958 alerts in 10 distinct minutes, levels up to 13). Excluded at admission on the
+# same grounds. None occur in the AIT-ADS tuning scenarios; on the workstation the excluded run
+# (ws_eval.py --exclude-vulndet, 2026-10-25) left every result unchanged.
+STATE_GROUPS = {"vulnerability-detector"}
+EXCLUDED_GROUPS = COMPLIANCE_GROUPS | STATE_GROUPS
 
 # --- scan-timed integrity monitoring (admission, section 4.2.3) -------------
 # A FIM alert from a SCHEDULED syscheck scan carries the time the scan ran, not
@@ -184,7 +191,7 @@ class Alert:
 
     @property
     def admissible(self) -> bool:
-        return not (set(self.rule_groups) & COMPLIANCE_GROUPS) and not self.scan_timed
+        return not (set(self.rule_groups) & EXCLUDED_GROUPS) and not self.scan_timed
 
 
 @dataclass

@@ -33,6 +33,7 @@ The configuration at the freeze tag, with the defaults of `tools/seq_scoring.py`
   host window flags its rule as novel; rule and exposure weights 0, i.e. weights
   (rule, exposure, sequence, novelty) = (0, 0, 0.8, 0.2) (**provisional**, Q1/Q8; selected on the
   tuning set by `tools/ait_weight_lab.py`, `provenance/ait/weight_lab_verdict.txt`);
+- admission: configuration-assessment groups and, from 2026-10-28, vulnerability-detector results excluded (`tools/window_builder.py`, `EXCLUDED_GROUPS`; **provisional**, Q16); scheduled file-integrity results and duplicate Suricata ingestions excluded;
 - entries N = 20, delta = 60 s;
 - Delta = 24 h (repeat-group gap);
 - Component 8: half-life h = 1 h, theta at the 99.9th baseline percentile, contribution floor 10%, lambda = 4, weights (0.3, 0.2, 0.5);
@@ -136,7 +137,8 @@ whatever their p.
 6. Forest vs robust z-score: pre-committed claim as in Section 6 (Q6).
 7. Tie rule and first-item veto: **accepted** as written in Deliverable 3, Sec. IV-C (Q7).
 8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9). It outperforms the method on the tuning set; **the method is kept as specified** (decided 2026-10-27). Tuning-set numbers: `References/Results_Tuning_2026-10-27.pdf`.
-9. Robustness to quieter attacks (alerts labelled service_scan, dirb or wpscan removed from the stream; `CONTEXTSIEM_DROP_LABELS`): explored on the tuning set only, **not part of this protocol**. If it is to be reported as a test-set result it must be added here, with its analysis, before the freeze tag.
+9. Presentation decisions Q10-Q17 (2026-10-28, provisional): entries kept with the 5-alert ablation arm; notable ranking fixed; role-based exposure, the scenario split and the corpus division accepted as stated limitations; workstation drift discussed, refitting as future work; vulnerability-detector results excluded at admission; AIT-ADS kept.
+10. Robustness to quieter attacks (alerts labelled service_scan, dirb or wpscan removed from the stream; `CONTEXTSIEM_DROP_LABELS`): explored on the tuning set only, **not part of this protocol**. If it is to be reported as a test-set result it must be added here, with its analysis, before the freeze tag.
 
 ## 8. Deviations
 

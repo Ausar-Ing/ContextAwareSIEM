@@ -192,14 +192,14 @@ B$_\mathrm{RBA}$'s variety module added as a fifth term, 1001 weightings, tuning
 The protocol selects $(0, 0, 0, 0.1, 0.9)$: the forest's sequence term drops out. Best weighting that keeps a sequence weight: (0.0, 0.0, 0.1, 0.1, 0.8), 0.764. Not adopted: the method is kept (Q9).
 
 \section{Workstation re-run (false promotion)}
-Same corpus and hold-out week as before (68.9 awake hours, 143 queue groups); load thresholds recomputed on the tuning set with the current configuration (the median priority of the non-scan stages' first items).
+Same corpus and hold-out week as before (68.9 awake hours, 141 queue groups); load thresholds recomputed on the tuning set with the current configuration (the median priority of the non-scan stages' first items).
 \begin{center}\small
 \begin{tabular}{@{}l c c@{}}
 \toprule
 System & Threshold & Items per awake hour at or above it \\
 \midrule
-B0 (rule level) & 20.000 & 2.075 \\
-B0$_\mathrm{rank}$ & 50.000 & 0.914 \\
+B0 (rule level) & 20.000 & 2.046 \\
+B0$_\mathrm{rank}$ & 50.000 & 0.900 \\
 B2 (method) & 63.577 & 0.000 \\
 B2$_\mathrm{seq}$ & 54.472 & 0.000 \\
 B3 (notables and groups) & 70.000 & 0.015 \\
@@ -207,7 +207,7 @@ B$_\mathrm{RBA}$ & 0.660 & 0.000 \\
 \bottomrule
 \end{tabular}
 \end{center}
-B$_\mathrm{RBA}$'s highest group score in the week was 0.593, below its threshold; neither it nor B2 promotes anything on the workstation. Calibration drift is unchanged: 2.3\% of host and 7.5\% of user windows above the 99th percentile (1\% expected).
+Vulnerability-detector results are now excluded at admission by default (Q16): 127{,}212 admitted alerts instead of 128{,}170; the run without the exclusion gives the same conclusions (B$_\mathrm{RBA}$ and B2 at 0, B0 at 2.08 items per awake hour). B$_\mathrm{RBA}$'s highest group score in the week was 0.628, below its threshold; neither it nor B2 promotes anything on the workstation. Calibration drift is unchanged: 2.3\% of host and 7.5\% of user windows above the 99th percentile (1\% expected).
 
 \section{Exploratory, not pre-registered: an attacker without noisy reconnaissance}
 All alerts labelled service, directory or WordPress scan removed from the whole stream; every system as configured (B$_\mathrm{RBA}$'s configuration unchanged). Designed after seeing how B$_\mathrm{RBA}$ wins; deferred by decision, and to be pre-registered before the test run if it is to be used.

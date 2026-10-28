@@ -58,9 +58,9 @@ Q17 & Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set? & AIT-ADS;
 \end{table}
 
 
-\section*{Provisional decisions taken on 27 October 2026}
+\section*{Provisional decisions taken on 27 and 28 October 2026}
 
-The meeting planned for 27 October did not take place. To keep the project moving, the questions that block the test run were decided provisionally on that date, before any test result, following the recommendation given under each question. Each decision is shown in a blue box under its question; all are recorded in the pre-registration (Section~7 of \texttt{PREREGISTRATION.md}), and the state before them is preserved at the git tag\linebreak \texttt{checkpoint-2026-10-27-before-decisions}. Nothing is frozen until the supervisor has confirmed or changed them. Questions Q10--Q17 remain open.
+The meeting planned for 27 October did not take place. To keep the project moving, the questions that block the test run were decided provisionally on that date, before any test result, following the recommendation given under each question. Each decision is shown in a blue box under its question; all are recorded in the pre-registration (Section~7 of \texttt{PREREGISTRATION.md}), and the state before them is preserved at the git tag\linebreak \texttt{checkpoint-2026-10-27-before-decisions}. Nothing is frozen until the supervisor has confirmed or changed them. Questions Q10--Q17, which do not block the test run, were decided provisionally on 28 October in the same way.
 
 \begin{center}\small
 \begin{tabularx}{\linewidth}{@{}c X@{}}
@@ -76,6 +76,15 @@ Q6 & (a): forest and z-score reported as equal unless the forest wins after corr
 Q7 & tie rule and veto accepted \\
 Q8 & hybrid form kept; rule and exposure weights 0 after a search that included the novelty term \\
 Q9 & comparator added; it outperforms the method on the tuning set (with variety as a term the protocol would drop the forest); \textbf{the method is kept}, B$_\mathrm{RBA}$ secondary \\
+\midrule
+Q10 & entry windows kept, 5-alert window as ablation arm \\
+Q11 & notable ranking fixed \\
+Q12 & role-based exposure accepted, stated as a limitation \\
+Q13 & split accepted, preliminary check disclosed \\
+Q14 & corpus division kept, no attacks on the workstation \\
+Q15 & drift reported and discussed; refitting as future work \\
+Q16 & vulnerability-detector results excluded at admission \\
+Q17 & AIT-ADS kept; alternatives discussed in related work \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -345,31 +354,45 @@ Under the whole family, a primary comparison is significant only if B2 wins esse
 Windows hold the last 20 \emph{entries} (collapsed runs of one rule) rather than the last 20 alerts, so that one flood cannot fill the window. On the tuning set entries lead every alert-window configuration (0.478--0.525 against at most 0.491), and every alert-window configuration places five to eight of nine first items later. Alert-level AUC is slightly higher for short alert windows (0.981 for 5 alerts against 0.973 for entries), which is why the 5-alert window is kept as the ablation arm B2$_\mathrm{alert}$.
 \rec{Accept entries, with the ablation arm reported.}
 
+\dec{Accepted (28 October): entries kept, the 5-alert window reported as the ablation arm.}
+
 \subsection*{Q11. Is the evidence for the notable ranking enough to fix it?}
 A notable absorbs its contributing groups and is placed by the baseline percentile of its risk, which in practice puts it at the top. Against the alternatives on the tuning set: placing it at its best group's priority (no promotion) loses most of the accumulation gain (0.554 against 0.660); leaving the groups in place (no absorption) scores lower (0.641) and meets five stages later and none earlier. The basis is four scenarios and nine stage occurrences.
 \rec{Fix the rule; it is stated as tuned on four scenarios.}
+
+\dec{Fixed (28 October): absorption and promotion kept, stated in the paper as tuned on four scenarios and nine stage occurrences.}
 
 \subsection*{Q12. Role-based exposure score}
 Neither corpus has an asset inventory, so exposure is derived from documented host roles ($S_\mathrm{exp} = 100(c+x)/2$ from criticality and internet exposure), fixed before any ranking was computed. It receives zero weight in the tuned priority (Q8), so the evaluation does not depend on it.
 \rec{Accept, stated as a limitation.}
 
+\dec{Accepted (28 October) and stated as a limitation; the exposure term has zero weight in the tuned priority.}
+
 \subsection*{Q13. Is the scenario split enough, given that the preliminary check saw all eight?}
 The split was fixed before tuning (two large, two small, one contaminated per half). The test scenarios were read once, untuned, for the preliminary feasibility check with an earlier design; nothing since. The harness refuses them without an explicit flag, and the locked-run script refuses to run twice.
 \rec{Accept, with the preliminary check disclosed as it is now.}
 
+\dec{Accepted (28 October), with the preliminary check disclosed as it is.}
+
 \subsection*{Q14. Division of corpora; attacks on the workstation?}
 AIT-ADS supplies labelled attacks on simulated users; the workstation supplies a real user's benign activity but no attacks. They are never pooled; only the configuration crosses, from AIT-ADS to the workstation. Running attacks on the workstation after the freeze would add a realistic positive class but on one host, with a single attacker (the researcher), and would need its own protocol.
 \rec{Keep the division; no attacks, stated as a limitation and as future work.}
+
+\dec{Kept (28 October): no attacks on the workstation; stated as a limitation and as future work.}
 
 \subsection*{Q15. Workstation results and the drifting user model}
 Fitted on four weeks and run on the fifth (68.9 awake hours, 21{,}617 admitted alerts, 143 queue groups): no queue group reached the method's threshold (the priority above which half the AIT attack stages' first items fall; derived with the earlier $\Delta = 1$\,h queue and to be recomputed at the freeze), against 2.1 items per awake hour for rule level and 0.9 for level rarity; the accumulator raised one notable in the week, on the user entity. Host windows exceeded the 99th percentile 2.3\% of the time (95\% interval 0.2--6.1\%) and user windows 7.5\% (0.7--16.7\%), against 1\% expected: the user model does not stay calibrated over five weeks, which an operator would need to handle by periodic refitting. These numbers do not involve the AIT test scenarios.
 \rec{Report them as they stand, and keep the workstation analysis before the test run (it is final now).}
 \ask{whether the drift needs a mitigation (for example weekly refitting) evaluated before the paper, or only discussion.}
 
+\dec{Reported and discussed only (28 October); periodic refitting is named as future work and not evaluated before the paper.}
+
 \subsection*{Q16. Exclude vulnerability-detector alerts at admission?}
 Like the configuration-assessment (SCA) alerts already excluded, vulnerability-detector alerts describe an exploitable state, not anyone's activity. On the workstation they arrive in bursts (958 alerts in ten distinct minutes, up to 299 per minute) at high levels (443 at level 10, 60 at level 13), so they would dominate a severity-ranked queue. Excluding them changes none of the workstation results above; AIT-ADS contains none.
 \rec{Exclude, on the same grounds as SCA.}
 
+
+\dec{Excluded at admission (28 October), on the same grounds as configuration assessment (\texttt{window\_builder.EXCLUDED\_GROUPS}). None occur in the AIT-ADS tuning scenarios; the workstation re-run with the exclusion as default is in the results report.}
 
 \subsection*{Q17. Why AIT-ADS and not GUIDE, SALAD or the Hugging Face Wazuh set?}
 
@@ -386,6 +409,8 @@ Like the configuration-assessment (SCA) alerts already excluded, vulnerability-d
 \end{itemize}
 
 \rec{AIT-ADS as the primary corpus, with the alternatives and the reason each does not fit stated in Related Work (done in the main document).}
+
+\dec{AIT-ADS kept as the primary corpus (28 October); the alternatives and why they do not fit are in the related work of Deliverable~3.}
 
 \section{Resolved since Deliverable 3's open points}
 \label{sec:resolved}
