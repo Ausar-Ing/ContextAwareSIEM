@@ -14,7 +14,7 @@
 \usepackage{array}
 
 \newcommand{\phase}[2]{\par\smallskip\noindent\textbf{Phase #1: #2.}\par}
-\newcommand{\step}[2]{\par\noindent\textit{Step #1: #2.}\ }
+\newcommand{\step}[2]{\par\noindent\textbf{Step #1: #2.}\ }
 
 \begin{document}
 
@@ -56,7 +56,7 @@ This paper proposes a context-aware alert prioritization layer for Wazuh whose p
 \begin{itemize}
 \item \textbf{A replayable system model.} A Wazuh prioritization layer in which correlation is derived mechanically from the alert stream rather than authored in advance as rule thresholds, with alert, context and risk state separated so that every result can be reproduced by replaying an immutable alert log.
 \item \textbf{A temporal context window over collapsed runs.} A fifteen-feature window computed entirely from Wazuh alert fields, built from entries that collapse repeats of one rule, with an active-time correction that separates a host being switched off from an entity being quiet.
-\item \textbf{An inspectable scoring and queueing design.} A per-host calibrated anomaly score combined with novelty, rule severity and exposure while remaining inspectable term by term, together with a repeat-group queue and an accumulator designed against measured double counting.
+\item \textbf{An inspectable prioritization scheme.} A per-host calibrated anomaly score combined with novelty, rule severity and exposure into a priority that remains inspectable term by term, together with a repeat-group queue and an accumulator designed against measured double counting.
 \item \textbf{A pre-specified evaluation.} An evaluation on a public labelled alert corpus, the AIT Alert Data Set \cite{ref21}, complemented by five weeks of benign alerts from a real workstation, with an ablation isolating the contribution of temporal context and comparators that test whether the learned model earns its place.
 \end{itemize}
 
