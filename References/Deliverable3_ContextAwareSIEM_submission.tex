@@ -533,6 +533,42 @@ wardbeck & 10 & 5.0 & 63{,}694 & 23{,}463 & 10 \\
 
 \textbf{Workstation (secondary).} A Windows 11 workstation in daily personal use was monitored with stock Wazuh 4.14.7 and Sysmon (alert level 3, no custom rules) from 12 September 2026, with the baseline frozen on 17 October. At the freeze it held 128{,}170 admitted alerts over 35 days (about 3{,}700 per calendar day, at about 10 awake hours per day; 127{,}212 once vulnerability-detector results are excluded in Phase~1). Its final week is held out (21{,}617 admitted alerts, 68.9 awake hours); the rest gives 106{,}551 host and 61{,}590 user scoreable windows, about 10{,}700 and 6{,}200 after striding. It contains no attacks and is used for what AIT-ADS cannot show: false promotion on a real person's activity. With one host, B1 and B0 rank identically there. Measured on it: 7.7\% of benign alerts carry ATT\&CK tags, the most frequent being T1570 \emph{Lateral Tool Transfer} on a machine with nothing to move laterally to, and 34\% of alerts arrive within fifteen minutes of the machine starting.
 
+\textbf{Constraints and assumptions.} Table~\ref{tab:constraints} lists every known constraint of the two corpora, the assumption the evaluation makes about it, and how it is handled.
+
+\begin{table}[t]
+\caption{Constraints of the corpora, the assumptions made about them, and their handling}
+\label{tab:constraints}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.55cm} >{\raggedright\arraybackslash}p{4.95cm}@{}}
+\toprule
+\textbf{Constraint} & \textbf{Assumption and handling} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{AIT-ADS}}\\
+Simulated users and attacks; Ubuntu servers only & Results are claimed for this setting only; the workstation supplies real benign activity. \\
+Short baselines (1.9--4.3 days), no weekly cycle & The pre-attack period is the whole baseline; per-host calibration is shrunk towards the pooled one (Phase 4). \\
+Activity before the first attack step & Assumed benign apart from the labelled exfiltration. \\
+Designed contamination: exfiltration from the start, 52\% and 49\% of the harrison and santos baselines & Recorded baselines are the headline; santos is also run cleaned; harrison was cleaned for tuning. \\
+One ten-step attack template; about ten non-scan stage occurrences per split & Paired per-stage tests with power stated in advance; per-scenario ranks reported (Section~\ref{sec:stats}). \\
+Four of ten steps raise no alert; cracking alerts in 2 of 7 scenarios, exfiltration in 2 of 8 & Coverage counts alerted stages only; unalerted steps are outside the layer's boundary. \\
+Privilege escalation always on the intranet server, one of the least active hosts & Host rarity is a primary comparator; within-host AUC and the calibration split are reported. \\
+Labels derived from the scripted attacks' execution facts & Event-level labels are assumed complete and correct; time-interval labels are not used. \\
+Relevance grades are ours & Fixed before testing from the attack steps, not from any alert field (Table~\ref{tab:grades}). \\
+Accounts of the dominant benign alert appear only in the raw line & User entities are unscored on AIT-ADS (Phase 2). \\
+No asset inventory & Exposure from documented host roles; it receives zero weight. \\
+Suricata alerts share one Wazuh rule and are ingested twice & Signature identifier used as rule identity; duplicates excluded (Phase 1). \\
+An untuned check read all eight scenarios once & Disclosed; every later choice used the tuning scenarios only. \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Workstation}}\\
+One host and one user; no attacks & Used for false promotion only; no ranking claim rests on it. \\
+Reduced use during an examination period; agent re-enrolled once & Alias table; the hold-out is the final week. \\
+User model drifts over five weeks & Drift is measured on the hold-out week; periodic refitting is not evaluated. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
 \subsection{Systems Compared}
 
 \begin{itemize}
@@ -634,7 +670,7 @@ The selection evidence for the tuned values, all on the tuning scenarios, is as 
 \section{Threats to Validity, Scope and Future Work}
 \label{sec:threats}
 
-\textbf{Threats to validity.} AIT's users and attacks are simulated, its baselines are short (no weekly cycle) and its hosts are Ubuntu servers \cite{ref22}; the workstation supplies realistic benign activity but no attacks, so no single corpus provides both. Only 6--14 non-scan attack alerts exist per scenario, so per-stage ranks are reported for every scenario rather than averaged away. The scan stages are easy for every system and are reported separately. The workstation baseline spans an examination period with reduced use, and its agent was re-enrolled once, handled by the alias table; over its five weeks the user model drifts, and periodic refitting, which a deployment would need, is not evaluated. Neither corpus has an asset inventory, so $S_\mathrm{exp}$ comes from documented host roles; it receives zero weight in the tuned priority, so no result depends on it. No attacks were run on the workstation: a positive class there would rest on one host and one attacker, the researcher, and would need its own protocol. In every AIT scenario the attack's privilege escalation lands on the intranet server, one of the least active hosts, so any signal that a host is rarely active scores well. This is a property of how AIT-ADS is built, not of attacks in general, and host rarity is therefore a comparator rather than part of the method; B0$_\mathrm{host}$, the within-host AUC and the calibration split exist to separate it from temporal context. A preliminary untuned check, not reported here, used all eight scenarios once; every later choice used the tuning scenarios only. The queue is ranked over the whole evaluation period at once, whereas an analyst works a live queue; per-day ranking is reported as a check.
+\textbf{Threats to validity.} The constraints of both corpora and their handling are listed in Table~\ref{tab:constraints}; the main threats follow from them. No single corpus provides both realistic activity and attacks: AIT's users and attacks are simulated, and the workstation has none. AIT repeats one attack template, leaving about ten non-scan stage occurrences per split, so per-stage ranks are reported for every scenario rather than averaged away, and the scan stages, easy for every system, are reported separately. Any signal that a host is rarely active scores well on AIT-ADS because of how it is built, not because of a property of attacks in general; host rarity is therefore a comparator rather than part of the method. Over its five weeks the workstation's user model drifts, and periodic refitting, which a deployment would need, is not evaluated. No attacks were run on the workstation: a positive class there would rest on one host and one attacker, the researcher, and would need its own protocol. The queue is ranked over the whole evaluation period at once, whereas an analyst works a live queue; per-day ranking is reported as a check.
 
 \textbf{Scope and future work.} The layer consumes alerts only and reads no log content, so its reach is bounded by the rule set: four of AIT's ten attack steps never enter it. Two extensions follow. First, AIT-LDS publishes the raw logs behind every alert \cite{ref22}, so window features could include each entity's log volume and its deviation from baseline; this needs no log content and would let an unalerted step show up as unusual context around the alerts that do fire. Second, a log-anomaly detector such as AMiner could be admitted as an additional alert source whose alerts enter the same windows as Wazuh's. Neither changes the layer's role: it ranks what detectors raise and does not itself detect. A small, separately protocolled set of attacks on a monitored workstation would give the realistic corpus a positive class, and periodic refitting of the per-host models would counter the drift measured there. Robustness to quieter attacks, without reconnaissance or on busier hosts, and feedback-driven adaptation of the weights from analyst decisions \cite{ref18} are further directions.
 

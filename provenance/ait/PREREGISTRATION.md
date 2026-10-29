@@ -5,11 +5,17 @@ test scenarios were read once, untuned, for the preliminary check (Deliverable 3
 Table V); nothing since. This document fixes what the locked run does and what may be
 claimed from it. It is frozen by tagging the commit that resolves Section 7.
 
-Revised 2026-10-27: Section 7 closed by provisional decisions taken by the student while the
-supervisor was unavailable (the planned meeting was cancelled). They are marked
-**provisional** and are to be confirmed or changed by the supervisor before the freeze tag.
-The pre-decision version is at git tag `checkpoint-2026-10-27-before-decisions` and in
+Revised 2026-10-27: Section 7 closed by decisions taken by the student while the supervisor was
+unavailable (the planned meeting was cancelled). The pre-decision version is at git tag
+`checkpoint-2026-10-27-before-decisions` and in
 `References/checkpoints/2026-10-27_before_provisional_decisions/`.
+
+Revised 2026-10-29: the supervisor reviewed the questions. He accepted AIT-ADS as the corpus,
+provided its constraints and assumptions (the designed contamination among them) are listed in the
+paper; asked that the test compare with published work where possible and otherwise rely on
+ablation; and left the design decisions to the student, to be judged as a whole at submission.
+The decisions of 27-28 October, previously marked provisional, are therefore the student's
+decisions and stand unless changed here before the freeze tag.
 
 ## 1. Data
 
@@ -31,9 +37,9 @@ The configuration at the freeze tag, with the defaults of `tools/seq_scoring.py`
 - group score: `pi`, lambda = 8;
 - priority: (1 - w) * sequence term + w * 100 * nu(g), with w = 0.2 and nu(g) = 1 when a member's
   host window flags its rule as novel; rule and exposure weights 0, i.e. weights
-  (rule, exposure, sequence, novelty) = (0, 0, 0.8, 0.2) (**provisional**, Q1/Q8; selected on the
+  (rule, exposure, sequence, novelty) = (0, 0, 0.8, 0.2) (Q1/Q8; selected on the
   tuning set by `tools/ait_weight_lab.py`, `provenance/ait/weight_lab_verdict.txt`);
-- admission: configuration-assessment groups and, from 2026-10-28, vulnerability-detector results excluded (`tools/window_builder.py`, `EXCLUDED_GROUPS`; **provisional**, Q16); scheduled file-integrity results and duplicate Suricata ingestions excluded;
+- admission: configuration-assessment groups and, from 2026-10-28, vulnerability-detector results excluded (`tools/window_builder.py`, `EXCLUDED_GROUPS`; Q16); scheduled file-integrity results and duplicate Suricata ingestions excluded;
 - entries N = 20, delta = 60 s;
 - Delta = 24 h (repeat-group gap);
 - Component 8: half-life h = 1 h, theta at the 99.9th baseline percentile, contribution floor 10%, lambda = 4, weights (0.3, 0.2, 0.5);
@@ -49,7 +55,7 @@ scenario's `meta`; the report must show it unchanged.
 
 `tools/ait_locked_run.sh` performs, in order:
 1. it verifies the checksums above, that the working tree is clean at the freeze tag and that `tools/rba_config.json` exists;
-2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, provisional decision on Q4);
+2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, decision on Q4);
 3. it runs santos again with the oracle-cleaned baseline (its labelled exfiltration alerts removed from training), reported beside the headline;
 4. it runs `ait_report.py` and `ait_holm.py` on the headline run and `ait_report.py` on the cleaned santos run;
 5. it writes everything under `provenance/ait/test/`.
@@ -73,7 +79,7 @@ queue (average ranks for ties); seeded systems enter by their mean rank over 10 
 number of occurrences where B2 is earlier / later / tied, and the two-sided Wilcoxon
 signed-rank p.
 
-**Families and correction (provisional decision on Q3):** Holm step-down within the
+**Families and correction (decision on Q3):** Holm step-down within the
 **primary family** (the 2 comparisons above; confirmatory) and, separately, within the
 **secondary family** (exploratory), as implemented in `tools/ait_holm.py`:
 
@@ -81,7 +87,7 @@ signed-rank p.
 |---|
 | B2 vs B0 |
 | B2 vs B1 |
-| B2 vs B_RBA (risk-based alerting, Uetz et al. 2026; provisional decision on Q9) |
+| B2 vs B_RBA (risk-based alerting, Uetz et al. 2026; decision on Q9) |
 | B2 vs B2' |
 | B2 vs B2_nov |
 | B2 vs B2_seq (the sequence term without the novelty term) |
@@ -120,14 +126,14 @@ whatever their p.
 
 ## 6. Claims allowed
 
-- **"Temporal context improves on host rarity"** only if B2 vs B0_host is significant after Holm in the primary family. Otherwise the paper reports the counts, the within-host AUC (host rarity is 0.5 there by construction) and the calibration split, and states that AIT-ADS cannot separate the two. In both cases the paper states that host rarity is strong on AIT-ADS because of how the dataset is built (every attack lands on its least active host), not as a general property of attacks (provisional decision on Q2).
+- **"Temporal context improves on host rarity"** only if B2 vs B0_host is significant after Holm in the primary family. Otherwise the paper reports the counts, the within-host AUC (host rarity is 0.5 there by construction) and the calibration split, and states that AIT-ADS cannot separate the two. In both cases the paper states that host rarity is strong on AIT-ADS because of how the dataset is built (every attack lands on its least active host), not as a general property of attacks (decision on Q2).
 - **"Temporal context improves on level rarity"** only if B2 vs B0_rank is significant after Holm in the primary family.
 - **Secondary comparisons** (including static severity, B0, and risk-based alerting, B_RBA) are reported with counts and p-values and labelled exploratory; none is stated as a confirmed improvement.
-- **"The forest earns its place"** only if B2 vs B2' is significant after Holm in the secondary family. Otherwise the robust z-score is reported as an equal alternative and the result is credited to the window representation, not to the forest (provisional decision on Q6); the method itself is not changed after the run.
+- **"The forest earns its place"** only if B2 vs B2' is significant after Holm in the secondary family. Otherwise the robust z-score is reported as an equal alternative and the result is credited to the window representation, not to the forest (decision on Q6); the method itself is not changed after the run.
 - **Santos:** the recorded result is the headline; the cleaned result is reported beside it.
 - **Tuning-set numbers** are never presented as results.
 
-## 7. Decisions before the freeze (closed provisionally on 2026-10-27)
+## 7. Decisions before the freeze (closed 2026-10-27/28; status confirmed 2026-10-29)
 
 1. Novelty term: **adopted** (w = 0.2; Q1). Weights with the novelty term were searched (286 configurations); rule and exposure weights stay 0, and the rule and exposure scores are still shown to the analyst in every item's explanation (Q8).
 2. Santos headline: **recorded**; cleaned reported beside it (Q4).
@@ -137,7 +143,7 @@ whatever their p.
 6. Forest vs robust z-score: pre-committed claim as in Section 6 (Q6).
 7. Tie rule and first-item veto: **accepted** as written in Deliverable 3, Sec. IV-C (Q7).
 8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9). It outperforms the method on the tuning set; **the method is kept as specified** (decided 2026-10-27). Tuning-set numbers: `References/Results_Tuning_2026-10-27.pdf`.
-9. Presentation decisions Q10-Q17 (2026-10-28, provisional): entries kept with the 5-alert ablation arm; notable ranking fixed; role-based exposure, the scenario split and the corpus division accepted as stated limitations; workstation drift discussed, refitting as future work; vulnerability-detector results excluded at admission; AIT-ADS kept.
+9. Presentation decisions Q10-Q17 (2026-10-28): entries kept with the 5-alert ablation arm; notable ranking fixed; role-based exposure, the scenario split and the corpus division accepted as stated limitations; workstation drift discussed, refitting as future work; vulnerability-detector results excluded at admission; AIT-ADS kept.
 10. Robustness to quieter attacks (alerts labelled service_scan, dirb or wpscan removed from the stream; `CONTEXTSIEM_DROP_LABELS`): explored on the tuning set only, **not part of this protocol**. If it is to be reported as a test-set result it must be added here, with its analysis, before the freeze tag.
 
 ## 8. Deviations
