@@ -92,6 +92,7 @@ From 2026-10-27 (provisional decisions on Q1-Q9, `PREREGISTRATION.md` Sec. 7) B2
 | Workstation load thresholds from the AIT tuning set (recomputed 2026-10-27 with Delta 24 h, the novelty term and B_RBA) | `python3 $T/ait_thresholds.py $T $P/host_roles.json ws_thresholds.json --seeds 5` (after ait_param_lab.py has cached the forests) | `../workstation/ws_thresholds.json` | ~15 min |
 | Workstation false promotion: drift, load, notables per awake hour, vulnerability-detector (2026-10-25; re-run 2026-10-28 with the novelty term, B_RBA and vulnerability-detector results excluded at admission by default, `window_builder.EXCLUDED_GROUPS`; `ws_eval_novuln*` are the 2026-10-25 run with the exclusion as an option) | `python3 $T/ws_eval.py $T data/workstation/baseline_frozen_20261017T2315.json provenance/workstation/ws_thresholds.json ws.json --seeds 5`, and again with `--exclude-vulndet` | `../workstation/ws_eval*.json`, `ws_eval*_log.txt` | ~5 min each |
 | Calibration on training vs held-out windows (Sec. III-E) | `python3 $T/ait_analyses.py calib-synthetic` | printed | ~3 min |
+| B_RBA fidelity (2026-10-29): `tools/rba.py` with centred windows against Uetz et al. Table 4a on the russellmitchell files shipped with CATS (commit 628cf48); 23 of 26 per-module AUROC values exact at two decimals, 3 within 0.01 | `python3 tools/rba_fidelity.py ait_wazuh.jsonl ait_suricata.jsonl rba_fidelity.json` (CATS `datasets/ait_wazuh.zip`, `ait_suricata.zip`; scipy and scikit-learn needed) | `rba_fidelity.txt`, `rba_fidelity.json` | ~4 min |
 
 The test scenarios (fox, santos, wardbeck, wilson) appear only in Table V and the
 preliminary check. `ait_eval.py` refuses them unless `--allow-test` is given; the protocol
@@ -107,4 +108,3 @@ is run on them once, after every choice is fixed.
   "1.0 / 2.0 / 4.2 non-scan stages in the top ten" figures; `step-coverage` reproduces the
   attack-step counts; `calib-synthetic` reproduces 5.19 % vs 5.06 %.
 - Unit tests: `for t in test_parse_wazuh test_entries test_eval_metrics test_accumulator test_active_time; do python3 $T/$t.py; done`
-| B_RBA fidelity (2026-10-29): `tools/rba.py` with centred windows against Uetz et al. Table 4a on the russellmitchell files shipped with CATS (commit 628cf48); 23 of 26 per-module AUROC values exact at two decimals, 3 within 0.01 | `python3 tools/rba_fidelity.py ait_wazuh.jsonl ait_suricata.jsonl rba_fidelity.json` (CATS `datasets/ait_wazuh.zip`, `ait_suricata.zip`; scipy and scikit-learn needed) | `rba_fidelity.txt`, `rba_fidelity.json` | ~4 min |
