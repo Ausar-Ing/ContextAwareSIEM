@@ -48,7 +48,7 @@ The configuration at the freeze tag, with the defaults of `tools/seq_scoring.py`
 - the risk-based alerting comparator B_RBA with the configuration in `tools/rba_config.json`, fixed on the tuning set (`tools/ait_rba_tune.py`, `provenance/ait/rba_tune_report.txt`);
 - seeds 0-9.
 
-No environment override is set. `ait_eval.py` records the configuration in each
+No environment override is set, except `CONTEXTSIEM_DROP_LABELS` in the no-reconnaissance run (Section 5a). `ait_eval.py` records the configuration in each
 scenario's `meta`; the report must show it unchanged.
 
 ## 3. Runs
@@ -57,8 +57,9 @@ scenario's `meta`; the report must show it unchanged.
 1. it verifies the checksums above, that the working tree is clean at the freeze tag and that `tools/rba_config.json` exists;
 2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, decision on Q4);
 3. it runs santos again with the oracle-cleaned baseline (its labelled exfiltration alerts removed from training), reported beside the headline;
-4. it runs `ait_report.py` and `ait_holm.py` on the headline run and `ait_report.py` on the cleaned santos run;
-5. it writes everything under `provenance/ait/test/`.
+4. it runs the four test scenarios once more with recorded baselines and the reconnaissance alerts removed from the whole stream (`CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan`), every system configured as for the headline (**the no-reconnaissance condition**, Section 5a);
+5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run;
+6. it writes everything under `provenance/ait/test/`. It refuses to start if scipy is missing, since the Wilcoxon tests would otherwise return nan.
 
 The tuning scenarios were tuned with oracle-cleaned baselines (harrison cleaned; the other three
 tuning scenarios have no labelled attack alerts before their first attack step). Harrison's
@@ -79,15 +80,22 @@ queue (average ranks for ties); seeded systems enter by their mean rank over 10 
 number of occurrences where B2 is earlier / later / tied, and the two-sided Wilcoxon
 signed-rank p.
 
-**Families and correction (decision on Q3):** Holm step-down within the
-**primary family** (the 2 comparisons above; confirmatory) and, separately, within the
-**secondary family** (exploratory), as implemented in `tools/ait_holm.py`:
+**Comparison with published work (decided 2026-10-29):** B2 vs B_RBA, the risk-based alerting
+comparator after Uetz et al. (2026), forms a family of its own: one test, two-sided Wilcoxon at
+0.05, no correction. It was moved out of the secondary family because the supervisor asked that
+the test compare with published work; on the tuning set B_RBA places the first item of 7 of 9
+non-scan stages earlier than B2 (p = 0.023), so this comparison is expected to go against the
+method and is reported whatever its outcome.
+
+**Families and correction (decision on Q3, revised 2026-10-29):** Holm step-down within the
+**primary family** (the 2 comparisons above; confirmatory), the **published-work family** (1
+comparison) and, separately, within the **secondary family** (exploratory), as implemented in
+`tools/ait_holm.py`:
 
 | Secondary comparison |
 |---|
 | B2 vs B0 |
 | B2 vs B1 |
-| B2 vs B_RBA (risk-based alerting, Uetz et al. 2026; decision on Q9) |
 | B2 vs B2' |
 | B2 vs B2_nov |
 | B2 vs B2_seq (the sequence term without the novelty term) |
@@ -108,7 +116,7 @@ for n pairs is:
 
 So with about ten occurrences a primary comparison can be significant with up to two losses at
 the smallest rank differences. Anything less is reported as a direction with counts, never as a
-significant improvement. Secondary comparisons (11, smallest threshold 0.0045) are exploratory
+significant improvement. Secondary comparisons (10, smallest threshold 0.005) are exploratory
 whatever their p.
 
 ## 5. Secondary measures (reported, not tested)
@@ -124,11 +132,30 @@ whatever their p.
 - the per-host calibration check;
 - B3 incident measures: incidents, benign incidents, time to first attack notable, stages per notable.
 
+## 5a. No-reconnaissance condition (pre-registered 2026-10-29)
+
+**Disclosure.** This condition was added after the tuning-set comparison with B_RBA was known: on
+the tuning set, removing the reconnaissance alerts lowered B_RBA's alpha-nDCG@20 from 0.792 to
+0.322 and B2's from 0.526 to 0.437, while the paired first-item ranks split 4 (B2 earlier) to 5
+(p = 0.73). It is added before any test scenario has been read and is reported as a secondary
+condition, never as the headline.
+
+**Rationale.** An attacker who skips noisy scanning produces none of the service, directory and
+WordPress scan alerts that every AIT-ADS attack begins with. The condition asks whether a ranking
+depends on that reconnaissance.
+
+**Analysis.** The same unit and measure as Section 4 (non-scan stage occurrences, first-item
+rank). One test: B2 vs B_RBA, two-sided Wilcoxon at 0.05. All other comparisons in the
+`ait_holm.py` output of this run, and all secondary measures of Section 5, are reported
+descriptively beside the headline values.
+
 ## 6. Claims allowed
 
 - **"Temporal context improves on host rarity"** only if B2 vs B0_host is significant after Holm in the primary family. Otherwise the paper reports the counts, the within-host AUC (host rarity is 0.5 there by construction) and the calibration split, and states that AIT-ADS cannot separate the two. In both cases the paper states that host rarity is strong on AIT-ADS because of how the dataset is built (every attack lands on its least active host), not as a general property of attacks (decision on Q2).
 - **"Temporal context improves on level rarity"** only if B2 vs B0_rank is significant after Holm in the primary family.
-- **Secondary comparisons** (including static severity, B0, and risk-based alerting, B_RBA) are reported with counts and p-values and labelled exploratory; none is stated as a confirmed improvement.
+- **Comparison with published work:** "the method ranks attack stages earlier than risk-based alerting" only if B2 vs B_RBA is significant in B2's favour; "risk-based alerting ranks them earlier" if it is significant in B_RBA's favour; otherwise the counts are reported and no difference is claimed.
+- **No-reconnaissance condition:** "without reconnaissance the method ranks attack stages earlier than risk-based alerting" only if B2 vs B_RBA is significant in B2's favour in that run. A drop in B_RBA's aggregate measures alone does not license a robustness claim.
+- **Secondary comparisons** (including static severity, B0) are reported with counts and p-values and labelled exploratory; none is stated as a confirmed improvement.
 - **"The forest earns its place"** only if B2 vs B2' is significant after Holm in the secondary family. Otherwise the robust z-score is reported as an equal alternative and the result is credited to the window representation, not to the forest (decision on Q6); the method itself is not changed after the run.
 - **Santos:** the recorded result is the headline; the cleaned result is reported beside it.
 - **Tuning-set numbers** are never presented as results.
@@ -144,7 +171,9 @@ whatever their p.
 7. Tie rule and first-item veto: **accepted** as written in Deliverable 3, Sec. IV-C (Q7).
 8. Risk-based alerting comparator B_RBA: **added** to the secondary family, configuration fixed on the tuning set (Q9). It outperforms the method on the tuning set; **the method is kept as specified** (decided 2026-10-27). Tuning-set numbers: `References/Results_Tuning_2026-10-27.pdf`.
 9. Presentation decisions Q10-Q17 (2026-10-28): entries kept with the 5-alert ablation arm; notable ranking fixed; role-based exposure, the scenario split and the corpus division accepted as stated limitations; workstation drift discussed, refitting as future work; vulnerability-detector results excluded at admission; AIT-ADS kept.
-10. Robustness to quieter attacks (alerts labelled service_scan, dirb or wpscan removed from the stream; `CONTEXTSIEM_DROP_LABELS`): explored on the tuning set only, **not part of this protocol**. If it is to be reported as a test-set result it must be added here, with its analysis, before the freeze tag.
+10. Robustness to quieter attacks: **pre-registered** on 2026-10-29 as the no-reconnaissance condition (Section 5a), with the disclosure stated there.
+11. B_RBA moved from the secondary family to a published-work family of one test (2026-10-29), following the supervisor's request to compare with published work.
+12. Fidelity of B_RBA: checked against the numbers Uetz et al. publish for russellmitchell, a tuning scenario (`provenance/ait/rba_fidelity.txt`).
 
 ## 8. Deviations
 

@@ -1,0 +1,34 @@
+Fidelity of the B_RBA comparator (tools/rba.py) -- 2026-10-29, tuning scenario only (russellmitchell)
+
+Reference: Uetz et al., "Can Risk-Based Alerting Mitigate Cybersecurity Alert Fatigue?", arXiv:2609.02465v1,
+Table 4a (per-module AUROC, default parametrization: triangle windows, centred, normalizers from the whole file).
+Data: the AIT-ADS russellmitchell files shipped with their CATS implementation (commit 628cf48,
+datasets/ait_wazuh.zip: 23,116 alerts, 7,661 positive; datasets/ait_suricata.zip: 9,186 alerts, 44 positive).
+Positives: CATS's `misuse` flag. Grouping: hostname (Wazuh) / source IP (Suricata) for accumulation and variety,
+alert type for rarity and aperiodicity. CATS's code was not executed; tools/rba.py was run with centred=True
+(an option added for this check only; the evaluation's trailing-window output is unchanged, verified identical,
+max abs difference 0.0 over 22 variants).
+
+Result: with the paper's setting (column ours-ctr-tri), 23 of 26 published values are reproduced exactly at two
+decimals and the other 3 differ by 0.01 (max raw difference 0.014: Suricata aperiodicity_1m; also Suricata
+accumulation_1d and Wazuh aperiodicity_1m). Known approximations: aperiodicity normalized on a 2000-alert sample
+(CATS uses all alerts) and no clipping of windows at the file edges.
+The trailing windows used by our evaluation (ours-past-tri) are shown for reference; they differ from the
+published centred values, mainly on Suricata variety and on the 1-day windows, as expected.
+
+Command: python3 tools/rba_fidelity.py ait_wazuh.jsonl ait_suricata.jsonl rba_fidelity.json
+
+module            | Wazuh: paper  ours-ctr-tri  ours-ctr-box  ours-past-tri | Suricata: paper  ours-ctr-tri  ours-ctr-box  ours-past-tri
+level             |  0.99          0.99          0.99          0.99 |  0.81          0.81          0.81          0.81
+accumulation_1m   |  1.00          1.00          1.00          1.00 |  0.66          0.66          0.69          0.64
+accumulation_1h   |  1.00          1.00          1.00          0.99 |  0.48          0.48          0.39          0.38
+accumulation_1d   |  1.00          1.00          1.00          0.90 |  0.55          0.56          0.67          0.58
+variety_1m        |  1.00          1.00          1.00          1.00 |  0.80          0.80          0.93          0.72
+variety_1h        |  1.00          1.00          0.99          1.00 |  0.96          0.96          0.89          0.70
+variety_1d        |  1.00          1.00          1.00          0.97 |  0.79          0.79          0.71          0.55
+rarity_1m         |  0.00          0.00          0.00          0.00 |  0.59          0.59          0.53          0.55
+rarity_1h         |  0.00          0.00          0.01          0.04 |  0.88          0.88          0.95          0.92
+rarity_1d         |  0.07          0.07          0.07          0.28 |  0.99          0.99          0.93          0.95
+aperiodicity_1m   |  0.10          0.11           nan          0.15 |  0.42          0.43           nan          0.50
+aperiodicity_1h   |  0.00          0.00           nan          0.17 |  0.72          0.72           nan          0.72
+aperiodicity_1d   |  0.01          0.01           nan          0.22 |  0.95          0.95           nan          0.90

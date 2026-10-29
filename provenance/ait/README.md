@@ -107,3 +107,4 @@ is run on them once, after every choice is fixed.
   "1.0 / 2.0 / 4.2 non-scan stages in the top ten" figures; `step-coverage` reproduces the
   attack-step counts; `calib-synthetic` reproduces 5.19 % vs 5.06 %.
 - Unit tests: `for t in test_parse_wazuh test_entries test_eval_metrics test_accumulator test_active_time; do python3 $T/$t.py; done`
+| B_RBA fidelity (2026-10-29): `tools/rba.py` with centred windows against Uetz et al. Table 4a on the russellmitchell files shipped with CATS (commit 628cf48); 23 of 26 per-module AUROC values exact at two decimals, 3 within 0.01 | `python3 tools/rba_fidelity.py ait_wazuh.jsonl ait_suricata.jsonl rba_fidelity.json` (CATS `datasets/ait_wazuh.zip`, `ait_suricata.zip`; scipy and scikit-learn needed) | `rba_fidelity.txt`, `rba_fidelity.json` | ~4 min |

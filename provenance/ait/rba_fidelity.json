@@ -1,0 +1,154 @@
+{
+ "wazuh": {
+  "n": 23116,
+  "positives": 7661,
+  "auroc": {
+   "level": 0.9933541977836204,
+   "accumulation_1m_box_centred": 0.9992801481713524,
+   "accumulation_1m_triangle_centred": 0.9991832695661442,
+   "rarity_1m_box_centred": 0.002283511621188556,
+   "rarity_1m_triangle_centred": 0.0021010423455492307,
+   "variety_1m_box_centred": 0.998594417746745,
+   "variety_1m_triangle_centred": 0.9991780119983188,
+   "aperiodicity_1m_centred": 0.10608631254082798,
+   "accumulation_1h_box_centred": 0.9964894353925362,
+   "accumulation_1h_triangle_centred": 0.9967623770642342,
+   "rarity_1h_box_centred": 0.00753210146337326,
+   "rarity_1h_triangle_centred": 0.004261332624103621,
+   "variety_1h_box_centred": 0.9921580694312296,
+   "variety_1h_triangle_centred": 0.9996713872305967,
+   "aperiodicity_1h_centred": 0.004810096016701909,
+   "accumulation_1d_box_centred": 0.9971340427685618,
+   "accumulation_1d_triangle_centred": 0.9971432234532627,
+   "rarity_1d_box_centred": 0.07212003420079541,
+   "rarity_1d_triangle_centred": 0.07134283054191673,
+   "variety_1d_box_centred": 0.9976566703480901,
+   "variety_1d_triangle_centred": 0.9978959762545432,
+   "aperiodicity_1d_centred": 0.00521196423114024,
+   "accumulation_1m_box_past": 0.9980996447193262,
+   "accumulation_1m_triangle_past": 0.9984016022532964,
+   "rarity_1m_box_past": 0.004513155342632739,
+   "rarity_1m_triangle_past": 0.0035382713564622113,
+   "variety_1m_box_past": 0.9997190600684935,
+   "variety_1m_triangle_past": 0.9997586713023915,
+   "aperiodicity_1m_past": 0.15478970129877972,
+   "accumulation_1h_box_past": 0.9795320393016075,
+   "accumulation_1h_triangle_past": 0.9874205616340875,
+   "rarity_1h_box_past": 0.0743159661439659,
+   "rarity_1h_triangle_past": 0.040302386585288244,
+   "variety_1h_box_past": 0.9923231908445179,
+   "variety_1h_triangle_past": 0.9992315758459479,
+   "aperiodicity_1h_past": 0.17387061425410674,
+   "accumulation_1d_box_past": 0.8186303119435344,
+   "accumulation_1d_triangle_past": 0.898708618876628,
+   "rarity_1d_box_past": 0.4541857017719186,
+   "rarity_1d_triangle_past": 0.27905242665048885,
+   "variety_1d_box_past": 0.9212800289998152,
+   "variety_1d_triangle_past": 0.9694225936312653,
+   "aperiodicity_1d_past": 0.2201105812205336
+  }
+ },
+ "suricata": {
+  "n": 9186,
+  "positives": 44,
+  "auroc": {
+   "level": 0.8064378194546649,
+   "accumulation_1m_box_centred": 0.6909456355283309,
+   "accumulation_1m_triangle_centred": 0.6563537916906981,
+   "rarity_1m_box_centred": 0.5347111732065791,
+   "rarity_1m_triangle_centred": 0.587792854159623,
+   "variety_1m_box_centred": 0.9254042282373063,
+   "variety_1m_triangle_centred": 0.7998274696207315,
+   "aperiodicity_1m_centred": 0.4342880511525228,
+   "accumulation_1h_box_centred": 0.392944153855333,
+   "accumulation_1h_triangle_centred": 0.47658658340128474,
+   "rarity_1h_box_centred": 0.9504198902169805,
+   "rarity_1h_triangle_centred": 0.8813605039677016,
+   "variety_1h_box_centred": 0.8869205067520535,
+   "variety_1h_triangle_centred": 0.9561663451403114,
+   "aperiodicity_1h_centred": 0.7208985501481673,
+   "accumulation_1d_box_centred": 0.6727255325073089,
+   "accumulation_1d_triangle_centred": 0.5573551639784413,
+   "rarity_1d_box_centred": 0.9257025516596725,
+   "rarity_1d_triangle_centred": 0.9887233746345538,
+   "variety_1d_box_centred": 0.7120594757463058,
+   "variety_1d_triangle_centred": 0.7943930112766253,
+   "aperiodicity_1d_centred": 0.9464273284143117,
+   "accumulation_1m_box_past": 0.6411778305920726,
+   "accumulation_1m_triangle_past": 0.6354003003122451,
+   "rarity_1m_box_past": 0.5530071000974524,
+   "rarity_1m_triangle_past": 0.5540114556194189,
+   "variety_1m_box_past": 0.7250427596905391,
+   "variety_1m_triangle_past": 0.7211173206579026,
+   "aperiodicity_1m_past": 0.5009446908374933,
+   "accumulation_1h_box_past": 0.3331290646566297,
+   "accumulation_1h_triangle_past": 0.37858733915395476,
+   "rarity_1h_box_past": 0.9618121159085936,
+   "rarity_1h_triangle_past": 0.9218181320976115,
+   "variety_1h_box_past": 0.6646422107754419,
+   "variety_1h_triangle_past": 0.7034404148684393,
+   "aperiodicity_1h_past": 0.7241179570812035,
+   "accumulation_1d_box_past": 0.6653905053598775,
+   "accumulation_1d_triangle_past": 0.580355899842883,
+   "rarity_1d_box_past": 0.9166807541616118,
+   "rarity_1d_triangle_past": 0.9483751317595115,
+   "variety_1d_box_past": 0.6278527177263777,
+   "variety_1d_triangle_past": 0.5511674389928601,
+   "aperiodicity_1d_past": 0.9025986456116625
+  }
+ },
+ "paper_table4a": {
+  "level": [
+   0.99,
+   0.81
+  ],
+  "accumulation_1m": [
+   1.0,
+   0.66
+  ],
+  "accumulation_1h": [
+   1.0,
+   0.48
+  ],
+  "accumulation_1d": [
+   1.0,
+   0.55
+  ],
+  "variety_1m": [
+   1.0,
+   0.8
+  ],
+  "variety_1h": [
+   1.0,
+   0.96
+  ],
+  "variety_1d": [
+   1.0,
+   0.79
+  ],
+  "rarity_1m": [
+   0.0,
+   0.59
+  ],
+  "rarity_1h": [
+   0.0,
+   0.88
+  ],
+  "rarity_1d": [
+   0.07,
+   0.99
+  ],
+  "aperiodicity_1m": [
+   0.1,
+   0.42
+  ],
+  "aperiodicity_1h": [
+   0.0,
+   0.72
+  ],
+  "aperiodicity_1d": [
+   0.01,
+   0.95
+  ]
+ }
+}

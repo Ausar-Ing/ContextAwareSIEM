@@ -10,6 +10,10 @@ alert in [0, 1]:
   aperiodicity  spectral flatness of the same rule type's alert times in the window (1 s bins),
                 blended towards 1 for few events (small_n = 5), normalized so the mean is 0.5
 
+centred=True reproduces CATS's "Past + Future" windows (half the window on each side of the alert,
+distances relative to the half-window) for the fidelity check against the published numbers only
+(tools/rba_fidelity.py); it uses future alerts and is never used by the evaluation.
+
 Two deliberate departures from CATS, both to make the comparator causal like every other
 system here: (1) windows are trailing only ("Past"); CATS's better-performing centered windows
 use future alerts. (2) Every normalizer that CATS estimates from the whole file (expected counts
@@ -69,7 +73,8 @@ def aperiodicity_score(times, small_n=SMALL_N):
     return sf * conf + (1.0 - conf)
 
 
-def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_base_sample=2000, rng_seed=0):
+def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_base_sample=2000, rng_seed=0,
+                  centred=False):
     """Per-alert scores of every module variant for the alerts at positions `score_idx`.
     ts, host, rule, lvl: arrays over all admitted alerts in time order (baseline and evaluation).
     Returns {variant_name: scores aligned with score_idx}."""
@@ -100,10 +105,17 @@ def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_bas
     ts_r = {r: ts[g] for r, g in by_rule.items()}; cs_r = {r: np.concatenate([[0.0], np.cumsum(ts[g])]) for r, g in by_rule.items()}
 
     def window_counts(tsg, csg, i, W):
-        lo = int(np.searchsorted(tsg, tsg[i] - W, "left"))
-        c = i - lo + 1
-        tri = c - (c * tsg[i] - (csg[i + 1] - csg[lo])) / W
-        return c, tri
+        t = tsg[i]
+        if not centred:
+            lo = int(np.searchsorted(tsg, t - W, "left"))
+            c = i - lo + 1
+            tri = c - (c * t - (csg[i + 1] - csg[lo])) / W
+            return c, tri
+        hw = W / 2
+        lo = int(np.searchsorted(tsg, t - hw, "left")); hi = int(np.searchsorted(tsg, t + hw, "right"))
+        cl, cr = i - lo + 1, hi - i - 1
+        dist = (cl * t - (csg[i + 1] - csg[lo])) + ((csg[hi] - csg[i + 1]) - cr * t)
+        return cl + cr, (cl + cr) - dist / hw
 
     for wn, W in WINDOWS.items():
         exp_h = (W / T) * nbase / n_hosts            # expected additional alerts per host in the window
@@ -130,6 +142,25 @@ def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_bas
             want_k = {j: k for k, j in enumerate(score_idx)}
             vb = np.empty(len(score_idx)); vt = np.empty(len(score_idx))
             for h, g in by_host.items():
+                if centred:
+                    hw = W / 2
+                    tt = collections.defaultdict(list)
+                    for j in g:
+                        tt[rule[j]].append(ts[j])
+                    tt = {r: np.asarray(v) for r, v in tt.items()}
+                    for j in g:
+                        if j not in want_k:
+                            continue
+                        t = ts[j]; live = []
+                        for r, arr in tt.items():
+                            q = int(np.searchsorted(arr, t))
+                            d = min(abs(arr[q - 1] - t) if q > 0 else np.inf, abs(arr[q] - t) if q < len(arr) else np.inf)
+                            if d <= hw:
+                                live.append(d)
+                        ev = ptot - pall.get(rule[j], 0.0); k = want_k[j]
+                        vb[k] = 1 - 0.5 ** (len(live) / (ev + 1))
+                        vt[k] = 1 - 0.5 ** (sum(1 - d / hw for d in live) / (1 + ev * (1 - erd)))
+                    continue
                 last = {}
                 for j in g:
                     last[rule[j]] = ts[j]
@@ -149,6 +180,9 @@ def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_bas
         if need(name):
             def ap(j):
                 tsg = ts_r[rule[j]]; i = pos_r[j]
+                if centred:
+                    lo = int(np.searchsorted(tsg, tsg[i] - W / 2, "left")); hi = int(np.searchsorted(tsg, tsg[i] + W / 2, "right"))
+                    return aperiodicity_score(tsg[lo:hi])
                 lo = int(np.searchsorted(tsg, tsg[i] - W, "left"))
                 return aperiodicity_score(tsg[lo:i + 1])
             raw = np.empty(len(score_idx))
