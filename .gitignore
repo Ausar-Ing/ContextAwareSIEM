@@ -62,3 +62,6 @@ SCHEDULE.md
 
 # evaluation caches written to the working directory (~100 MB each), 2026-10-31
 *.pkl
+
+# example deliverables from the course, kept locally for reference, not part of the submission (2026-11-01)
+References/Deliverable3_Example*.pdf
