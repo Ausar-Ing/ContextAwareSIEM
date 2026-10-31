@@ -1,0 +1,20 @@
+Window-surprise correction check (tools/ws_qcheck.py), workstation hold-out week -- 2026-10-31
+Environment: Python 3.13, numpy 2.5.3, scikit-learn 1.9.1 (not the pinned versions of tools/requirements-ait.txt).
+Corpus: data/workstation/baseline_frozen_20261017T2315.json (SHA-256 a68af650...e19e32b); fit before the hold-out, host windows.
+Criterion (fixed in the script before the first run): corrected window term NOT flat if, on the median hold-out day,
+  at its ceiling (>= 99 on 0-100) at < 50% of the host's alerts AND interquartile range >= 10 points.
+Hold-out days with >= 1 awake hour: 7.
+
+seed | corrected: ceiling share, IQR, median level, not flat | uncorrected (S_seq itself): ceiling share, IQR, median level
+  0  | 0.000   11.9    6.9  True | 0.079   27.6   74.1
+  1  | 0.000   12.7    7.2  True | 0.086   27.8   71.9
+  2  | 0.000   15.0    7.3  True | 0.096   31.0   74.7
+  3  | 0.000   13.7    7.2  True | 0.090   30.3   70.3
+  4  | 0.000   10.7    7.1  True | 0.075   30.9   72.6
+
+Result: PASS -- the corrected window term is not flat on every seed.
+Note: the uncorrected form is not flat either by this criterion (it sits high, median about 70-75 of 100, and reaches
+its ceiling on part of each day), so the check shows the corrected term is informative, not that the correction is
+necessary. What the correction changes is the benign level: about 7 of 100 instead of about 73, so an anomalous window
+stands out against a low floor. The paper's justification was reworded accordingly (2026-10-31).
+Command: python3 tools/ws_qcheck.py tools data/workstation/baseline_frozen_20261017T2315.json ws_qcheck.json --seeds 5

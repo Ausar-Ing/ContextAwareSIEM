@@ -67,6 +67,9 @@ NIGHT = W.FEATURE_NAMES.index("night_fraction")
 class TypeModel:
     """Forest + calibration for one entity type, one seed."""
 
+    # Model-input features removed in addition to night_fraction (ablation arms; empty for the method).
+    DROP: tuple = ()
+
     def __init__(self, seed: int, stratify: bool | None = None, min_host_cal: int | None = None,
                  fallback: str = "pooled"):
         """fallback: what a host with fewer than min_host_cal held-out windows is
@@ -102,10 +105,10 @@ class TypeModel:
             out[idx] = True
         return out
 
-    @staticmethod
-    def prep(F: np.ndarray, entries: bool) -> np.ndarray:
+    @classmethod
+    def prep(cls, F: np.ndarray, entries: bool) -> np.ndarray:
         X = W.log_transform(F, entries=entries)
-        return np.delete(X, NIGHT, axis=1)
+        return np.delete(X, [NIGHT] + [W.FEATURE_NAMES.index(f) for f in cls.DROP], axis=1)
 
     def fit(self, F_base: np.ndarray, hosts_base: list, entries: bool):
         """F_base: baseline feature rows in stream order; hosts_base: host of
@@ -186,6 +189,18 @@ class TypeModel:
     def score(self, F: np.ndarray, hosts: list, entries: bool) -> np.ndarray:
         """S_seq in [0, 100] for each row (-1 where fallback="none" leaves a host unscored)."""
         return self._to_percent(self._raw_scores(F, entries), hosts)
+
+    def score_pooled(self, F: np.ndarray, entries: bool) -> np.ndarray:
+        """Ablation arm B2_pooled: the same forest, every host calibrated against the entity
+        type's pooled held-out distribution only (credibility weight 0)."""
+        raw = self._raw_scores(F, entries)
+        return 100.0 * np.searchsorted(self.cal_type, raw, side="right") / len(self.cal_type)
+
+
+class NoTimingModel(TypeModel):
+    """Ablation arm B2_notime: the forest refitted without the three timing features
+    (window duration, mean and minimum inter-arrival time between entry starts)."""
+    DROP = ("window_duration_s", "inter_arrival_mean_s", "inter_arrival_min_s")
 
 
 class RobustZModel(TypeModel):

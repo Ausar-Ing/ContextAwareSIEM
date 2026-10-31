@@ -61,6 +61,10 @@ scenario's `meta`; the report must show it unchanged.
 5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run;
 6. it writes everything under `provenance/ait/test/`. It refuses to start if scipy is missing, since the Wilcoxon tests would otherwise return nan.
 
+`bash tools/ait_locked_run.sh --dry-run [seeds]` (added 2026-10-31) performs the same steps on the tuning
+scenarios, without `--allow-test`, into `provenance/ait/dryrun/`, to test the script's mechanics before the
+freeze. Its numbers are tuning-set numbers and are never reported as results.
+
 The tuning scenarios were tuned with oracle-cleaned baselines (harrison cleaned; the other three
 tuning scenarios have no labelled attack alerts before their first attack step). Harrison's
 recorded run (`provenance/ait/eval_harrison_recorded_report.txt`) is the tuning-set evidence for
@@ -101,6 +105,8 @@ comparison) and, separately, within the **secondary family** (exploratory), as i
 | B2 vs B2_seq (the sequence term without the novelty term) |
 | B2 vs B2_alert |
 | B2 vs B2_max |
+| B2 vs B2_pooled (per-host credibility calibration replaced by pooled calibration; added 2026-10-31) |
+| B2 vs B2_notime (forests without the three timing features; added 2026-10-31) |
 | B3 vs B2 |
 | B3 vs B3_bestgrp |
 | B3 vs B3_noabs |
@@ -116,7 +122,7 @@ for n pairs is:
 
 So with about ten occurrences a primary comparison can be significant with up to two losses at
 the smallest rank differences. Anything less is reported as a direction with counts, never as a
-significant improvement. Secondary comparisons (10, smallest threshold 0.005) are exploratory
+significant improvement. Secondary comparisons (12, smallest threshold 0.0042) are exploratory
 whatever their p.
 
 ## 5. Secondary measures (reported, not tested)
@@ -174,6 +180,8 @@ descriptively beside the headline values.
 10. Robustness to quieter attacks: **pre-registered** on 2026-10-29 as the no-reconnaissance condition (Section 5a), with the disclosure stated there.
 11. B_RBA moved from the secondary family to a published-work family of one test (2026-10-29), following the supervisor's request to compare with published work.
 12. Fidelity of B_RBA: checked against the numbers Uetz et al. publish for russellmitchell, a tuning scenario (`provenance/ait/rba_fidelity.txt`).
+13. Two ablation arms added to the secondary family on 2026-10-31, so that every component claimed as a contribution has one: B2_pooled (the same forests, every host calibrated against the pooled held-out distribution only) and B2_notime (forests refitted without window duration and the mean and minimum inter-arrival times). They were added because of what the paper claims, before their tuning-set results were seen. On the tuning set B2_pooled is preferred by the objective but rejected by the protocol's calibration guard (`provenance/ait/calib_guard_pooled.txt`); the method is unchanged.
+14. The accumulator's window-surprise correction is checked on the workstation's hold-out week (`tools/ws_qcheck.py`), against a criterion fixed in the script before its first run; it is not part of the locked run.
 
 ## 8. Deviations
 

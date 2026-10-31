@@ -19,6 +19,10 @@ within a group because its members share host and rule):
   B2'       B2 with the forest replaced by a robust z-score
   B2_nov    the novelty flag alone: 100 * [any member's rule is novel for its entity]
   B2_alert  B2 with the window of the last 5 alerts in the sequence term
+  B2_pooled B2 with every host calibrated against the pooled held-out distribution only (same forests;
+            ablation of the per-host credibility calibration, added 2026-10-31)
+  B2_notime B2 with forests refitted without the three timing features (window duration, mean and
+            minimum inter-arrival time; feature-group ablation, added 2026-10-31)
   B_RBA     risk-based alerting after Uetz et al. 2026 (tools/rba.py), configuration fixed on the tuning
             set in <wb_dir>/rba_config.json (ait_rba_tune.py); trailing windows, group maximum
   B3        B2 + risk notables (Component 8) absorbing their contributing groups, ranked by the
@@ -127,12 +131,16 @@ def host_of(a):
     return next(v for t, v in a.entities if t == "host")
 
 
-def score_types(rows, A, t_atk, model_cls, seed, entries, info=None):
+def score_types(rows, A, t_atk, model_cls, seed, entries, info=None, pooled=None):
     """{etype: S array aligned with rows[etype]} (-1 where unscoreable or no model).
-    If `info` is a dict, info[etype] receives the model's per-host calibration source."""
+    If `info` is a dict, info[etype] receives the model's per-host calibration source.
+    If `pooled` is a dict, pooled[etype] receives the same forest's scores under pooled-only
+    calibration (arm B2_pooled)."""
     out = {}
     for et, d in rows.items():
         s = np.full(len(d["j"]), -1.0)
+        if pooled is not None:
+            pooled[et] = np.full(len(d["j"]), -1.0)
         ts = np.array([A[j].ts for j in d["j"]])
         hosts = [host_of(A[j]) for j in d["j"]]
         base = d["ok"] & (ts < t_atk)
@@ -141,6 +149,8 @@ def score_types(rows, A, t_atk, model_cls, seed, entries, info=None):
             if m.fit(d["F"][base], [h for h, b in zip(hosts, base) if b], entries):
                 okm = d["ok"]
                 s[okm] = m.score(d["F"][okm], [h for h, o in zip(hosts, okm) if o], entries)
+                if pooled is not None:
+                    pooled[et][okm] = m.score_pooled(d["F"][okm], entries)
                 if info is not None:
                     info[et] = dict(m.cal_source)
                     if os.environ.get("DUMP_DIR"):
@@ -299,7 +309,8 @@ for sc in args.scenarios:
     per_seed = collections.defaultdict(list)
     for seed in range(args.seeds):
         cal_info = {}
-        Se = score_types(rows_e, A, t_atk, C6.TypeModel, seed, True, cal_info)
+        Sp = {}
+        Se = score_types(rows_e, A, t_atk, C6.TypeModel, seed, True, cal_info, pooled=Sp)
         if seed == 0:
             # which non-scan stages sit on hosts the model could calibrate against their own baseline
             hc = cal_info.get("host", {})
@@ -351,6 +362,12 @@ for sc in args.scenarios:
                                 held=np.array([json.dumps({k: cal_info.get(k) for k in cal_info if k.startswith(("held:", "pool:"))})], dtype=object))
         per_seed["B2_def"].append(queue_metrics(0.3 * g_rule + 0.2 * g_exp + 0.5 * b2s, stages, None))
         per_seed["B2_alert"].append(queue_metrics(mix(seq_term(gid, G, k, sa)), stages, sa, L))
+        # ablation arms added 2026-10-31: per-host calibration and the timing features
+        sp = alert_max(seq_rows(rows_e), Sp, n)[ev]
+        per_seed["B2_pooled"].append(queue_metrics(mix(seq_term(gid, G, k, sp)), stages, sp, L))
+        Snt = score_types(seq_rows(rows_e), A, t_atk, C6.NoTimingModel, seed, True)
+        snt = alert_max(seq_rows(rows_e), Snt, n)[ev]
+        per_seed["B2_notime"].append(queue_metrics(mix(seq_term(gid, G, k, snt)), stages, snt, L))
         # ---- Component 8: one stream of (alert, entity) in time order, baseline and evaluation
         stream = []
         RUN = W.ENTRY_FEATURE_NAMES.index("current_run_length")

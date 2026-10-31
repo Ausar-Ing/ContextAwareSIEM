@@ -124,7 +124,7 @@ Unsupervised learning is used because it needs no attack labels and can rank act
 \section{Proposed System}
 \label{sec:system}
 
-This section presents the system model of the proposed prioritization layer and its operational process. Fig.~\ref{fig:architecture} shows the architecture.
+Fig.~\ref{fig:architecture} shows the architecture of the proposed layer.
 
 \begin{figure}[t]
 \centering
@@ -241,7 +241,6 @@ where $G_c$ = \{\texttt{sca}, \texttt{rootcheck}, \texttt{policy\_monitoring}, \
 
 %% ---------------- Phase 2
 \phase{2}{Entity Resolution and Attribute Enrichment (C3, C4)}
-Phase 2 determines the units over which context accumulates and attaches the attributes that do not depend on history.
 
 \step{1}{Entity resolution} Each alert resolves to a set of entities $E(a) \subseteq \{\mathrm{host}, \mathrm{user}, \mathrm{srcip}\}$. The host is the monitored machine, mapped from the Wazuh agent through a frozen alias table so that a re-enrolled agent remains one entity. The user is taken, for Windows logon events, from the target account and otherwise from the subject account, with machine and service identities excluded and domain and case variants normalized. The source address is taken from the decoder's source field when routable. Table~\ref{tab:resolution} gives the measured resolution rates. Each corpus populates two of the three types, and the pair differs: the workstation has no network logons, and AIT's dominant benign alert, a mail-server login, records the account only in the raw line, which the layer does not read.
 
@@ -379,7 +378,6 @@ For a host with a long baseline $w_h \to 1$, $S_\mathrm{seq}$ is uniform on its 
 
 %% ---------------- Phase 5
 \phase{5}{Sequence Scoring and Hybrid Priority (C6, C7)}
-Phase 5 turns the windows of an admitted alert into calibrated scores and combines them with the per-alert attributes into one priority.
 
 \step{1}{Window scoring} Every scoreable window $W(e,a)$ is scored with the forest of $e$'s type by (\ref{eq:iforest}) and calibrated by (\ref{eq:calib}), giving $S_\mathrm{seq}(a,e) \in [0,100]$.
 
@@ -429,12 +427,12 @@ R_e(t) = \sum_{g \in \mathcal{G}_e} v_g\,(1 + \ln k_g)\, 2^{-(t - t^{\mathrm{las
 \end{multline}
 with $\mathcal{G}_e$ the accumulation groups of $e$, $v_g = a_r S_\mathrm{rule} + a_c S_\mathrm{exp}$ of the group's first member, $t^{\mathrm{last}}_g$ its most recent member, and half-life $t_{1/2} = 1$\,h. The accumulator keeps its own weights, $(a_r, a_c, a_s) = (0.3, 0.2, 0.5)$, separate from the queue's: the tuned queue weights give the static terms zero weight (Phase 5), which would leave the accumulator no group evidence at all. Decaying from the most recent member and splitting groups at gaps longer than $T$ keep a burst today from being absorbed into a group that began weeks earlier.
 
-The window term uses a surprise score rather than $S_\mathrm{seq}$, whose maximum over many windows approaches 100 for any busy entity because $S_\mathrm{seq}$ is uniform on benign data. With $u = S_\mathrm{seq}(a,e)/100$ and $n_e$ the effective number of independent windows the entity produced in the preceding $T$,
+The window term uses a surprise score rather than $S_\mathrm{seq}$, whose running maximum over a busy entity's many windows stays high on benign activity alone, because $S_\mathrm{seq}$ is uniform on benign data. With $u = S_\mathrm{seq}(a,e)/100$ and $n_e$ the effective number of independent windows the entity produced in the preceding $T$,
 \begin{equation}
 q(a, e) = 100 \cdot \min\!\big(1,\ -\log_{10}(1 - u^{\,n_e}) / \lambda \big),
 \label{eq:q}
 \end{equation}
-the improbability that $n_e$ benign windows would produce a maximum this high, on a log scale saturating at $\lambda = 4$. A window changes materially only when an entry is added to it, so $n_e$ is the number of entries the entity opened in the preceding $T$ divided by $N$ (for B2$_\mathrm{alert}$, the window count divided by $N$). This correction is derived rather than measured; it is validated by checking that the window term is not flat for the workstation host across a benign day.
+the improbability that $n_e$ benign windows would produce a maximum this high, on a log scale saturating at $\lambda = 4$. A window changes materially only when an entry is added to it, so $n_e$ is the number of entries the entity opened in the preceding $T$ divided by $N$ (for B2$_\mathrm{alert}$, the window count divided by $N$). This correction is derived rather than measured; that it keeps the window term informative is checked on the workstation's hold-out week against a criterion fixed in advance (on the median day, at its ceiling at under half of the host's alerts, with an interquartile range of at least 10 points).
 
 \step{3}{Escalation} An entity becomes a risk notable when three conditions hold together: $R_e(t) > \theta$, an amount of evidence; its contributing groups number at least two, so that one flood cannot escalate on its own; and they carry at least two ATT\&CK tactics contributed by \emph{different} rules. The last condition is a correction: several common benign rules each carry two or three tactics, so a plain ``two tactics'' condition is met by a single benign alert. $\theta$ is calibrated as $S_\mathrm{seq}$ is, per entity type, as the 99.9th percentile of $R_e(t)$ over the baseline period, so that it states a benign crossing rate rather than a hand-set level. A group is \emph{contributing} only while its decayed term is at least 10\% of $R_e(t)$, so that a residue from the previous day cannot supply the second group.
 
@@ -581,7 +579,10 @@ User model drifts over five weeks & Drift is measured on the hold-out week; peri
 \item \textbf{B2$_\mathrm{max}$}: B2 with groups ranked by their maximum $S_\mathrm{seq}$ instead of $\pi(g)$: does the size correction earn its place?
 \item \textbf{B2$_\mathrm{seq}$}: B2 without the novelty term, the sequence term alone: does the novelty term add to the window?
 \item \textbf{B2$_\mathrm{alert}$}: B2 with the window of the last 5 alerts, the strongest alert window on the tuning set, instead of entries: does collapsing change the ranking?
-\item \textbf{B3}: B2 + entity accumulation (Phase 7).
+\item \textbf{B2$_\mathrm{pooled}$}: B2 with every host calibrated against the pooled distribution only ($w_h = 0$), same forests: does per-host calibration earn its place?
+\item \textbf{B2$_\mathrm{notime}$}: B2 with forests refitted without the three timing features: does the window's pacing carry signal?
+\item \textbf{B2$_\mathrm{def}$}: B2 with the former default weights $(0.3, 0.2, 0.5, 0)$; descriptive only.
+\item \textbf{B3}: B2 + entity accumulation (Phase 7); \textbf{B3$_\mathrm{bestgrp}$} and \textbf{B3$_\mathrm{noabs}$}: B3 without promotion (each notable at its best group's priority) and without absorption (notables beside their groups).
 \item \textbf{B$_\mathrm{RBA}$}: risk-based alerting after Uetz et al. \cite{ref26}: their five hypotheses scored per alert as in their implementation and combined by a weighted mean whose windows and weights are selected on the tuning set, groups taking their members' maximum. For comparability its windows look only into the past (their better centred windows also use future alerts) and every normalizer is estimated from the pre-attack period. Does a learned window beat a strong hand-designed risk score?
 \end{itemize}
 
@@ -626,7 +627,7 @@ Ties are broken by average rank, which matters for B0, under which all groups of
 \subsection{Statistical Analysis and Pre-specified Claims}
 \label{sec:stats}
 
-The test set holds about ten non-scan stage occurrences, so systems are compared \emph{paired} on the same stages: for each stage, the first-item rank under one system against the other, with the number improved and worsened and a Wilcoxon signed-rank test over the pairs. With ten pairs only a near-unanimous difference is significant, and the results are stated in those terms rather than as averaged percentages. Seeded systems are run ten times and enter the tests by their mean rank per stage. The comparisons form three families. The primary family compares B2 with the two strongest systems without temporal context, B0$_\mathrm{host}$ and B0$_\mathrm{rank}$. The published-work family is a single comparison, B2 against B$_\mathrm{RBA}$, the reimplementation of Uetz et al.\ \cite{ref26}, tested at 0.05; on the tuning set B$_\mathrm{RBA}$ ranked the non-scan stages earlier than B2, so this comparison may go against the method and is reported whatever its outcome. The remaining ten comparisons, the ablations among them, form the secondary family and are labelled exploratory. Holm correction is applied within each family separately; with about ten pairs the primary family then tolerates up to two losses at the smallest rank differences, where one correction over all thirteen comparisons would demand near-unanimity.
+The test set holds about ten non-scan stage occurrences, so systems are compared \emph{paired} on the same stages: for each stage, the first-item rank under one system against the other, with the number improved and worsened and a Wilcoxon signed-rank test over the pairs. With ten pairs only a near-unanimous difference is significant, and the results are stated in those terms rather than as averaged percentages. Seeded systems are run ten times and enter the tests by their mean rank per stage. The comparisons form three families. The primary family compares B2 with the two strongest systems without temporal context, B0$_\mathrm{host}$ and B0$_\mathrm{rank}$. The published-work family is a single comparison, B2 against B$_\mathrm{RBA}$, the reimplementation of Uetz et al.\ \cite{ref26}, tested at 0.05; on the tuning set B$_\mathrm{RBA}$ ranked the non-scan stages earlier than B2, so this comparison may go against the method and is reported whatever its outcome. The remaining twelve comparisons, the ablations among them, form the secondary family and are labelled exploratory. Holm correction is applied within each family separately; with about ten pairs the primary family then tolerates up to two losses at the smallest rank differences, where one correction over all fifteen comparisons would demand near-unanimity.
 
 The claims are fixed in advance. Temporal context is said to improve on host or level rarity only if the primary comparison is significant after correction; otherwise the counts, the within-host AUC and the calibration split are reported and AIT-ADS is said not to separate the two. The forest is said to earn its place only if B2 beats B2$'$ after correction; otherwise the two scorers are reported as equal and the result is credited to the window representation rather than to the forest. The method is said to rank attack stages earlier than risk-based alerting only if B2 beats B$_\mathrm{RBA}$, and the reverse is stated if B$_\mathrm{RBA}$ wins significantly. Every paired comparison is also reported separately for stages on hosts whose calibration is dominated by their own baseline ($n_h \ge n_0$, Phase 4) and on hosts dominated by the type-level distribution: only the former test the window score as specified, the latter largely test host rarity.
 

@@ -22,7 +22,8 @@ import eval_metrics as M
 PRIMARY = [("B2", "B0_host"), ("B2", "B0_rank")]
 PUBLISHED = [("B2", "B_RBA")]
 SECONDARY = [("B2", "B0"), ("B2", "B1"), ("B2", "B2'"), ("B2", "B2_nov"), ("B2", "B2_seq"),
-             ("B2", "B2_alert"), ("B2", "B2_max"), ("B3", "B2"), ("B3", "B3_bestgrp"), ("B3", "B3_noabs")]
+             ("B2", "B2_alert"), ("B2", "B2_max"), ("B2", "B2_pooled"), ("B2", "B2_notime"),
+             ("B3", "B2"), ("B3", "B3_bestgrp"), ("B3", "B3_noabs")]   # B2_pooled, B2_notime added 2026-10-31
 FAMILY = PRIMARY + PUBLISHED + SECONDARY
 TAGS = {**{c: "primary  " for c in PRIMARY}, **{c: "published" for c in PUBLISHED}, **{c: "secondary" for c in SECONDARY}}
 

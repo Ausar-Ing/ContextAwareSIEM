@@ -1,0 +1,17 @@
+scenarios: harrison, russellmitchell, shaw, wheeler; Holm step-down within the primary (2), published-work (1) and secondary (12) families separately
+
+primary   B2         vs B0_host   : n= 9  B2 earlier  7, B0_host earlier  2, tied  0  p=0.223  Holm p=0.223
+primary   B2         vs B0_rank   : n= 9  B2 earlier  6, B0_rank earlier  3, tied  0  p=0.098  Holm p=0.195
+published B2         vs B_RBA     : n= 9  B2 earlier  2, B_RBA earlier  7, tied  0  p=0.023  Holm p=0.023
+secondary B2         vs B0        : n= 9  B2 earlier  8, B0 earlier  1, tied  0  p=0.008  Holm p=0.086
+secondary B2         vs B1        : n= 9  B2 earlier  8, B1 earlier  1, tied  0  p=0.027  Holm p=0.246
+secondary B2         vs B2'       : n= 9  B2 earlier  4, B2' earlier  5, tied  0  p=0.652  Holm p=1.000
+secondary B2         vs B2_nov    : n= 9  B2 earlier  9, B2_nov earlier  0, tied  0  p=0.004  Holm p=0.047
+secondary B2         vs B2_seq    : n= 9  B2 earlier  3, B2_seq earlier  1, tied  5  p=0.250  Holm p=1.000
+secondary B2         vs B2_alert  : n= 9  B2 earlier  6, B2_alert earlier  3, tied  0  p=0.301  Holm p=1.000
+secondary B2         vs B2_max    : n= 9  B2 earlier  8, B2_max earlier  1, tied  0  p=0.125  Holm p=0.750
+secondary B2         vs B2_pooled : n= 9  B2 earlier  0, B2_pooled earlier  7, tied  2  p=0.016  Holm p=0.156
+secondary B2         vs B2_notime : n= 9  B2 earlier  3, B2_notime earlier  5, tied  1  p=0.547  Holm p=1.000
+secondary B3         vs B2        : n= 9  B3 earlier  6, B2 earlier  2, tied  1  p=0.078  Holm p=0.547
+secondary B3         vs B3_bestgrp: n= 9  B3 earlier  2, B3_bestgrp earlier  5, tied  2  p=0.906  Holm p=1.000
+secondary B3         vs B3_noabs  : n= 9  B3 earlier  5, B3_noabs earlier  0, tied  4  p=0.062  Holm p=0.500

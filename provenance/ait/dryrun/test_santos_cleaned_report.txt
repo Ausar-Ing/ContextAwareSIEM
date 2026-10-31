@@ -1,0 +1,106 @@
+scenarios: harrison
+system     aNDCG@10           @20     @50     MRR  macroAUC withinAUC
+B0            0.237   0.251         0.489   0.033     0.513     0.509
+B0_rank       0.367   0.357         0.564   0.081     0.862     0.510
+B0_host       0.558   0.667         0.695   0.098     0.930     0.500
+B1            0.231   0.334         0.507   0.043     0.506     0.509
+B_RBA         0.402   0.564         0.575   0.278     0.828     0.629
+B2_nov        0.457   0.555         0.631   0.057     0.968     0.934
+B2'           0.323   0.417         0.545   0.134     0.999     0.990
+B2_def        0.436   0.490±0.015   0.568   0.211       -         -  
+B2_alert      0.367   0.421±0.001   0.512   0.107     0.989     0.925
+B2_pooled     0.710   0.751±0.083   0.803   0.571     0.999     0.987
+B2_notime     0.636   0.662±0.001   0.745   0.458     0.996     0.995
+B2_max        0.668   0.749±0.027   0.763   0.290       -         -  
+B2_seq        0.692   0.707±0.055   0.781   0.568     0.981     0.987
+B2            0.692   0.743±0.083   0.798   0.570     0.981     0.987
+B3            0.768   0.813±0.027   0.870   0.462       -         -  
+B3_bestgrp     0.718   0.777±0.048   0.834   0.574       -         -  
+B3_noabs      0.799   0.804±0.005   0.881   0.458       -         -  
+
+robustness and per-day ranking (means over scenarios and seeds): alpha-nDCG@20 with the protocol grades, binary grades, grades (2,1,1), alpha = 1; per-day alpha-nDCG@20 and MRR
+system         @20  binary  (2,1,1)  alpha=1  day@20  dayMRR
+B0           0.251   0.486    0.339    0.242   0.251   0.033
+B0_rank      0.357   0.537    0.428    0.377   0.357   0.081
+B0_host      0.667   0.729    0.704    0.640   0.667   0.098
+B1           0.334   0.551    0.417    0.339   0.334   0.043
+B_RBA        0.564   0.502    0.556    0.508   0.564   0.278
+B2_nov       0.555   0.623    0.592    0.563   0.555   0.057
+B2'          0.417   0.407    0.423    0.402   0.417   0.134
+B2_def       0.490   0.511    0.509    0.428   0.490   0.211
+B2_alert     0.421   0.490    0.455    0.361   0.421   0.107
+B2_pooled    0.751   0.669    0.740    0.724   0.751   0.571
+B2_notime    0.662   0.605    0.657    0.633   0.662   0.458
+B2_max       0.749   0.783    0.778    0.718   0.749   0.290
+B2_seq       0.707   0.623    0.694    0.688   0.707   0.568
+B2           0.743   0.656    0.730    0.725   0.743   0.570
+B3           0.813   0.873    0.853    0.825   0.813   0.462
+B3_bestgrp   0.777   0.709    0.771    0.779   0.777   0.574
+B3_noabs     0.804   0.834    0.833    0.788   0.804   0.458
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n= 3  B2 better  3, B0 better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B0_rank : n= 3  B2 better  3, B0_rank better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B0_host : n= 3  B2 better  2, B0_host better  1, tied  0, Wilcoxon p=0.500
+  B2   vs B1      : n= 3  B2 better  3, B1 better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B2'     : n= 3  B2 better  3, B2' better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B2_nov  : n= 3  B2 better  2, B2_nov better  1, tied  0, Wilcoxon p=0.500
+  B2   vs B2_alert: n= 3  B2 better  3, B2_alert better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B2_max  : n= 3  B2 better  2, B2_max better  1, tied  0, Wilcoxon p=1.000
+  B2   vs B2_pooled: n= 3  B2 better  0, B2_pooled better  1, tied  2, Wilcoxon p=1.000
+  B2   vs B2_notime: n= 3  B2 better  3, B2_notime better  0, tied  0, Wilcoxon p=0.250
+  B2   vs B_RBA   : n= 3  B2 better  2, B_RBA better  1, tied  0, Wilcoxon p=1.000
+  B2   vs B2_seq  : n= 3  B2 better  1, B2_seq better  0, tied  2, Wilcoxon p=1.000
+  B3   vs B2      : n= 3  B3 better  1, B2 better  2, tied  0, Wilcoxon p=1.000
+  B3   vs B3_bestgrp: n= 3  B3 better  0, B3_bestgrp better  2, tied  1, Wilcoxon p=0.500
+  B3   vs B3_noabs: n= 3  B3 better  1, B3_noabs better  0, tied  2, Wilcoxon p=1.000
+
+paired first-item ranks, split by whether the stage's host has its own calibration
+  calibrated   B2 vs B0_host : n= 1  B2 better  0, B0_host better  1, tied  0, Wilcoxon p=1.000
+  calibrated   B2 vs B0_rank : n= 1  B2 better  1, B0_rank better  0, tied  0, Wilcoxon p=1.000
+  calibrated   B2 vs B0      : n= 1  B2 better  1, B0 better  0, tied  0, Wilcoxon p=1.000
+  uncalibrated B2 vs B0_host : n= 2  B2 better  2, B0_host better  0, tied  0, Wilcoxon p=0.500
+  uncalibrated B2 vs B0_rank : n= 2  B2 better  2, B0_rank better  0, tied  0, Wilcoxon p=0.500
+  uncalibrated B2 vs B0      : n= 2  B2 better  2, B0 better  0, tied  0, Wilcoxon p=0.500
+
+stage hosts and calibration:
+  harrison         dnsteal: inet-firewall/internal_share (own); attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+
+calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
+  harrison         [shrink n0=100] intranet_server 44%, webserver 4%, external_mail 3%, mail 0%, inet-firewall 0%, external_mail 0%, vpn 0%
+
+within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
+  harrison         host 21   n=13/27: B2 0.979, B0_rank 0.520, B0_host 0.500
+  harrison         host 27   n=486/1680: B2 0.996, B0_rank 0.500, B0_host 0.500
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  harrison         2 / 2 / 0   0.4113888888888889   max stages 3
+
+training windows after stride (entries):
+  harrison         {'host': 4323, 'srcip': 1465, 'user': 7}
+
+stage coverage@20 (pre-registered, Sec. 5): stages whose first item is in the top 20, summed over scenarios, mean over seeds; non-scan and scan separately
+system          non-scan         scan
+B0             0.0 / 3      3.0 / 3  
+B0_rank        1.0 / 3      3.0 / 3  
+B0_host        3.0 / 3      3.0 / 3  
+B1             1.0 / 3      3.0 / 3  
+B_RBA          3.0 / 3      3.0 / 3  
+B2_nov         3.0 / 3      3.0 / 3  
+B2'            2.0 / 3      1.0 / 3  
+B2_def         2.0 / 3      3.0 / 3  
+B2_alert       2.0 / 3      3.0 / 3  
+B2_pooled      2.5 / 3      3.0 / 3  
+B2_notime      2.0 / 3      3.0 / 3  
+B2_max         3.0 / 3      3.0 / 3  
+B2_seq         2.0 / 3      3.0 / 3  
+B2             2.5 / 3      3.0 / 3  
+B3             2.5 / 3      3.0 / 3  
+B3_bestgrp     2.5 / 3      3.0 / 3  
+B3_noabs       2.0 / 3      3.0 / 3  
+
+first-item rank of every non-scan stage occurrence (seeded systems: mean over seeds; lower is earlier)
+  scenario         stage                     B0_host  B0_rank    B_RBA       B2       B3
+  harrison         attacker_change_user          8.5     32.0      4.0      1.2      1.5
+  harrison         dnsteal                      17.0     32.0     12.0     23.5     19.0
+  harrison         escalated_sudo_command        8.5      5.5      2.0      1.2      1.5

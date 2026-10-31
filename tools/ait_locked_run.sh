@@ -10,14 +10,27 @@
 # without the reconnaissance alerts (pre-registered 2026-10-29, PREREGISTRATION.md Section 5a).
 #
 # usage: bash tools/ait_locked_run.sh <freeze-tag>
+#        bash tools/ait_locked_run.sh --dry-run [seeds]
+#
+# --dry-run (added 2026-10-31) runs every step below on the TUNING scenarios instead (harrison and
+# shaw, wheeler and russellmitchell, recorded baselines; harrison in place of santos for the cleaned
+# run), without --allow-test, writing to provenance/ait/dryrun/ and skipping only the git-state checks.
+# It tests the script's mechanics; its numbers are tuning-set numbers and are never results.
 set -euo pipefail
-TAG="${1:?usage: ait_locked_run.sh <freeze-tag>}"
-ROOT="$(git rev-parse --show-toplevel)"; cd "$ROOT"
-D=data/ait_ads; T=tools; P=provenance/ait; OUT=$P/test
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"; cd "$ROOT"
+D=data/ait_ads; T=tools; P=provenance/ait
 C="$D/alerts_csv"
-
-[ -z "$(git status --porcelain -- tools provenance/ait References)" ] || { echo "dirty tree"; exit 1; }
-[ "$(git rev-parse HEAD)" = "$(git rev-parse "$TAG^{commit}")" ] || { echo "HEAD is not $TAG"; exit 1; }
+if [ "${1:-}" = "--dry-run" ]; then
+    DRY=1; SEEDS="${2:-2}"; OUT=$P/dryrun; ALLOW=""
+    SA="harrison shaw"; SB="wheeler russellmitchell"; SCLEAN=harrison
+    rm -rf "$OUT"
+else
+    DRY=0; TAG="${1:?usage: ait_locked_run.sh <freeze-tag> | --dry-run [seeds]}"
+    SEEDS=10; OUT=$P/test; ALLOW="--allow-test"
+    SA="fox santos"; SB="wardbeck wilson"; SCLEAN=santos
+    [ -z "$(git status --porcelain -- tools provenance/ait References)" ] || { echo "dirty tree"; exit 1; }
+    [ "$(git rev-parse HEAD)" = "$(git rev-parse "$TAG^{commit}")" ] || { echo "HEAD is not $TAG"; exit 1; }
+fi
 env | grep -q '^CONTEXTSIEM_' && { echo "CONTEXTSIEM_* override set"; exit 1; }
 echo "9f0595c4ebe56ac9223763881f55369dd4f249a8108064e4ae108eb3309aeeb9  $D/ait_ads.zip" | sha256sum -c -
 echo "633e09b42772eabbbe5b48598220860eead60b7352efb01973fc45a5034290c0  $D/labels.csv" | sha256sum -c -
@@ -27,19 +40,19 @@ python3 -c "import scipy.stats" || { echo "scipy missing: the Wilcoxon tests wou
 mkdir -p "$OUT"
 
 python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv "$C" $T $P/host_roles.json "$OUT/test_recorded_a.json" \
-    --scenarios fox santos --seeds 10 --allow-test --recorded > "$OUT/test_recorded_a.out" 2>&1 &
+    --scenarios $SA --seeds $SEEDS $ALLOW --recorded > "$OUT/test_recorded_a.out" 2>&1 &
 python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv "$C" $T $P/host_roles.json "$OUT/test_recorded_b.json" \
-    --scenarios wardbeck wilson --seeds 10 --allow-test --recorded > "$OUT/test_recorded_b.out" 2>&1 &
-wait
+    --scenarios $SB --seeds $SEEDS $ALLOW --recorded > "$OUT/test_recorded_b.out" 2>&1 &
+for p in $(jobs -p); do wait "$p"; done   # a crashed run stops the script (set -e)
 python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv "$C" $T $P/host_roles.json "$OUT/test_santos_cleaned.json" \
-    --scenarios santos --seeds 10 --allow-test > "$OUT/test_santos_cleaned.out" 2>&1
+    --scenarios $SCLEAN --seeds $SEEDS $ALLOW > "$OUT/test_santos_cleaned.out" 2>&1
 
 NR=service_scan,dirb,wpscan
 CONTEXTSIEM_DROP_LABELS=$NR python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv "$C" $T $P/host_roles.json "$OUT/test_norecon_a.json" \
-    --scenarios fox santos --seeds 10 --allow-test --recorded > "$OUT/test_norecon_a.out" 2>&1 &
+    --scenarios $SA --seeds $SEEDS $ALLOW --recorded > "$OUT/test_norecon_a.out" 2>&1 &
 CONTEXTSIEM_DROP_LABELS=$NR python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv "$C" $T $P/host_roles.json "$OUT/test_norecon_b.json" \
-    --scenarios wardbeck wilson --seeds 10 --allow-test --recorded > "$OUT/test_norecon_b.out" 2>&1 &
-wait
+    --scenarios $SB --seeds $SEEDS $ALLOW --recorded > "$OUT/test_norecon_b.out" 2>&1 &
+for p in $(jobs -p); do wait "$p"; done   # a crashed run stops the script (set -e)
 
 python3 - "$OUT" <<'PY'
 import json, sys
@@ -55,5 +68,9 @@ python3 $T/ait_holm.py $T "$OUT/test_recorded.json" > "$OUT/test_recorded_holm.t
 python3 $T/ait_report.py $T "$OUT/test_santos_cleaned.json" > "$OUT/test_santos_cleaned_report.txt"
 python3 $T/ait_report.py $T "$OUT/test_norecon.json" > "$OUT/test_norecon_report.txt"
 python3 $T/ait_holm.py $T "$OUT/test_norecon.json" > "$OUT/test_norecon_holm.txt"
-echo "freeze tag $TAG, commit $(git rev-parse HEAD), finished $(date -Iseconds)" > "$OUT/RUN_RECORD.txt"
+if [ "$DRY" = 1 ]; then
+    echo "DRY RUN on tuning scenarios ($SEEDS seeds), commit $(git rev-parse HEAD 2>/dev/null || echo none), finished $(date -Iseconds)" > "$OUT/RUN_RECORD.txt"
+else
+    echo "freeze tag $TAG, commit $(git rev-parse HEAD), finished $(date -Iseconds)" > "$OUT/RUN_RECORD.txt"
+fi
 echo "done: $OUT"
