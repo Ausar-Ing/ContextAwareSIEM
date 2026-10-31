@@ -41,33 +41,13 @@
     }
    },
    "host_calibration": {
-    "inet-firewall[27]": [
-     "own",
-     28394
-    ],
-    "intranet_server[21]": [
-     "pooled",
-     84
-    ],
-    "external_mail[11]": [
-     "own",
-     4553
-    ],
-    "internal_share[16]": [
-     "own",
-     22248
-    ],
     "vpn[12]": [
      "own",
      4706
     ],
-    "external_mail[6]": [
+    "internal_share[16]": [
      "own",
-     9752
-    ],
-    "webserver[24]": [
-     "own",
-     4121
+     22248
     ],
     "cloud_share[19]": [
      "pooled",
@@ -76,6 +56,26 @@
     "mail[22]": [
      "own",
      10083
+    ],
+    "inet-firewall[27]": [
+     "own",
+     28394
+    ],
+    "external_mail[11]": [
+     "own",
+     4553
+    ],
+    "intranet_server[21]": [
+     "pooled",
+     84
+    ],
+    "webserver[24]": [
+     "own",
+     4121
+    ],
+    "external_mail[6]": [
+     "own",
+     9752
     ]
    },
    "calib_check": {
@@ -109,7 +109,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 98
+   "seconds": 124
   },
   "deterministic": {
    "B0": {
@@ -1293,9 +1293,17 @@
     }
    },
    "host_calibration": {
-    "inet-firewall[25]": [
+    "intranet_server[21]": [
+     "pooled",
+     27
+    ],
+    "mail[20]": [
      "own",
-     6308
+     10910
+    ],
+    "cloud_share[1]": [
+     "pooled",
+     35
     ],
     "vpn[23]": [
      "own",
@@ -1305,33 +1313,25 @@
      "pooled",
      37
     ],
-    "mail[20]": [
+    "inet-firewall[25]": [
      "own",
-     10910
+     6308
     ],
-    "external_mail[2]": [
-     "own",
-     7497
-    ],
-    "intranet_server[21]": [
+    "external_mail[5]": [
      "pooled",
-     27
-    ],
-    "cloud_share[1]": [
-     "pooled",
-     35
-    ],
-    "internal_share[24]": [
-     "pooled",
-     41
+     80
     ],
     "external_mail[4]": [
      "pooled",
      82
     ],
-    "external_mail[5]": [
+    "internal_share[24]": [
      "pooled",
-     80
+     41
+    ],
+    "external_mail[2]": [
+     "own",
+     7497
     ]
    },
    "calib_check": {
@@ -1377,7 +1377,7 @@
     ]
    },
    "calib_mode": "shrink n0=100",
-   "seconds": 89
+   "seconds": 103
   },
   "deterministic": {
    "B0": {
