@@ -1,0 +1,6 @@
+  wheeler seed 0: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+  wheeler seed 1: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+=== wheeler (132s): B2 0.291, B2_seq 0.175, B2_max 0.290, B2_def 0.188, B2_alert 0.315, B2_pooled 0.375, B2_notime 0.288, B3_bestgrp 0.291, B3_noabs 0.291, B3 0.291, B0 0.000, B0_rank 0.175, B0_host 0.372, B1 0.094, B2_nov 0.428, B_RBA 0.347, B2' 0.422
+  russellmitchell seed 0: B2 aNDCG@20 0.182 | B3 0.178 incidents 1 (attack 0) ttn None
+  russellmitchell seed 1: B2 aNDCG@20 0.182 | B3 0.179 incidents 1 (attack 0) ttn None
+=== russellmitchell (53s): B2 0.182, B2_seq 0.090, B2_max 0.133, B2_def 0.000, B2_alert 0.158, B2_pooled 0.272, B2_notime 0.092, B3_bestgrp 0.182, B3_noabs 0.178, B3 0.178, B0 0.000, B0_rank 0.000, B0_host 0.360, B1 0.000, B2_nov 0.344, B_RBA 0.313, B2' 0.252

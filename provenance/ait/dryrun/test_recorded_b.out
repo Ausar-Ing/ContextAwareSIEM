@@ -1,0 +1,6 @@
+  wheeler seed 0: B2 aNDCG@20 0.289 | B3 0.508 incidents 1 (attack 1) ttn 26.225833333333334
+  wheeler seed 1: B2 aNDCG@20 0.360 | B3 0.555 incidents 1 (attack 1) ttn 26.225833333333334
+=== wheeler (481s): B2 0.325, B2_seq 0.291, B2_max 0.299, B2_def 0.282, B2_alert 0.297, B2_pooled 0.438, B2_notime 0.331, B3_bestgrp 0.390, B3_noabs 0.435, B3 0.532, B0 0.188, B0_rank 0.345, B0_host 0.386, B1 0.180, B2_nov 0.432, B_RBA 0.889, B2' 0.395
+  russellmitchell seed 0: B2 aNDCG@20 0.430 | B3 0.516 incidents 2 (attack 1) ttn 0.9405555555555556
+  russellmitchell seed 1: B2 aNDCG@20 0.294 | B3 0.415 incidents 2 (attack 1) ttn 0.9405555555555556
+=== russellmitchell (60s): B2 0.362, B2_seq 0.358, B2_max 0.442, B2_def 0.288, B2_alert 0.194, B2_pooled 0.430, B2_notime 0.456, B3_bestgrp 0.527, B3_noabs 0.451, B3 0.466, B0 0.165, B0_rank 0.184, B0_host 0.392, B1 0.129, B2_nov 0.325, B_RBA 0.777, B2' 0.246

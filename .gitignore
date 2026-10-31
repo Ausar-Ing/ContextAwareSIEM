@@ -52,3 +52,7 @@ wazuh-passwords.txt
 
 # Public datasets (large, licensed separately; download from source, never commit)
 data/
+
+# keep the run logs of the locked test run and its dry run (2026-10-31)
+!provenance/ait/test/*.out
+!provenance/ait/dryrun/*.out

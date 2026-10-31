@@ -1,0 +1,3 @@
+  harrison seed 0: B2 aNDCG@20 0.661 | B3 0.786 incidents 2 (attack 2) ttn 0.4113888888888889
+  harrison seed 1: B2 aNDCG@20 0.826 | B3 0.840 incidents 2 (attack 2) ttn 0.4113888888888889
+=== harrison (288s): B2 0.743, B2_seq 0.707, B2_max 0.749, B2_def 0.490, B2_alert 0.421, B2_pooled 0.751, B2_notime 0.662, B3_bestgrp 0.777, B3_noabs 0.804, B3 0.813, B0 0.251, B0_rank 0.357, B0_host 0.667, B1 0.334, B2_nov 0.555, B_RBA 0.564, B2' 0.417
