@@ -56,3 +56,6 @@ data/
 # keep the run logs of the locked test run and its dry run (2026-10-31)
 !provenance/ait/test/*.out
 !provenance/ait/dryrun/*.out
+
+# local planning file, not pushed (2026-10-31)
+SCHEDULE.md
