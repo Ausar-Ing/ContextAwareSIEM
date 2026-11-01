@@ -87,7 +87,7 @@ def scores(sc, P, seed):
 
 
 def params(v):
-    p = dict(delta=3600.0, thq=99.9, cf=0.10, h=4 * 3600.0,  # the incumbent of the 2026-10-25 sweep; lam=4.0, a=(0.3, 0.2, 0.5))
+    p = dict(delta=3600.0, thq=99.9, cf=0.10, h=4 * 3600.0, lam=4.0, a=(0.3, 0.2, 0.5))  # the incumbent of the 2026-10-25 sweep
     for part in v.split("+"):
         p.update(_param(part))
     return p
