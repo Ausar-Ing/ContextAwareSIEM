@@ -68,6 +68,10 @@ python3 $T/ait_holm.py $T "$OUT/test_recorded.json" > "$OUT/test_recorded_holm.t
 python3 $T/ait_report.py $T "$OUT/test_santos_cleaned.json" > "$OUT/test_santos_cleaned_report.txt"
 python3 $T/ait_report.py $T "$OUT/test_norecon.json" > "$OUT/test_norecon_report.txt"
 python3 $T/ait_holm.py $T "$OUT/test_norecon.json" > "$OUT/test_norecon_holm.txt"
+# the paper's result tables, generated from the outputs above (added 2026-11-01)
+if [ "$DRY" = 1 ]; then NOTE="dry run on the tuning set, not results"; else NOTE=""; fi
+python3 $T/make_result_tables.py $T "$OUT/test_recorded.json" "$OUT/results_tables.tex" \
+    --norecon "$OUT/test_norecon.json" --cleaned "$OUT/test_santos_cleaned.json" --label-note "$NOTE"
 if [ "$DRY" = 1 ]; then
     echo "DRY RUN on tuning scenarios ($SEEDS seeds), commit $(git rev-parse HEAD 2>/dev/null || echo none), finished $(date -Iseconds)" > "$OUT/RUN_RECORD.txt"
 else
