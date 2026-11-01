@@ -59,7 +59,8 @@ rm -f "$OUT/eval_tuning_set_self.json" "$OUT/eval_tuning_set_noscans_self.json"
 ( cd "$WORK/main" && python3 "$T/ait_eval.py" "$D/ait_ads.zip" "$D/labels.csv" "$C" "$T" "$P/host_roles.json" \
       "$OUT/eval_tuning_set_self.json" --scenarios $TUNE --seeds "$SEEDS" > "$OUT/eval_tuning_set_self.out" 2>&1 ) &
 PA=$!
-( if [ "$HAVE_WS" = 1 ]; then python3 "$T/ws_qcheck.py" "$T" "$WSC" "$OUT/ws_qcheck_self.json" --seeds 5 > "$OUT/ws_qcheck_self.out" 2>&1; fi
+( if [ "$HAVE_WS" = 1 ]; then python3 "$T/ws_qcheck.py" "$T" "$WSC" "$OUT/ws_qcheck_self.json" --seeds 5 > "$OUT/ws_qcheck_self.out" 2>&1 \
+      || echo "step 9 (ws_qcheck) failed, see ws_qcheck_self.out; continuing with step 2" | tee -a "$LOG"; fi
   cd "$WORK/norecon" && CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan python3 "$T/ait_eval.py" "$D/ait_ads.zip" "$D/labels.csv" "$C" "$T" \
       "$P/host_roles.json" "$OUT/eval_tuning_set_noscans_self.json" --scenarios $TUNE --seeds "$SEEDS" > "$OUT/eval_tuning_set_noscans_self.out" 2>&1 ) &
 PB=$!
