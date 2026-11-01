@@ -1,0 +1,6 @@
+seed 0: corrected ceiling share 0.000, IQR 11.9 -> not flat: True | uncorrected ceiling share 0.079, IQR 27.6
+seed 1: corrected ceiling share 0.000, IQR 12.7 -> not flat: True | uncorrected ceiling share 0.086, IQR 27.8
+seed 2: corrected ceiling share 0.000, IQR 15.0 -> not flat: True | uncorrected ceiling share 0.096, IQR 31.0
+seed 3: corrected ceiling share 0.000, IQR 13.7 -> not flat: True | uncorrected ceiling share 0.090, IQR 30.3
+seed 4: corrected ceiling share 0.000, IQR 10.7 -> not flat: True | uncorrected ceiling share 0.075, IQR 30.9
+PASS (not flat on every seed)

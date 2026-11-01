@@ -1,0 +1,21 @@
+Comparison of this rerun with the saved tuning-set results
+IDENTICAL = every number equal; LAST DIGIT = within one unit of the last printed digit; DIFFERENT = look at it
+
+1 all systems: report                                  IDENTICAL
+1 all systems: paired tests                            IDENTICAL
+1 all systems vs the 27 Oct run                        IDENTICAL
+2 no-reconnaissance: report                            IDENTICAL
+2 no-reconnaissance: paired tests                      DIFFERENT
+                                                         B2 vs B0: 0.043 -> 0.047
+                                                         B2 vs B1: 0.043 -> 0.047
+3 forest caches and C8 constants (delta86400 variant)  IDENTICAL
+3 weight search verdict                                IDENTICAL
+4 B_RBA configuration                                  IDENTICAL
+4 B_RBA selection report                               IDENTICAL
+5 variety as a fifth term                              IDENTICAL
+6 calibration guard                                    IDENTICAL
+7 workstation thresholds                               IDENTICAL
+8 workstation false promotion                          IDENTICAL
+9 window-surprise check                                IDENTICAL
+
+13 of 14 items identical or within the last digit; check: 2 no-reconnaissance: paired tests

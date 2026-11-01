@@ -1,0 +1,32 @@
+seed 0 done (2s)
+seed 1 done (6s)
+seed 2 done (10s)
+seed 3 done (14s)
+seed 4 done (18s)
+incumbent (0.0, 0.0, 1.0, 0.0): 0.501 (sd 0.019) MRR 0.258 (sd 0.024)
+  (0.0, 0.0, 0.8, 0.2)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5  <- adopted
+  (0.0, 0.0, 0.7, 0.3)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.6, 0.4)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.5, 0.5)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.4, 0.6)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.3, 0.7)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.2, 0.8)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.1, 0.9)     0.526 0.020 0.261  prefers              earlier 4, later 0, tied 5
+  (0.0, 0.0, 0.9, 0.1)     0.522 0.025 0.260  tie, incumbent stays earlier 4, later 0, tied 5
+  (0.0, 0.1, 0.8, 0.1)     0.503 0.025 0.261  tie, incumbent stays earlier 5, later 0, tied 4
+  (0.0, 0.1, 0.9, 0.0)     0.503 0.025 0.261  tie, incumbent stays earlier 5, later 0, tied 4
+  (0.0, 0.0, 1.0, 0.0)     0.501 0.019 0.258   (incumbent)
+  (0.0, 0.1, 0.6, 0.3)     0.501 0.023 0.257  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.1, 0.7, 0.2)     0.501 0.023 0.257  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.1, 0.5, 0.4)     0.499 0.023 0.255  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.2, 0.6, 0.2)     0.499 0.025 0.254  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.1, 0.3, 0.6)     0.499 0.025 0.254  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.1, 0.4, 0.5)     0.497 0.027 0.255  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.2, 0.7, 0.1)     0.496 0.026 0.254  tie, incumbent stays earlier 5, later 2, tied 2
+  (0.0, 0.0, 0.0, 1.0)     0.493 0.000 0.074  tie, MRR rejects     earlier 3, later 6, tied 0  VETOED
+  (0.1, 0.0, 0.6, 0.3)     0.493 0.024 0.231  tie, MRR rejects     earlier 5, later 4, tied 0
+  (0.0, 0.2, 0.8, 0.0)     0.493 0.023 0.254  tie, incumbent stays earlier 4, later 3, tied 2
+  (0.1, 0.0, 0.8, 0.1)     0.492 0.025 0.231  tie, MRR rejects     earlier 5, later 3, tied 1
+  (0.1, 0.0, 0.7, 0.2)     0.491 0.024 0.231  tie, MRR rejects     earlier 5, later 4, tied 0
+  (0.1, 0.1, 0.7, 0.1)     0.490 0.022 0.234  tie, incumbent stays earlier 6, later 3, tied 0
+adopted: (0.0, 0.0, 0.8, 0.2)

@@ -1,0 +1,24 @@
+  harrison seed 0: B2 aNDCG@20 0.591 | B3 0.868 incidents 1 (attack 1) ttn 1.5325
+  harrison seed 1: B2 aNDCG@20 0.581 | B3 0.883 incidents 1 (attack 1) ttn 1.5325
+  harrison seed 2: B2 aNDCG@20 0.551 | B3 0.855 incidents 1 (attack 1) ttn 1.5325
+  harrison seed 3: B2 aNDCG@20 0.479 | B3 0.849 incidents 1 (attack 1) ttn 1.5325
+  harrison seed 4: B2 aNDCG@20 0.552 | B3 0.865 incidents 1 (attack 1) ttn 1.5325
+=== harrison (132s): B2 0.551, B2_seq 0.459, B2_max 0.640, B2_def 0.419, B2_alert 0.478, B2_pooled 0.605, B2_notime 0.481, B3_bestgrp 0.600, B3_noabs 0.847, B3 0.864, B0 0.163, B0_rank 0.326, B0_host 0.642, B1 0.167, B2_nov 0.608, B_RBA 0.350, B2' 0.568
+  russellmitchell seed 0: B2 aNDCG@20 0.182 | B3 0.178 incidents 1 (attack 0) ttn None
+  russellmitchell seed 1: B2 aNDCG@20 0.182 | B3 0.179 incidents 1 (attack 0) ttn None
+  russellmitchell seed 2: B2 aNDCG@20 0.185 | B3 0.181 incidents 1 (attack 0) ttn None
+  russellmitchell seed 3: B2 aNDCG@20 0.175 | B3 0.173 incidents 1 (attack 0) ttn None
+  russellmitchell seed 4: B2 aNDCG@20 0.181 | B3 0.094 incidents 1 (attack 0) ttn None
+=== russellmitchell (76s): B2 0.181, B2_seq 0.091, B2_max 0.107, B2_def 0.000, B2_alert 0.182, B2_pooled 0.285, B2_notime 0.100, B3_bestgrp 0.181, B3_noabs 0.144, B3 0.161, B0 0.000, B0_rank 0.000, B0_host 0.360, B1 0.000, B2_nov 0.344, B_RBA 0.313, B2' 0.252
+  shaw seed 0: B2 aNDCG@20 0.591 | B3 0.972 incidents 1 (attack 1) ttn 18.219166666666666
+  shaw seed 1: B2 aNDCG@20 0.746 | B3 0.972 incidents 1 (attack 1) ttn 18.219166666666666
+  shaw seed 2: B2 aNDCG@20 0.795 | B3 1.000 incidents 1 (attack 1) ttn 18.219166666666666
+  shaw seed 3: B2 aNDCG@20 0.775 | B3 1.000 incidents 1 (attack 1) ttn 18.219166666666666
+  shaw seed 4: B2 aNDCG@20 0.700 | B3 0.957 incidents 1 (attack 1) ttn 18.219166666666666
+=== shaw (138s): B2 0.721, B2_seq 0.691, B2_max 0.727, B2_def 0.607, B2_alert 0.711, B2_pooled 0.761, B2_notime 0.800, B3_bestgrp 0.870, B3_noabs 0.940, B3 0.980, B0 0.177, B0_rank 0.474, B0_host 0.560, B1 0.116, B2_nov 0.557, B_RBA 0.279, B2' 0.627
+  wheeler seed 0: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+  wheeler seed 1: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+  wheeler seed 2: B2 aNDCG@20 0.303 | B3 0.303 incidents 0 (attack 0) ttn None
+  wheeler seed 3: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+  wheeler seed 4: B2 aNDCG@20 0.291 | B3 0.291 incidents 0 (attack 0) ttn None
+=== wheeler (249s): B2 0.293, B2_seq 0.176, B2_max 0.292, B2_def 0.188, B2_alert 0.319, B2_pooled 0.384, B2_notime 0.289, B3_bestgrp 0.293, B3_noabs 0.293, B3 0.293, B0 0.000, B0_rank 0.175, B0_host 0.372, B1 0.094, B2_nov 0.428, B_RBA 0.347, B2' 0.422

@@ -1,0 +1,11 @@
+[21:20:03] start: seeds 5, work dir /home/user/csiem_rerun, commit fd672aa
+[21:20:03] 1 all systems + 2 no-reconnaissance (+9 window-surprise check) -- the long part
+[21:43:07] 1-2 done
+[21:43:07] 3 weight search (forest caches first)
+[21:55:02] 4 B_RBA selection
+[22:03:40] 5 variety as a fifth term
+[22:04:09] 6 calibration guard
+[22:10:10] 7 workstation thresholds
+[22:16:05] 8 workstation false promotion
+[22:19:04] comparing with the saved files
+[22:19:06] done: /mnt/c/Personal/UniStuff/Project/ContextAwareSIEM/provenance/ait/rerun_self (see COMPARISON_self.txt)

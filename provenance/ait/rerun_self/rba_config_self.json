@@ -1,0 +1,27 @@
+{
+ "variants": {
+  "level": "level",
+  "accumulation": "accumulation_1d_box",
+  "variety": "variety_1d_triangle",
+  "rarity": "rarity_1d_triangle",
+  "aperiodicity": "aperiodicity_1d"
+ },
+ "weights": {
+  "level": 0.0,
+  "accumulation": 0.0,
+  "variety": 0.9,
+  "rarity": 0.1,
+  "aperiodicity": 0.0
+ },
+ "delta_s": 86400.0,
+ "aggregation": "group maximum",
+ "windows": "trailing only; normalizers from the pre-attack period",
+ "selected_on": [
+  "harrison",
+  "russellmitchell",
+  "shaw",
+  "wheeler"
+ ],
+ "source": "tools/rba.py (after Uetz et al. 2026, CATS commit 628cf48)",
+ "date": "2026-10-27"
+}
