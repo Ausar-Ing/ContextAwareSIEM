@@ -1,0 +1,19 @@
+Independent rerun of the B_RBA fidelity check (tools/rba_fidelity.py) -- 2026-11-02, tuning scenario only (russellmitchell)
+
+Purpose: confirm that provenance/ait/rba_fidelity.json does not depend on the machine or library versions it
+was made with, and record the input hashes, which the original run did not.
+
+Code: tools/rba.py and tools/rba_fidelity.py at commit d8180c1 (unchanged in the working tree).
+Machine: a separate Linux container (Claude session), not the machine that produced rba_fidelity.json.
+Environment: Python 3.13.18, numpy 2.5.3, scikit-learn 1.9.1, scipy 1.18.1
+  (NOT the pinned versions in tools/requirements-ait.txt; the pinned wheels were not installable there).
+Input: CATS, github.com/962012d09b/cats, commit 628cf48a6f569cafc463f47d512bc626d0ac366a
+  datasets/ait_wazuh.zip     sha256 43385c87481fb13a92ed276e623d0f65fd1951f9fe0ed209e6201e81109ee62e  -> ait_wazuh.jsonl (37,000,712 bytes)
+  datasets/ait_suricata.zip  sha256 5f48c675ac1cfc27eafe808496a4c27e8d4f1c07fb8ce7f9e7c6ca3207af224c  -> ait_suricata.jsonl (17,867,674 bytes)
+Command: python3 tools/rba_fidelity.py ait_wazuh.jsonl ait_suricata.jsonl rba_fidelity.json   (2 min 32 s)
+
+Result: identical to provenance/ait/rba_fidelity.json.
+  Alert and positive counts identical: Wazuh 23,116 / 7,661; Suricata 9,186 / 44.
+  Every AUROC value identical except one, which differs by 1.1e-16 (floating-point rounding):
+  Suricata variety_1d_triangle_centred. The printed comparison table is identical, so the verdict stands:
+  23 of 26 published values of Uetz et al. Table 4a reproduced exactly at two decimals, 3 within 0.01.
