@@ -17,12 +17,26 @@ ablation; and left the design decisions to the student, to be judged as a whole 
 The decisions of 27-28 October, previously marked provisional, are therefore the student's
 decisions and stand unless changed here before the freeze tag.
 
+Revised 2026-11-03, after an audit of the locked-run script and before the freeze: the event-label
+files are added to Section 1 and checked by the run; Section 3 lists the run's checks and replaces the
+crash rule with a procedure; Section 7 item 3 states the current family sizes; Section 8 moves
+`DEVIATIONS.md` out of the output directory and now comes before Section 9. No system, parameter,
+comparison or claim changed.
+
 ## 1. Data
 
 | File | SHA-256 |
 |---|---|
 | `data/ait_ads/ait_ads.zip` | `9f0595c4ebe56ac9223763881f55369dd4f249a8108064e4ae108eb3309aeeb9` |
 | `data/ait_ads/labels.csv` | `633e09b42772eabbbe5b48598220860eead60b7352efb01973fc45a5034290c0` |
+| `data/ait_ads/alerts_csv/<scenario>_alerts.txt` (8 files) | listed in `provenance/ait/alerts_csv.sha256` |
+
+The per-alert event labels are not in the Zenodo record: they come from `alerts_csv/alerts_csv.zip` in
+the dataset's GitHub repository (`ait-aecid/alert-data-set`, commit `ce927dd`, SHA-256
+`2bf1a81527a3fe15d92079a7834c9d77c5305546e15569657d2097d6294825c3`); the eight extracted files are
+identical to the archive's contents. An alert with no matching label row counts as benign, so a
+different label file would relabel attack alerts silently; the run therefore checks these hashes too
+(added 2026-11-03).
 
 Test scenarios: **fox, santos, wardbeck, wilson**, fixed before tuning (two large, two
 small, one with exfiltration in each half). Tuning scenarios (harrison, russellmitchell,
@@ -54,11 +68,11 @@ scenario's `meta`; the report must show it unchanged.
 ## 3. Runs
 
 `tools/ait_locked_run.sh` performs, in order:
-1. it verifies the checksums above, that the working tree is clean at the freeze tag and that `tools/rba_config.json` exists;
+1. it checks that no output directory exists yet, that the working tree is clean at the freeze tag, the checksums above (data and event-label files), that the numpy, scikit-learn and scipy versions equal `tools/requirements-ait.txt`, that no `CONTEXTSIEM_*` or `DUMP_DIR` variable is set, and that scipy and `tools/rba_config.json` are present; it records the start time, versions, machine and checks in `RUN_RECORD.txt` and the environment in `pip_freeze.txt`, and deletes any cached parse (`evalcache_*.pkl`) so that every scenario is parsed by the frozen code (checks other than checksums and scipy added 2026-11-03);
 2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, decision on Q4);
 3. it runs santos again with the oracle-cleaned baseline (its labelled exfiltration alerts removed from training), reported beside the headline;
 4. it runs the four test scenarios once more with recorded baselines and the reconnaissance alerts removed from the whole stream (`CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan`), every system configured as for the headline (**the no-reconnaissance condition**, Section 5a);
-5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run, `ait_descriptive.py` on the headline and no-reconnaissance runs (added 2026-11-02, Section 9; it only formats these outputs), and writes the paper's result tables with `make_result_tables.py` (added 2026-11-01; it only formats these outputs);
+5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run, `ait_descriptive.py` on the headline and no-reconnaissance runs (added 2026-11-02, Section 9; it only formats these outputs), and writes the paper's result tables with `make_result_tables.py` (added 2026-11-01; it only formats these outputs). This step is `tools/ait_locked_format.sh` (separated 2026-11-03): it reads only the evaluation outputs and stops if any pre-registered comparison is not available, since its Holm family would otherwise shrink without notice;
 6. it writes everything under `provenance/ait/test/`. It refuses to start if scipy is missing, since the Wilcoxon tests would otherwise return nan.
 
 `bash tools/ait_locked_run.sh --dry-run [seeds]` (added 2026-10-31) performs the same steps on the tuning
@@ -70,9 +84,13 @@ tuning scenarios have no labelled attack alerts before their first attack step).
 recorded run (`provenance/ait/eval_harrison_recorded_report.txt`) is the tuning-set evidence for
 the recorded condition.
 
-The run happens once. A crash is fixed and the run repeated from scratch. Any other
-repeat, and any change of code or parameters after seeing a test number, is a deviation
-and is reported as such (Section 8).
+The run happens once. If it stops with an error, the cause is fixed and recorded in
+`DEVIATIONS.md` (Section 8); the procedure is in `docs/LOCKED_RUN_CHECKLIST.md`. After a failure in
+an evaluation step (2-4), the partial outputs are moved to `provenance/ait/test_crash<N>/` and
+committed, and the run is repeated from scratch at a new tag, which reads the test scenarios again.
+After a failure in step 5, the evaluation outputs are kept and step 5 alone is rerun
+(`tools/ait_locked_format.sh`). Any other repeat, and any change of code or parameters after seeing a
+test number, is a deviation and is reported as such (Section 8).
 
 ## 4. Primary analysis
 
@@ -170,7 +188,7 @@ descriptively beside the headline values.
 
 1. Novelty term: **adopted** (w = 0.2; Q1). Weights with the novelty term were searched (286 configurations); rule and exposure weights stay 0, and the rule and exposure scores are still shown to the analyst in every item's explanation (Q8).
 2. Santos headline: **recorded**; cleaned reported beside it (Q4).
-3. Holm: **primary family (2) and secondary family (11) corrected separately** (Q3).
+3. Holm: **primary family (2) and secondary family (11) corrected separately** (Q3). Current sizes, as in Section 4 and `tools/ait_holm.py`: primary 2, published-work 1 (B_RBA, moved out of the secondary family on 2026-10-29, item 11), secondary 12 (B2_pooled and B2_notime added on 2026-10-31, item 13).
 4. Grades (Table VI): **confirmed** (Q5). Every event label that occurs among the Wazuh alerts of the eight scenarios has a grade: service, directory and WordPress scans, online password cracking, user change, sudo escalation and DNS exfiltration.
 5. Workstation analysis: run before the test run (done 2026-10-25, `provenance/workstation/`).
 6. Forest vs robust z-score: pre-committed claim as in Section 6 (Q6).
@@ -182,6 +200,12 @@ descriptively beside the headline values.
 12. Fidelity of B_RBA: checked against the numbers Uetz et al. publish for russellmitchell, a tuning scenario (`provenance/ait/rba_fidelity.txt`).
 13. Two ablation arms added to the secondary family on 2026-10-31, so that every component claimed as a contribution has one: B2_pooled (the same forests, every host calibrated against the pooled held-out distribution only) and B2_notime (forests refitted without window duration and the mean and minimum inter-arrival times). They were added because of what the paper claims, before their tuning-set results were seen. On the tuning set B2_pooled is preferred by the objective but rejected by the protocol's calibration guard (`provenance/ait/calib_guard_pooled.txt`); the method is unchanged (confirmed by the student on 2026-11-01: per-host calibration is kept to keep host rarity out of S_seq, and the paper states that it does not improve ranking on AIT-ADS).
 14. The accumulator's window-surprise correction is checked on the workstation's hold-out week (`tools/ws_qcheck.py`), against a criterion fixed in the script before its first run; it is not part of the locked run.
+
+## 8. Deviations
+
+Any departure from this document is listed in `provenance/ait/DEVIATIONS.md` with its reason and
+the date, before the results are written up. The file lives outside `provenance/ait/test/` because
+the run refuses to start while that directory exists (template in `docs/LOCKED_RUN_CHECKLIST.md`).
 
 ## 9. Descriptive comparisons and wording of structural claims (added 2026-11-02)
 
@@ -241,8 +265,3 @@ scenarios. Hence:
 **9.5 Compute.** No throughput or latency comparison with B_RBA (413 alerts/s in Uetz et al.) or
 any other published method is claimed unless B2 and B_RBA are timed on the same machine and the
 same scenario; that timing is not part of the locked run.
-
-## 8. Deviations
-
-Any departure from this document is listed in `provenance/ait/test/DEVIATIONS.md` with
-its reason and the date, before the results are written up.
