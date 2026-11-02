@@ -58,7 +58,7 @@ scenario's `meta`; the report must show it unchanged.
 2. it runs `ait_eval.py --allow-test --seeds 10 --recorded` on the four test scenarios: baselines as recorded, the designed exfiltration in santos included (**the headline**, decision on Q4);
 3. it runs santos again with the oracle-cleaned baseline (its labelled exfiltration alerts removed from training), reported beside the headline;
 4. it runs the four test scenarios once more with recorded baselines and the reconnaissance alerts removed from the whole stream (`CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan`), every system configured as for the headline (**the no-reconnaissance condition**, Section 5a);
-5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run, and writes the paper's result tables with `make_result_tables.py` (added 2026-11-01; it only formats these outputs);
+5. it runs `ait_report.py` and `ait_holm.py` on the headline run and on the no-reconnaissance run, and `ait_report.py` on the cleaned santos run, `ait_descriptive.py` on the headline and no-reconnaissance runs (added 2026-11-02, Section 9; it only formats these outputs), and writes the paper's result tables with `make_result_tables.py` (added 2026-11-01; it only formats these outputs);
 6. it writes everything under `provenance/ait/test/`. It refuses to start if scipy is missing, since the Wilcoxon tests would otherwise return nan.
 
 `bash tools/ait_locked_run.sh --dry-run [seeds]` (added 2026-10-31) performs the same steps on the tuning
@@ -182,6 +182,65 @@ descriptively beside the headline values.
 12. Fidelity of B_RBA: checked against the numbers Uetz et al. publish for russellmitchell, a tuning scenario (`provenance/ait/rba_fidelity.txt`).
 13. Two ablation arms added to the secondary family on 2026-10-31, so that every component claimed as a contribution has one: B2_pooled (the same forests, every host calibrated against the pooled held-out distribution only) and B2_notime (forests refitted without window duration and the mean and minimum inter-arrival times). They were added because of what the paper claims, before their tuning-set results were seen. On the tuning set B2_pooled is preferred by the objective but rejected by the protocol's calibration guard (`provenance/ait/calib_guard_pooled.txt`); the method is unchanged (confirmed by the student on 2026-11-01: per-host calibration is kept to keep host rarity out of S_seq, and the paper states that it does not improve ranking on AIT-ADS).
 14. The accumulator's window-surprise correction is checked on the workstation's hold-out week (`tools/ws_qcheck.py`), against a criterion fixed in the script before its first run; it is not part of the locked run.
+
+## 9. Descriptive comparisons and wording of structural claims (added 2026-11-02)
+
+**Disclosure.** Added after the tuning-set results, including the student's own rerun
+(`provenance/ait/rerun_self/`), were known, and before any test scenario has been read. On the
+tuning set: within-host AUC was higher for B2 than for B_RBA on 2 of 4 eligible hosts in the
+recorded run (both in harrison) and on 3 of 4 in the no-reconnaissance run; B3 placed the first
+item of 2 of 9 non-scan stages earlier than B_RBA in the recorded run and 4 of 9 without
+reconnaissance. The output below is produced by `tools/ait_descriptive.py` in step 5 of the locked
+run, into `provenance/ait/test/test_descriptive.txt`. Nothing in this section is a test, and
+nothing here changes Sections 4, 5a or 6.
+
+**9.1 Within-host AUC, B2 vs B_RBA.** Per eligible host (>= 5 non-scan attack and >= 5 benign
+alerts): scenario, host, alert counts, B2 (mean over seeds), B_RBA, B0_host (0.5 by construction).
+The scenario mean is printed in the report but is **not** the basis of any statement, because one
+large host can dominate it. Rule, applied to the headline (recorded) run:
+- fewer than 3 eligible hosts: no comparison is stated;
+- B2 higher (at three decimals) on more than half of the eligible hosts, and those hosts in at
+  least two scenarios: the paper may state "within a host, the method separated attack from benign
+  alerts better than risk-based alerting on k of m hosts", with the per-host table and without the
+  words "significant" or "consistently";
+- otherwise: the per-host table is reported and described as mixed.
+The no-reconnaissance run gets the same table and verdict, reported beside the headline, never in
+its place.
+
+**9.2 Recorded vs no-reconnaissance.** alpha-nDCG@20 and MRR of B0_host, B0_rank, B_RBA, B2 and B3
+in both runs, with the relative change. Section 6 stands: a fall in B_RBA's aggregate measures does
+not license a robustness claim. The paper may describe the changes with their numbers ("removing
+reconnaissance lowered B_RBA's alpha-nDCG@20 from x to y and B2's from u to v"), always together
+with the Section 5a test result, and uses "robust" only if that test is significant in B2's favour.
+
+**9.3 B3 vs B_RBA.** Paired first-item counts (earlier / later / tied) of non-scan stages in both
+runs, no p-value. B_RBA's published-work comparison remains B2 vs B_RBA (Section 4). The paper may
+report these counts and B3's aggregate measures beside B_RBA's; it does not state that the
+accumulator outperforms risk-based alerting.
+
+**9.4 Where labels are used, and the allowed wording.** `labels.csv` is used (a) to score every
+system; (b) to end each baseline at the scenario's first attack step (`t_atk`), an oracle placement
+of the split that a deployment does not have; (c) to remove labelled attack alerts from the
+baseline in the oracle-cleaned runs (the tuning convention and the santos cleaned run, not the
+headline); (d) to select B2's weights and parameters, and B_RBA's weights, on the four tuning
+scenarios. Hence:
+- allowed: "the detector is fitted on the alert stream without alert labels and, in the headline
+  condition, without removing the attack alerts it contains";
+- allowed: "no alert is labelled in the scenarios being scored; weights and parameters were
+  selected once, on four labelled tuning scenarios, and frozen", stating that B_RBA's weights were
+  selected the same way;
+- allowed for santos only: the recorded and cleaned results side by side, described as evidence
+  from one scenario, without a general claim of tolerance to contamination;
+- not allowed: "label-free", "requires no labels" or "unsupervised" for the method as a whole
+  without the qualification above; any claim of transfer across environments (the tuning and test
+  scenarios share one testbed);
+- (b) is listed in the paper's table of dataset constraints and assumptions. A sensitivity check
+  on the split point is not part of the locked run; if run later it is reported as post hoc in
+  `DEVIATIONS.md`.
+
+**9.5 Compute.** No throughput or latency comparison with B_RBA (413 alerts/s in Uetz et al.) or
+any other published method is claimed unless B2 and B_RBA are timed on the same machine and the
+same scenario; that timing is not part of the locked run.
 
 ## 8. Deviations
 
