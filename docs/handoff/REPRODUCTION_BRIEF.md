@@ -3,6 +3,21 @@
 *Self-contained. You need the repository and this file, nothing else. Report back with the
 items in Section 7.*
 
+> **Second round (2 Nov), if you already did this once.** Your first run used a commit from before
+> 1 Nov: it still had the `ait_param_lab.py` syntax error (fixed in `a98e4a1`, the same fix you made)
+> and probably not the two ablation arms added on 31 Oct (B2_pooled, B2_notime). Please run again:
+> 1. `git pull` (or a fresh clone) so that `git log -1` shows commit `11f06da` or later on `main`.
+>    Do not edit any code this time; if something fails, report it.
+> 2. **Delete the old caches**: `rm -rf ~/repro` and start in a new, empty scratch directory. The
+>    cache files (`evalcache_*`, `plabrows_*`, `plabfit_*`, `rbacache_*`) are named without the code
+>    version, so old ones would be loaded silently and the rerun would test the old code.
+> 3. Run steps 1-7 again and compare with the files in the table, which now point to
+>    `provenance/ait/rerun_self/` (Anawin's own rerun at `fd672aa`; the evaluation code has not changed
+>    since). The older `eval_tuning_set_*holm.txt` files are from 27 Oct, before B_RBA moved to its
+>    own published-work family; that, not your run, caused the Holm difference you reported.
+> 4. Send everything in Section 7, including the commit hash, `pip freeze`, the data hashes and
+>    your output `.txt` files (`ev_report.txt`, `ev_holm.txt`, and the no-reconnaissance ones).
+
 ## 1. What this is and why
 
 The paper's tuning-set numbers (method B2, the comparator B_RBA, the ablation arms, the
@@ -76,11 +91,11 @@ Run in this order (runtimes on 2 cores). Keep every output file.
 | # | Command | Compare with | Time |
 |---|---|---|---|
 | 1 | `python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json ev.json --scenarios $TUNE --seeds 5` | (creates caches; compared in step 2) | ~15 min |
-| 2 | `python3 $T/ait_report.py $T ev.json > ev_report.txt` and `python3 $T/ait_holm.py $T ev.json > ev_holm.txt` | `$P/eval_tuning_set_report.txt`, `$P/eval_tuning_set_holm.txt` | <1 min |
+| 2 | `python3 $T/ait_report.py $T ev.json > ev_report.txt` and `python3 $T/ait_holm.py $T ev.json > ev_holm.txt` | `$P/rerun_self/eval_tuning_set_self_report.txt`, `$P/rerun_self/eval_tuning_set_self_holm.txt` | <1 min |
 | 3 | `python3 $T/ait_param_lab.py $T $P/host_roles.json pl.json --seeds 5 --variants delta86400` | (creates forest caches for step 4) | ~15 min |
 | 4 | `python3 $T/ait_weight_lab.py $T $P/host_roles.json weight_lab.json --seeds 5` | `$P/weight_lab_verdict.txt` (selected weights 0, 0, 0.8, 0.2) | ~1 min |
 | 5 | `python3 $T/ait_rba_tune.py $T rba_config_repro.json rba_tune.json` | `$T/rba_config.json`, `$P/rba_tune_report.txt` | ~10 min |
-| 6 | `CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json evnr.json --scenarios $TUNE --seeds 5`, then `ait_report.py` and `ait_holm.py` on `evnr.json` | `$P/eval_tuning_set_noscans_report.txt`, `_holm.txt` | ~15 min |
+| 6 | `CONTEXTSIEM_DROP_LABELS=service_scan,dirb,wpscan python3 $T/ait_eval.py $D/ait_ads.zip $D/labels.csv $C $T $P/host_roles.json evnr.json --scenarios $TUNE --seeds 5`, then `ait_report.py` and `ait_holm.py` on `evnr.json` | `$P/rerun_self/eval_tuning_set_noscans_self_report.txt`, `$P/rerun_self/eval_tuning_set_noscans_self_holm.txt` | ~15 min |
 | 7 | `cd $R && for t in test_parse_wazuh test_entries test_eval_metrics test_accumulator test_active_time; do python3 $T/$t.py || echo "FAILED $t"; done; cd ~/repro` | all pass | <1 min |
 
 Notes:
@@ -97,7 +112,7 @@ that is not shared.
 ## 6. How to compare
 
 ```bash
-diff <(sed 's/[[:space:]]\+/ /g' ev_report.txt) <(sed 's/[[:space:]]\+/ /g' $P/eval_tuning_set_report.txt)
+diff <(sed 's/[[:space:]]\+/ /g' ev_report.txt) <(sed 's/[[:space:]]\+/ /g' $P/rerun_self/eval_tuning_set_self_report.txt)
 ```
 and the same for the Holm and no-reconnaissance files.
 
