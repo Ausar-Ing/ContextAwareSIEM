@@ -5,7 +5,7 @@ B0_rank       0.367   0.357         0.564   0.081     0.862     0.510
 B0_host       0.558   0.667         0.695   0.098     0.930     0.500
 B1            0.231   0.334         0.507   0.043     0.506     0.509
 B_RBA         0.402   0.564         0.575   0.278     0.828     0.629
-B2_nov        0.457   0.555         0.631   0.057     0.968     0.934
+B2_nov        0.496   0.610         0.661   0.067     0.999     0.990
 B2'           0.323   0.417         0.545   0.134     0.999     0.990
 B2_def        0.436   0.490±0.015   0.568   0.211       -         -  
 B2_alert      0.367   0.421±0.001   0.512   0.107     0.989     0.925
@@ -25,7 +25,7 @@ B0_rank      0.357   0.537    0.428    0.377   0.357   0.081
 B0_host      0.667   0.729    0.704    0.640   0.667   0.098
 B1           0.334   0.551    0.417    0.339   0.334   0.043
 B_RBA        0.564   0.502    0.556    0.508   0.564   0.278
-B2_nov       0.555   0.623    0.592    0.563   0.555   0.057
+B2_nov       0.610   0.677    0.648    0.603   0.610   0.067
 B2'          0.417   0.407    0.423    0.402   0.417   0.134
 B2_def       0.490   0.511    0.509    0.428   0.490   0.211
 B2_alert     0.421   0.490    0.455    0.361   0.421   0.107
@@ -104,3 +104,6 @@ first-item rank of every non-scan stage occurrence (seeded systems: mean over se
   harrison         attacker_change_user          8.5     32.0      4.0      1.2      1.5
   harrison         dnsteal                      17.0     32.0     12.0     23.5     19.0
   harrison         escalated_sudo_command        8.5      5.5      2.0      1.2      1.5
+
+data checks (recorded from 2026-11-03): alerts without a row in alerts_csv, counted benign; event labels without a grade, which would enter the tests as grade-0 non-scan stages
+  harrison         unmatched 0; labels without a grade: none

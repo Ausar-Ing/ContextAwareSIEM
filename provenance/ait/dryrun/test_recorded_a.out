@@ -1,6 +1,6 @@
   harrison seed 0: B2 aNDCG@20 0.670 | B3 0.793 incidents 2 (attack 2) ttn 0.4161111111111111
   harrison seed 1: B2 aNDCG@20 0.668 | B3 0.793 incidents 2 (attack 2) ttn 0.4161111111111111
-=== harrison (439s): B2 0.669, B2_seq 0.664, B2_max 0.604, B2_def 0.487, B2_alert 0.432, B2_pooled 0.686, B2_notime 0.537, B3_bestgrp 0.751, B3_noabs 0.800, B3 0.793, B0 0.251, B0_rank 0.357, B0_host 0.610, B1 0.334, B2_nov 0.483, B_RBA 0.558, B2' 0.417
+=== harrison (434s): B2 0.669, B2_seq 0.664, B2_max 0.604, B2_def 0.487, B2_alert 0.432, B2_pooled 0.686, B2_notime 0.537, B3_bestgrp 0.751, B3_noabs 0.800, B3 0.793, B0 0.251, B0_rank 0.357, B0_host 0.610, B1 0.334, B2_nov 0.528, B_RBA 0.558, B2' 0.417
   shaw seed 0: B2 aNDCG@20 0.595 | B3 0.899 incidents 2 (attack 2) ttn 17.520555555555557
   shaw seed 1: B2 aNDCG@20 0.618 | B3 0.902 incidents 2 (attack 2) ttn 17.520555555555557
-=== shaw (136s): B2 0.606, B2_seq 0.605, B2_max 0.596, B2_def 0.565, B2_alert 0.692, B2_pooled 0.614, B2_notime 0.620, B3_bestgrp 0.599, B3_noabs 0.846, B3 0.900, B0 0.294, B0_rank 0.434, B0_host 0.552, B1 0.354, B2_nov 0.538, B_RBA 0.937, B2' 0.622
+=== shaw (146s): B2 0.606, B2_seq 0.605, B2_max 0.596, B2_def 0.565, B2_alert 0.692, B2_pooled 0.614, B2_notime 0.620, B3_bestgrp 0.599, B3_noabs 0.846, B3 0.900, B0 0.294, B0_rank 0.434, B0_host 0.552, B1 0.354, B2_nov 0.639, B_RBA 0.937, B2' 0.622

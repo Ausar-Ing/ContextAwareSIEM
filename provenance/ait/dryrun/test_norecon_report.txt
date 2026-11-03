@@ -5,7 +5,7 @@ B0_rank       0.185   0.244         0.403   0.216     0.825     0.536
 B0_host       0.416   0.461         0.483   0.134     0.925     0.500
 B1            0.054   0.094         0.283   0.058     0.383     0.535
 B_RBA         0.231   0.315         0.363   0.121     0.739     0.691
-B2_nov        0.363   0.452         0.490   0.086     0.887     0.848
+B2_nov        0.438   0.485         0.533   0.148     0.827     0.777
 B2'           0.398   0.454         0.496   0.229     0.841     0.878
 B2_def        0.178   0.302±0.017   0.398   0.185       -         -  
 B2_alert      0.299   0.384±0.013   0.447   0.238     0.923     0.700
@@ -25,7 +25,7 @@ B0_rank      0.244   0.244    0.244    0.297   0.289   0.220
 B0_host      0.461   0.461    0.461    0.410   0.469   0.142
 B1           0.094   0.094    0.094    0.126   0.155   0.065
 B_RBA        0.315   0.315    0.315    0.321   0.396   0.210
-B2_nov       0.452   0.452    0.452    0.450   0.486   0.101
+B2_nov       0.485   0.485    0.485    0.504   0.515   0.164
 B2'          0.454   0.454    0.454    0.485   0.496   0.295
 B2_def       0.302   0.302    0.302    0.309   0.349   0.231
 B2_alert     0.384   0.384    0.384    0.386   0.398   0.246
@@ -44,7 +44,7 @@ paired first-item ranks of non-scan stages (a better = earlier)
   B2   vs B0_host : n= 9  B2 better  6, B0_host better  3, tied  0, Wilcoxon p=0.887
   B2   vs B1      : n= 9  B2 better  8, B1 better  1, tied  0, Wilcoxon p=0.027
   B2   vs B2'     : n= 9  B2 better  1, B2' better  8, tied  0, Wilcoxon p=0.016
-  B2   vs B2_nov  : n= 9  B2 better  8, B2_nov better  1, tied  0, Wilcoxon p=0.012
+  B2   vs B2_nov  : n= 9  B2 better  4, B2_nov better  5, tied  0, Wilcoxon p=0.324
   B2   vs B2_alert: n= 9  B2 better  4, B2_alert better  5, tied  0, Wilcoxon p=0.523
   B2   vs B2_max  : n= 9  B2 better  5, B2_max better  3, tied  1, Wilcoxon p=0.633
   B2   vs B2_pooled: n= 9  B2 better  0, B2_pooled better  8, tied  1, Wilcoxon p=0.008
@@ -124,3 +124,9 @@ first-item rank of every non-scan stage occurrence (seeded systems: mean over se
   shaw             escalated_sudo_command        5.5      1.0     10.0      1.8      1.0
   wheeler          attacker_change_user         10.5     39.0      6.0      9.5      9.5
   wheeler          escalated_sudo_command       10.5      5.0      6.0      9.5      9.5
+
+data checks (recorded from 2026-11-03): alerts without a row in alerts_csv, counted benign; event labels without a grade, which would enter the tests as grade-0 non-scan stages
+  harrison         unmatched 0; labels without a grade: none
+  russellmitchell  unmatched 0; labels without a grade: none
+  shaw             unmatched 0; labels without a grade: none
+  wheeler          unmatched 0; labels without a grade: none
