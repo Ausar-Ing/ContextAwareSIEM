@@ -1,0 +1,8 @@
+LOCKED RUN, freeze tag freeze-2026-11-04
+commit b7857b0f9ad6a0cd37c668975d7c69116d12efb4
+started 2026-11-03T20:14:59+07:00
+python 3.12.3 numpy 2.4.4 scikit-learn 1.8.0 scipy 1.17.1
+machine Linux 6.18.54.1-microsoft-standard-WSL2 x86_64, 16 cores, 7 GB memory
+checks passed: clean tree at tag, no earlier output, environment, data and label hashes, library versions, scipy, B_RBA configuration
+evaluation finished 2026-11-03T20:42:12+07:00
+finished 2026-11-03T20:42:21+07:00

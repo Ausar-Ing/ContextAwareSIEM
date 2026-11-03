@@ -1,0 +1,11 @@
+  santos seed 0: B2 aNDCG@20 0.323 | B3 0.396 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 1: B2 aNDCG@20 0.377 | B3 0.470 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 2: B2 aNDCG@20 0.432 | B3 0.529 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 3: B2 aNDCG@20 0.411 | B3 0.480 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 4: B2 aNDCG@20 0.409 | B3 0.479 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 5: B2 aNDCG@20 0.516 | B3 0.572 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 6: B2 aNDCG@20 0.306 | B3 0.363 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 7: B2 aNDCG@20 0.320 | B3 0.415 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 8: B2 aNDCG@20 0.460 | B3 0.519 incidents 2 (attack 1) ttn 28.106944444444444
+  santos seed 9: B2 aNDCG@20 0.341 | B3 0.431 incidents 2 (attack 1) ttn 28.106944444444444
+=== santos (138s): B2 0.390, B2_seq 0.358, B2_max 0.524, B2_def 0.223, B2_alert 0.538, B2_pooled 0.535, B2_notime 0.429, B3_bestgrp 0.395, B3_noabs 0.458, B3 0.465, B0 0.188, B0_rank 0.331, B0_host 0.567, B1 0.236, B2_nov 0.516, B_RBA 0.718, B2' 0.439

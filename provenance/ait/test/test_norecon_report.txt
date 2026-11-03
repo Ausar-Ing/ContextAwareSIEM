@@ -1,0 +1,133 @@
+scenarios: fox, santos, wardbeck, wilson
+system     aNDCG@10           @20     @50     MRR  macroAUC withinAUC
+B0            0.000   0.000         0.172   0.027     0.521     0.521
+B0_rank       0.092   0.113         0.203   0.076     0.570     0.522
+B0_host       0.239   0.330         0.386   0.093     0.943     0.500
+B1            0.027   0.075         0.167   0.043     0.428     0.521
+B_RBA         0.254   0.299         0.335   0.106     0.852     0.846
+B2_nov        0.215   0.286         0.360   0.077     0.707     0.695
+B2'           0.225   0.298         0.352   0.125     0.708     0.770
+B2_def        0.039   0.095±0.019   0.233   0.067       -         -  
+B2_alert      0.391   0.394±0.015   0.463   0.323     0.939     0.756
+B2_pooled     0.354   0.357±0.015   0.459   0.276     0.972     0.820
+B2_notime     0.028   0.160±0.013   0.250   0.072     0.837     0.747
+B2_max        0.086   0.210±0.029   0.267   0.106       -         -  
+B2_seq        0.076   0.155±0.026   0.271   0.103     0.869     0.820
+B2            0.095   0.210±0.025   0.283   0.114     0.869     0.820
+B3            0.091   0.197±0.027   0.277   0.107       -         -  
+B3_bestgrp     0.094   0.210±0.024   0.283   0.114       -         -  
+B3_noabs      0.091   0.197±0.027   0.277   0.106       -         -  
+
+robustness and per-day ranking (means over scenarios and seeds): alpha-nDCG@20 with the protocol grades, binary grades, grades (2,1,1), alpha = 1; per-day alpha-nDCG@20 and MRR
+system         @20  binary  (2,1,1)  alpha=1  day@20  dayMRR
+B0           0.000   0.000    0.000    0.000   0.174   0.053
+B0_rank      0.113   0.109    0.114    0.151   0.201   0.102
+B0_host      0.330   0.327    0.331    0.297   0.542   0.185
+B1           0.075   0.075    0.075    0.100   0.251   0.089
+B_RBA        0.299   0.294    0.302    0.298   0.671   0.540
+B2_nov       0.286   0.287    0.285    0.320   0.395   0.114
+B2'          0.298   0.300    0.296    0.340   0.391   0.184
+B2_def       0.095   0.104    0.090    0.123   0.256   0.096
+B2_alert     0.394   0.407    0.387    0.475   0.453   0.342
+B2_pooled    0.357   0.365    0.352    0.410   0.482   0.305
+B2_notime    0.160   0.166    0.157    0.177   0.273   0.094
+B2_max       0.210   0.222    0.204    0.236   0.273   0.126
+B2_seq       0.155   0.168    0.148    0.187   0.292   0.127
+B2           0.210   0.222    0.203    0.242   0.302   0.134
+B3           0.197   0.208    0.190    0.224   0.302   0.134
+B3_bestgrp   0.210   0.221    0.203    0.242   0.302   0.134
+B3_noabs     0.197   0.208    0.190    0.224   0.302   0.134
+
+paired first-item ranks of non-scan stages (a better = earlier)
+  B2   vs B0      : n=10  B2 better  9, B0 better  1, tied  0, Wilcoxon p=0.004
+  B2   vs B0_rank : n=10  B2 better  7, B0_rank better  3, tied  0, Wilcoxon p=0.027
+  B2   vs B0_host : n=10  B2 better  4, B0_host better  6, tied  0, Wilcoxon p=0.375
+  B2   vs B1      : n=10  B2 better  8, B1 better  2, tied  0, Wilcoxon p=0.037
+  B2   vs B2'     : n=10  B2 better  3, B2' better  7, tied  0, Wilcoxon p=0.322
+  B2   vs B2_nov  : n=10  B2 better  5, B2_nov better  5, tied  0, Wilcoxon p=0.846
+  B2   vs B2_alert: n=10  B2 better  3, B2_alert better  7, tied  0, Wilcoxon p=0.131
+  B2   vs B2_max  : n=10  B2 better  8, B2_max better  1, tied  1, Wilcoxon p=0.008
+  B2   vs B2_pooled: n=10  B2 better  1, B2_pooled better  9, tied  0, Wilcoxon p=0.004
+  B2   vs B2_notime: n=10  B2 better 10, B2_notime better  0, tied  0, Wilcoxon p=0.002
+  B2   vs B_RBA   : n=10  B2 better  3, B_RBA better  7, tied  0, Wilcoxon p=0.131
+  B2   vs B2_seq  : n=10  B2 better  8, B2_seq better  2, tied  0, Wilcoxon p=0.010
+  B3   vs B2      : n=10  B3 better  0, B2 better  3, tied  7, Wilcoxon p=0.250
+  B3   vs B3_bestgrp: n=10  B3 better  0, B3_bestgrp better  4, tied  6, Wilcoxon p=0.125
+  B3   vs B3_noabs: n=10  B3 better  1, B3_noabs better  0, tied  9, Wilcoxon p=1.000
+
+paired first-item ranks, split by whether the stage's host has its own calibration
+  calibrated   B2 vs B0_host : n= 2  B2 better  0, B0_host better  2, tied  0, Wilcoxon p=0.500
+  calibrated   B2 vs B0_rank : n= 2  B2 better  1, B0_rank better  1, tied  0, Wilcoxon p=1.000
+  calibrated   B2 vs B0      : n= 2  B2 better  1, B0 better  1, tied  0, Wilcoxon p=1.000
+  uncalibrated B2 vs B0_host : n= 8  B2 better  4, B0_host better  4, tied  0, Wilcoxon p=0.844
+  uncalibrated B2 vs B0_rank : n= 8  B2 better  6, B0_rank better  2, tied  0, Wilcoxon p=0.039
+  uncalibrated B2 vs B0      : n= 8  B2 better  8, B0 better  0, tied  0, Wilcoxon p=0.008
+
+stage hosts and calibration:
+  fox              online_cracking: inet-firewall/intranet_server (pooled); attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  santos           online_cracking: inet-firewall/intranet_server (pooled); attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  wardbeck         attacker_change_user: intranet_server (pooled); escalated_sudo_command: intranet_server (pooled)
+  wilson           attacker_change_user: intranet_server (own); escalated_sudo_command: intranet_server (own)
+
+calibration check: benign evaluation host windows above S_seq 99 (should be ~1%), seed 0
+  fox              [shrink n0=100] internal_share 67%, webserver 32%, external_mail 11%, cloud_share 7%, intranet_server 3%, external_mail 1%, inet-firewall 0%, vpn 0%, external_mail 0%, mail 0%, external_mail 0%
+  santos           [shrink n0=100] internal_share 100%, cloud_share 8%, intranet_server 5%, external_mail 1%, external_mail 1%, vpn 0%, mail 0%, inet-firewall 0%, webserver 0%
+  wardbeck         [shrink n0=100] internal_share 6%, cloud_share 6%, intranet_server 1%, mail 0%, external_mail 0%, vpn 0%, external_mail 0%, inet-firewall 0%, external_mail 0%, webserver 0%
+  wilson           [shrink n0=100] internal_share 27%, webserver 4%, inet-firewall 2%, external_mail 0%, mail 0%, vpn 0%, external_mail 0%, intranet_server 0%, cloud_share 0%
+
+within-host AUC per eligible host (>= 5 non-scan attack and >= 5 benign alerts), B2 seed mean vs B0_rank
+  fox              host 27   n=11/36: B2 0.795, B0_rank 0.486, B0_host 0.500
+  santos           host 26   n=12/20: B2 0.878, B0_rank 0.517, B0_host 0.500
+  wardbeck         host 12   n=10/99: B2 0.803, B0_rank 0.540, B0_host 0.500
+  wilson           host 28   n=10/85: B2 0.807, B0_rank 0.544, B0_host 0.500
+
+B3 incidents per scenario (seed 0): total / attack / benign, time to first attack notable (h), stages
+  fox              0 / 0 / 0   -   max stages 0
+  santos           0 / 0 / 0   -   max stages 0
+  wardbeck         1 / 0 / 1   -   max stages 0
+  wilson           2 / 0 / 2   -   max stages 0
+
+training windows after stride (entries):
+  fox              {'host': 1876, 'srcip': 476, 'user': 34}
+  santos           {'host': 5210, 'srcip': 3424, 'user': 2}
+  wardbeck         {'host': 2344, 'srcip': 814, 'user': 2}
+  wilson           {'host': 7987, 'srcip': 3775, 'user': 24}
+
+stage coverage@20 (pre-registered, Sec. 5): stages whose first item is in the top 20, summed over scenarios, mean over seeds; non-scan and scan separately
+system          non-scan         scan
+B0             0.0 / 10     0.0 / 0  
+B0_rank        3.0 / 10     0.0 / 0  
+B0_host        7.0 / 10     0.0 / 0  
+B1             3.0 / 10     0.0 / 0  
+B_RBA          9.0 / 10     0.0 / 0  
+B2_nov         8.0 / 10     0.0 / 0  
+B2'            8.0 / 10     0.0 / 0  
+B2_def         4.5 / 10     0.0 / 0  
+B2_alert       8.0 / 10     0.0 / 0  
+B2_pooled      8.0 / 10     0.0 / 0  
+B2_notime      6.2 / 10     0.0 / 0  
+B2_max         7.3 / 10     0.0 / 0  
+B2_seq         5.9 / 10     0.0 / 0  
+B2             7.5 / 10     0.0 / 0  
+B3             7.1 / 10     0.0 / 0  
+B3_bestgrp     7.5 / 10     0.0 / 0  
+B3_noabs       7.1 / 10     0.0 / 0  
+
+first-item rank of every non-scan stage occurrence (seeded systems: mean over seeds; lower is earlier)
+  scenario         stage                     B0_host  B0_rank    B_RBA       B2       B3
+  fox              attacker_change_user         24.0     71.5      9.0     18.1     18.1
+  fox              escalated_sudo_command       24.0     71.5      8.0     52.0     52.0
+  fox              online_cracking              24.0     50.5     13.0     11.2     11.2
+  santos           attacker_change_user          6.0     35.5     10.0      8.4      8.4
+  santos           escalated_sudo_command        6.0      4.0      8.0      9.9      9.9
+  santos           online_cracking               6.0     35.5     33.0      2.3      2.3
+  wardbeck         attacker_change_user         12.5     44.5      8.0     12.2     13.2
+  wardbeck         escalated_sudo_command       12.5      3.5      8.0     19.5     20.5
+  wilson           attacker_change_user         12.0     65.0      9.0     16.7     18.7
+  wilson           escalated_sudo_command       12.0     20.0      9.0     27.9     27.9
+
+data checks (recorded from 2026-11-03): alerts without a row in alerts_csv, counted benign; event labels without a grade, which would enter the tests as grade-0 non-scan stages
+  fox              unmatched 0; labels without a grade: none
+  santos           unmatched 0; labels without a grade: none
+  wardbeck         unmatched 0; labels without a grade: none
+  wilson           unmatched 0; labels without a grade: none

@@ -1,0 +1,27 @@
+== 9.1 within-host AUC, recorded run (scenarios: fox, santos, wardbeck, wilson)
+  scenario          host  n_att  n_ben     B2  B_RBA B0_host
+  fox                 27     11     36  0.583  0.902   0.500
+  santos              26     12     20  0.953  0.988   0.500
+  wardbeck            12     10     99  0.887  0.961   0.500
+  wilson              28     10     85  0.940  0.882   0.500
+  verdict (governs the statement): B2 higher on 1, lower on 3 of 4 hosts (1 scenario(s) with B2 higher): mixed, no statement
+
+== 9.1 within-host AUC, no-recon run (scenarios: fox, santos, wardbeck, wilson)
+  scenario          host  n_att  n_ben     B2  B_RBA B0_host
+  fox                 27     11     36  0.795  0.833   0.500
+  santos              26     12     20  0.878  0.975   0.500
+  wardbeck            12     10     99  0.803  0.770   0.500
+  wilson              28     10     85  0.807  0.807   0.500
+  verdict (reported beside the headline): B2 higher on 1, lower on 2 of 4 hosts (1 scenario(s) with B2 higher): mixed, no statement
+
+== 9.2 recorded vs no-reconnaissance (means over scenarios and seeds); change is relative
+  system   nDCG@20 rec  no-recon  change   MRR rec  no-recon  change
+  B0_host        0.332     0.330     -1%     0.062     0.093    +49%
+  B0_rank        0.289     0.113    -61%     0.043     0.076    +77%
+  B_RBA          0.676     0.299    -56%     0.425     0.106    -75%
+  B2             0.327     0.210    -36%     0.134     0.114    -15%
+  B3             0.412     0.197    -52%     0.108     0.107     -1%
+
+== 9.3 B3 vs B_RBA, paired first-item ranks of non-scan stages (descriptive, no test)
+  recorded : n=10  B3 earlier  1, B_RBA earlier  9, tied  0
+  no-recon : n=10  B3 earlier  3, B_RBA earlier  7, tied  0

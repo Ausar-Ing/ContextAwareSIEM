@@ -1,0 +1,22 @@
+  wardbeck seed 0: B2 aNDCG@20 0.492 | B3 0.455 incidents 2 (attack 1) ttn 61.986666666666665
+  wardbeck seed 1: B2 aNDCG@20 0.227 | B3 0.350 incidents 2 (attack 1) ttn 61.98694444444445
+  wardbeck seed 2: B2 aNDCG@20 0.157 | B3 0.339 incidents 2 (attack 1) ttn 61.986666666666665
+  wardbeck seed 3: B2 aNDCG@20 0.163 | B3 0.265 incidents 2 (attack 1) ttn 61.986666666666665
+  wardbeck seed 4: B2 aNDCG@20 0.353 | B3 0.410 incidents 2 (attack 1) ttn 61.986666666666665
+  wardbeck seed 5: B2 aNDCG@20 0.390 | B3 0.436 incidents 2 (attack 1) ttn 61.98694444444445
+  wardbeck seed 6: B2 aNDCG@20 0.226 | B3 0.318 incidents 2 (attack 1) ttn 61.98694444444445
+  wardbeck seed 7: B2 aNDCG@20 0.221 | B3 0.338 incidents 2 (attack 1) ttn 61.98694444444445
+  wardbeck seed 8: B2 aNDCG@20 0.302 | B3 0.375 incidents 2 (attack 1) ttn 61.98694444444445
+  wardbeck seed 9: B2 aNDCG@20 0.160 | B3 0.280 incidents 2 (attack 1) ttn 61.986666666666665
+=== wardbeck (166s): B2 0.269, B2_seq 0.233, B2_max 0.360, B2_def 0.255, B2_alert 0.170, B2_pooled 0.545, B2_notime 0.398, B3_bestgrp 0.276, B3_noabs 0.351, B3 0.357, B0 0.276, B0_rank 0.351, B0_host 0.354, B1 0.360, B2_nov 0.347, B_RBA 0.743, B2' 0.347
+  wilson seed 0: B2 aNDCG@20 0.167 | B3 0.270 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 1: B2 aNDCG@20 0.251 | B3 0.349 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 2: B2 aNDCG@20 0.251 | B3 0.344 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 3: B2 aNDCG@20 0.259 | B3 0.351 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 4: B2 aNDCG@20 0.289 | B3 0.364 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 5: B2 aNDCG@20 0.263 | B3 0.347 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 6: B2 aNDCG@20 0.242 | B3 0.338 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 7: B2 aNDCG@20 0.295 | B3 0.358 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 8: B2 aNDCG@20 0.270 | B3 0.350 incidents 3 (attack 1) ttn 24.2225
+  wilson seed 9: B2 aNDCG@20 0.239 | B3 0.344 incidents 3 (attack 1) ttn 24.2225
+=== wilson (814s): B2 0.253, B2_seq 0.250, B2_max 0.276, B2_def 0.240, B2_alert 0.112, B2_pooled 0.299, B2_notime 0.238, B3_bestgrp 0.254, B3_noabs 0.351, B3 0.341, B0 0.293, B0_rank 0.267, B0_host 0.370, B1 0.295, B2_nov 0.290, B_RBA 0.582, B2' 0.226

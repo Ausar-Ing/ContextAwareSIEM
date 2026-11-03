@@ -1,0 +1,22 @@
+  fox seed 0: B2 aNDCG@20 0.304 | B3 0.473 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 1: B2 aNDCG@20 0.361 | B3 0.508 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 2: B2 aNDCG@20 0.402 | B3 0.527 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 3: B2 aNDCG@20 0.343 | B3 0.498 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 4: B2 aNDCG@20 0.287 | B3 0.461 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 5: B2 aNDCG@20 0.363 | B3 0.508 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 6: B2 aNDCG@20 0.225 | B3 0.393 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 7: B2 aNDCG@20 0.138 | B3 0.322 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 8: B2 aNDCG@20 0.329 | B3 0.490 incidents 1 (attack 1) ttn 27.239166666666666
+  fox seed 9: B2 aNDCG@20 0.126 | B3 0.320 incidents 1 (attack 1) ttn 27.239166666666666
+=== fox (621s): B2 0.288, B2_seq 0.280, B2_max 0.369, B2_def 0.228, B2_alert 0.233, B2_pooled 0.322, B2_notime 0.144, B3_bestgrp 0.293, B3_noabs 0.440, B3 0.450, B0 0.173, B0_rank 0.205, B0_host 0.037, B1 0.142, B2_nov 0.277, B_RBA 0.655, B2' 0.214
+  santos seed 0: B2 aNDCG@20 0.504 | B3 0.504 incidents 0 (attack 0) ttn None
+  santos seed 1: B2 aNDCG@20 0.340 | B3 0.340 incidents 0 (attack 0) ttn None
+  santos seed 2: B2 aNDCG@20 0.531 | B3 0.531 incidents 0 (attack 0) ttn None
+  santos seed 3: B2 aNDCG@20 0.445 | B3 0.445 incidents 0 (attack 0) ttn None
+  santos seed 4: B2 aNDCG@20 0.511 | B3 0.511 incidents 0 (attack 0) ttn None
+  santos seed 5: B2 aNDCG@20 0.602 | B3 0.602 incidents 0 (attack 0) ttn None
+  santos seed 6: B2 aNDCG@20 0.542 | B3 0.542 incidents 0 (attack 0) ttn None
+  santos seed 7: B2 aNDCG@20 0.471 | B3 0.471 incidents 0 (attack 0) ttn None
+  santos seed 8: B2 aNDCG@20 0.488 | B3 0.488 incidents 0 (attack 0) ttn None
+  santos seed 9: B2 aNDCG@20 0.558 | B3 0.558 incidents 0 (attack 0) ttn None
+=== santos (198s): B2 0.499, B2_seq 0.478, B2_max 0.523, B2_def 0.375, B2_alert 0.523, B2_pooled 0.550, B2_notime 0.586, B3_bestgrp 0.499, B3_noabs 0.499, B3 0.499, B0 0.188, B0_rank 0.331, B0_host 0.567, B1 0.236, B2_nov 0.516, B_RBA 0.725, B2' 0.439

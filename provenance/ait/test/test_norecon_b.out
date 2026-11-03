@@ -1,0 +1,22 @@
+  wardbeck seed 0: B2 aNDCG@20 0.095 | B3 0.093 incidents 1 (attack 0) ttn None
+  wardbeck seed 1: B2 aNDCG@20 0.183 | B3 0.179 incidents 1 (attack 0) ttn None
+  wardbeck seed 2: B2 aNDCG@20 0.173 | B3 0.170 incidents 1 (attack 0) ttn None
+  wardbeck seed 3: B2 aNDCG@20 0.177 | B3 0.091 incidents 1 (attack 0) ttn None
+  wardbeck seed 4: B2 aNDCG@20 0.172 | B3 0.086 incidents 1 (attack 0) ttn None
+  wardbeck seed 5: B2 aNDCG@20 0.396 | B3 0.290 incidents 1 (attack 0) ttn None
+  wardbeck seed 6: B2 aNDCG@20 0.182 | B3 0.178 incidents 1 (attack 0) ttn None
+  wardbeck seed 7: B2 aNDCG@20 0.177 | B3 0.091 incidents 1 (attack 0) ttn None
+  wardbeck seed 8: B2 aNDCG@20 0.173 | B3 0.170 incidents 1 (attack 0) ttn None
+  wardbeck seed 9: B2 aNDCG@20 0.317 | B3 0.267 incidents 1 (attack 0) ttn None
+=== wardbeck (193s): B2 0.204, B2_seq 0.107, B2_max 0.219, B2_def 0.086, B2_alert 0.550, B2_pooled 0.551, B2_notime 0.147, B3_bestgrp 0.203, B3_noabs 0.162, B3 0.162, B0 0.000, B0_rank 0.213, B0_host 0.364, B1 0.109, B2_nov 0.318, B_RBA 0.308, B2' 0.358
+  wilson seed 0: B2 aNDCG@20 0.089 | B3 0.086 incidents 2 (attack 0) ttn None
+  wilson seed 1: B2 aNDCG@20 0.088 | B3 0.085 incidents 2 (attack 0) ttn None
+  wilson seed 2: B2 aNDCG@20 0.088 | B3 0.085 incidents 2 (attack 0) ttn None
+  wilson seed 3: B2 aNDCG@20 0.087 | B3 0.084 incidents 2 (attack 0) ttn None
+  wilson seed 4: B2 aNDCG@20 0.091 | B3 0.087 incidents 2 (attack 0) ttn None
+  wilson seed 5: B2 aNDCG@20 0.092 | B3 0.088 incidents 2 (attack 0) ttn None
+  wilson seed 6: B2 aNDCG@20 0.090 | B3 0.086 incidents 2 (attack 0) ttn None
+  wilson seed 7: B2 aNDCG@20 0.085 | B3 0.000 incidents 2 (attack 0) ttn None
+  wilson seed 8: B2 aNDCG@20 0.091 | B3 0.087 incidents 2 (attack 0) ttn None
+  wilson seed 9: B2 aNDCG@20 0.086 | B3 0.084 incidents 2 (attack 0) ttn None
+=== wilson (308s): B2 0.089, B2_seq 0.054, B2_max 0.087, B2_def 0.000, B2_alert 0.219, B2_pooled 0.169, B2_notime 0.084, B3_bestgrp 0.089, B3_noabs 0.077, B3 0.077, B0 0.000, B0_rank 0.084, B0_host 0.352, B1 0.090, B2_nov 0.117, B_RBA 0.300, B2' 0.130
