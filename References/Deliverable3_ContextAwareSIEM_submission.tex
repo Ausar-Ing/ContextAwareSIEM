@@ -570,7 +570,7 @@ User model drifts over five weeks & Drift is measured on the hold-out week; peri
 \subsection{Systems Compared}
 
 \begin{itemize}
-\item \textbf{B0}: rule level. \textbf{B1}: B0 + exposure, $0.8\,S_\mathrm{rule} + 0.2\,S_\mathrm{exp}$, the best static weights on the tuning set.
+\item \textbf{B0}: rule level. \textbf{B1}: B0 + exposure, $0.8\,S_\mathrm{rule} + 0.2\,S_\mathrm{exp}$, weights fixed before tuning.
 \item \textbf{B0$_\mathrm{host}$}: groups ranked only by how rarely their host alerted in the baseline, $100\,(1 - \text{host's share of baseline alerts})$. It tests whether temporal context adds anything beyond ``this machine is unusual'': in AIT-ADS the attack lands on the least active host.
 \item \textbf{B0$_\mathrm{rank}$}: B0 with the level replaced by its rarity, the percentile of the alert's level among its host's baseline alerts. It uses no temporal context; on the tuning set it and B0$_\mathrm{host}$ were the strongest systems without it, so B2 must beat them, not only B0.
 \item \textbf{B2}: the method, the sequence and novelty terms with the tuned weights (Phase 5); \emph{B2 vs.\ B1 compares the temporal terms with the best static combination}, since the tuned weights give rule and exposure no weight.

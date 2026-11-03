@@ -7,7 +7,7 @@ within a group because its members share host and rule):
   B0        S_rule (100 * level / 15)
   B0_rank   S_rule as the mid-rank percentile of the level among the host's baseline alerts
   B0_host   host rarity: 100 * (1 - host's share of baseline alerts); no temporal context
-  B1        0.8 S_rule + 0.2 S_exp          (best static weights on the tuning set)
+  B1        0.8 S_rule + 0.2 S_exp          (fixed when the harness was written; not tuned)
   B2        THE METHOD (from 2026-10-27, provisional decision on Q1/Q8): (1 - w) * sequence term
             + w * 100 nu(g), w = 0.2 (CONTEXTSIEM_NOVELTY_W; 0 reproduces every earlier B2), where the
             sequence term is 100 min(1, pi(g)/8) of S_seq (seq_scoring.GROUP_SCORE) over entries
