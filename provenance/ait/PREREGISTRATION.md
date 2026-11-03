@@ -21,7 +21,7 @@ Revised 2026-11-03, after an audit of the locked-run script and before the freez
 files are added to Section 1 and checked by the run; Section 3 lists the run's checks and replaces the
 crash rule with a procedure; Section 7 item 3 states the current family sizes; Section 8 moves
 `DEVIATIONS.md` out of the output directory and now comes before Section 9. No system, parameter,
-comparison or claim changed.
+comparison or claim changed. Later the same day, after the code review: Section 7 items 15-17.
 
 ## 1. Data
 
@@ -200,6 +200,9 @@ descriptively beside the headline values.
 12. Fidelity of B_RBA: checked against the numbers Uetz et al. publish for russellmitchell, a tuning scenario (`provenance/ait/rba_fidelity.txt`).
 13. Two ablation arms added to the secondary family on 2026-10-31, so that every component claimed as a contribution has one: B2_pooled (the same forests, every host calibrated against the pooled held-out distribution only) and B2_notime (forests refitted without window duration and the mean and minimum inter-arrival times). They were added because of what the paper claims, before their tuning-set results were seen. On the tuning set B2_pooled is preferred by the objective but rejected by the protocol's calibration guard (`provenance/ait/calib_guard_pooled.txt`); the method is unchanged (confirmed by the student on 2026-11-01: per-host calibration is kept to keep host rarity out of S_seq, and the paper states that it does not improve ranking on AIT-ADS).
 14. The accumulator's window-surprise correction is checked on the workstation's hold-out week (`tools/ws_qcheck.py`), against a criterion fixed in the script before its first run; it is not part of the locked run.
+15. Code review (2026-11-03, before any test result): **B2_nov redefined** as B2's own novelty term alone, $100\,\nu(g)$ from scoreable host windows, so that B2 vs B2_nov asks what Deliverable 3 says it asks. It previously used the novelty flag of any entity's window (host, source address or user), scoreable or not. Its tuning-set figures in `References/Results_Tuning_2026-10-27.pdf` and `provenance/ait/rerun_self/` used the earlier definition; nothing else changes.
+16. Code review: the **novelty term requires a scoreable host window** (at least three alerts). The code is unchanged and the paper now says so. Allowing every host window would change 4 of about 260 tuning-set queue groups in each condition, none holding an attack stage (`tools/ait_nu_diff_check.py`, output `provenance/ait/nu_diff_tuning.txt`). The same run confirms that no tuning scenario's split is set by the exfiltration step, that every alert has a label row, and that every event label has a grade.
+17. Code review: the **AUCs of B2 and its arms** are computed on $S_\mathrm{seq}$ with alerts whose window is not scoreable placed below every scored alert (the queue gives them 50). Unchanged, so the tuning-set within-host AUCs quoted in Section 9 stay valid; the paper now states the convention. The other findings of the review changed only the paper's wording, comments and two counts recorded in each run's `meta` (unmatched alerts, ungraded labels).
 
 ## 8. Deviations
 

@@ -173,8 +173,9 @@ def module_scores(ts, host, rule, lvl, t_atk, score_idx, variants=None, aper_bas
                         vt[k] = 1 - 0.5 ** (sum(1 - d / W for d in live) / (1 + ev * (1 - erd)))
             out[f"variety_{wn}_box"] = np.clip(vb, 0, 1); out[f"variety_{wn}_triangle"] = np.clip(vt, 0, 1)
         # aperiodicity of the alert's rule type in the trailing window, normalized on the baseline.
-        # Cost control (an approximation, stated in the paper): per rule type at most APER_CAP of
-        # the scored alerts, evenly spaced in time, get their own FFT; the others take the value of
+        # Cost control (an approximation, not described in the paper; the frozen tools/rba_config.json gives
+        # aperiodicity weight 0): per rule type at most APER_CAP of the scored alerts, evenly spaced over
+        # them, get their own FFT; the others take the value of
         # the nearest preceding sampled alert of the same rule type.
         name = f"aperiodicity_{wn}"
         if need(name):

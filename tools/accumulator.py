@@ -26,8 +26,11 @@ and closes when R_e falls back below theta_k. It records the queue groups
 (gids) of its contributing alerts so that Component 9 can absorb them.
 
 Approximation, stated: groups whose last member is older than T are dropped
-from the sum. Their decayed weight is at most 2^(-T/h) = 1/64 of their value at
-h = 4 h, and the contribution rule already excludes them from escalation.
+from the sum. Their decayed weight is at most 2^(-T/h) of their value, 2^-24 at
+h = 1 h, and the contribution rule already excludes them from escalation.
+
+q caps u at U_MAX = 1 - 1e-5, as ait_eval.surprise does, so a window above every
+baseline window (S_seq = 100) reaches q = 100 only while n_e <= 10.
 """
 from __future__ import annotations
 

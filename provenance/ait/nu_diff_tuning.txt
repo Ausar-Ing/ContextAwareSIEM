@@ -1,0 +1,24 @@
+Code review finding 2 (2026-11-03): does the novelty term change if host windows of fewer than 3 alerts may flag novelty?
+Tuning scenarios only; no model fitted; deterministic. Run 2026-11-03 in a separate Linux container (Python 3.13,
+numpy 2.5.3) with the reviewer's script, whose logic is identical to tools/ait_nu_diff_check.py (only the import
+path differs), on the data files that pass provenance/ait/alerts_csv.sha256 and the PREREGISTRATION Section 1 hashes.
+Decision: code unchanged, paper wording corrected (PREREGISTRATION Section 7 item 16).
+
+harrison: t_atk set by 'network_scans'; unmatched 0; labels without a grade: none
+  recorded                       56 queue groups; nu(g) differs on 0 (0 holding attack stages)
+  recorded, no reconnaissance    39 queue groups; nu(g) differs on 0 (0 holding attack stages)
+  oracle-cleaned                 56 queue groups; nu(g) differs on 0 (0 holding attack stages)
+russellmitchell: t_atk set by 'network_scans'; unmatched 0; labels without a grade: none
+  recorded                       68 queue groups; nu(g) differs on 2 (0 holding attack stages)
+  recorded, no reconnaissance    47 queue groups; nu(g) differs on 2 (0 holding attack stages)
+  oracle-cleaned                 68 queue groups; nu(g) differs on 2 (0 holding attack stages)
+shaw: t_atk set by 'service_stop'; unmatched 0; labels without a grade: none
+  recorded                       51 queue groups; nu(g) differs on 1 (0 holding attack stages)
+  recorded, no reconnaissance    44 queue groups; nu(g) differs on 1 (0 holding attack stages)
+  oracle-cleaned                 51 queue groups; nu(g) differs on 1 (0 holding attack stages)
+wheeler: t_atk set by 'service_stop'; unmatched 0; labels without a grade: none
+  recorded                       85 queue groups; nu(g) differs on 1 (0 holding attack stages)
+  recorded, no reconnaissance    64 queue groups; nu(g) differs on 1 (0 holding attack stages)
+  oracle-cleaned                 85 queue groups; nu(g) differs on 1 (0 holding attack stages)
+
+Some groups change: see the guide, finding 2.

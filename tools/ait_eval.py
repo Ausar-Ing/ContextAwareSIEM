@@ -17,7 +17,7 @@ within a group because its members share host and rule):
   B2_max    B2 with the group maximum of S_seq instead of pi(g) in the sequence term (B2_pi when GROUP_SCORE=max)
   B2_def    0.3 S_rule + 0.2 S_exp + 0.5 * sequence term                 (former default weights)
   B2'       B2 with the forest replaced by a robust z-score
-  B2_nov    the novelty flag alone: 100 * [any member's rule is novel for its entity]
+  B2_nov    the novelty term of B2 alone: 100 * nu(g), from host windows as in B2
   B2_alert  B2 with the window of the last 5 alerts in the sequence term
   B2_pooled B2 with every host calibrated against the pooled held-out distribution only (same forests;
             ablation of the per-host credibility calibration, added 2026-10-31)
@@ -176,6 +176,8 @@ def alert_max(rows, S, n_alerts):
 
 
 def surprise(u, n):
+    # u is capped at 1 - 1e-5, so the surprise of a group (n >= 1) is at most 5: the cap LAMBDA_Q = 8 of the
+    # queue's sequence term never binds, and groups whose highest member has S_seq = 100 are ordered by size
     u = np.clip(u, 1e-12, 1 - 1e-5)
     return -np.log10(np.maximum(-np.expm1(n * np.log(u)), 1e-300))
 
@@ -226,10 +228,16 @@ for sc in args.scenarios:
         keep_ = [j for j in range(len(A)) if labels[j] not in DROP_LABELS]
         A = [A[j] for j in keep_]; labels = [labels[j] for j in keep_]
     n = len(A)
+    # data checks recorded with the results (code review, 2026-11-03): an alert without a row in alerts_csv
+    # counts as benign, and an event label without a grade would enter the tests as a grade-0 non-scan stage
+    unmatched = sum(l == "unmatched" for l in labels)
+    ungraded = sorted(set(labels) - M.BENIGN - set(M.GRADES))
+    if ungraded:
+        print(f"  WARNING {sc}: event labels without a grade: {', '.join(ungraded)}", flush=True)
     ev = np.array([j for j, a in enumerate(A) if a.ts >= t_atk and a.admissible])
     L = np.array([labels[j] for j in ev], dtype=object)
     CUR_HOSTS = np.array([host_of(A[j]) for j in ev], dtype=object)
-    # queue groups over the evaluation period: same host, same rule, gaps <= 1 h
+    # queue groups over the evaluation period: same host, same rule, gaps <= Delta (DELTA_Q, 24 h)
     gid, last, cur, nxt = [], {}, {}, 0
     for j in ev:
         key = (host_of(A[j]), A[j].rule_id)
@@ -261,7 +269,8 @@ for sc in args.scenarios:
     res = {"meta": {"alerts": n, "eval_admitted": int(len(ev)), "queue_items": int(G),
                     "baseline": "recorded" if args.recorded else "oracle-cleaned", "seeds": args.seeds,
                     "seq_entities": SEQ_ENTITIES, "group_score": C6.GROUP_SCORE,
-                    "dropped_labels": sorted(DROP_LABELS), "novelty_w": NOVELTY_W}}
+                    "dropped_labels": sorted(DROP_LABELS), "novelty_w": NOVELTY_W,
+                    "unmatched": int(unmatched), "ungraded_labels": ungraded}}
     # B0_host: host rarity -- groups ranked by how rarely their host alerted in the baseline
     base_host = collections.Counter(host_of(a) for a in A if a.ts < t_atk and a.admissible)
     tot_host = max(1, sum(base_host.values()))
@@ -277,16 +286,13 @@ for sc in args.scenarios:
     res["meta"]["training_windows"] = {et: int((d["ok"] & (np.array([A[j].ts for j in d["j"]]) < t_atk)).sum() // C6.STRIDE)
                                        for et, d in rows_e.items()}
     evpos = np.full(n, -1); evpos[ev] = np.arange(len(ev))
-    # novelty (deterministic): any entity's window flags the rule as novel
-    nov = np.zeros(n)
-    for et, d in rows_e.items():
-        np.maximum.at(nov, d["j"], d["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")])
-    res["deterministic"]["B2_nov"] = queue_metrics(100 * group_max(gid, G, nov[ev]), stages, nov[ev], L)
     # host-window novelty nu(g), the novelty term of B2
     nov_h = np.zeros(n)
     dh_ = rows_e["host"]
     np.maximum.at(nov_h, dh_["j"], np.where(dh_["ok"], dh_["F"][:, W.FEATURE_NAMES.index("novel_rule_flag")], 0.0))
     g_novh = group_max(gid, G, nov_h[ev])
+    # B2_nov: B2's novelty term alone (code review, 2026-11-03; was any entity's window)
+    res["deterministic"]["B2_nov"] = queue_metrics(100 * g_novh, stages, nov_h[ev], L)
 
     def mix(seq):
         """the method's priority from a sequence term: (1 - w) seq + w * 100 nu(g)"""

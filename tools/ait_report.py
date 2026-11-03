@@ -139,3 +139,10 @@ for key in sorted(F_[PER_STAGE[0]]) if PER_STAGE else []:
         continue
     print(f"  {key[0]:16s} {key[1]:24s} " + " ".join(f"{F_[x].get(key, float('nan')):8.1f}" for x in PER_STAGE))
 
+print("\ndata checks (recorded from 2026-11-03): alerts without a row in alerts_csv, counted benign; "
+      "event labels without a grade, which would enter the tests as grade-0 non-scan stages")
+for sc in scs:
+    m = R[sc]["meta"]
+    ug = m.get("ungraded_labels")
+    ug = "not recorded" if ug is None else (", ".join(ug) if ug else "none")
+    print(f"  {sc:16s} unmatched {m.get('unmatched', 'not recorded')}; labels without a grade: {ug}")
