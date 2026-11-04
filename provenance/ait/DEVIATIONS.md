@@ -9,3 +9,15 @@ scenario was read before it. No code, parameter or configuration changed after t
 
 Note (not a deviation): the tag name carries the planned freeze date, 4 November; the tag was created and the
 run made on 3 November, as the timestamps above and the tag record show. The pre-registration does not fix the date.
+
+## Post-hoc analyses (after the run; not part of the protocol)
+
+Listed so that no post-hoc number can be mistaken for a pre-registered result. None changes code, parameters or a
+pre-registered result, and none re-reads a test scenario: each reads only the frozen outputs in
+`provenance/ait/test/`.
+
+- P1 (2026-11-04): `tools/ait_posthoc.py` -> `provenance/ait/posthoc_2026-11-04.txt`. First-item ranks per stage;
+  paired counts without a test for B2_pooled vs B_RBA, vs B0_host and vs B0 (comparisons the protocol does not
+  contain); santos recorded beside cleaned in numbers. Decided by Anawin, run by Claude in a separate container
+  (numpy 2.5.3; the script only averages and counts stored ranks). Reported as post hoc in
+  `provenance/ait/CLAIMS.md` Section 6.

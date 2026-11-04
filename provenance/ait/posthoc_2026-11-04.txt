@@ -1,0 +1,46 @@
+POST-HOC, descriptive only (not in PREREGISTRATION.md; see DEVIATIONS.md). Lower rank = earlier.
+
+== recorded: first-item rank of non-scan stages
+  scenario  stage                           B0   B0_host     B_RBA        B2 B2_pooled
+  fox       attacker_change_user          73.0      30.0       2.0      10.9       6.8
+  fox       escalated_sudo_command        73.0      30.0       2.0      65.4      49.1
+  fox       online_cracking               73.0      30.0       7.0      10.6       6.0
+  santos    attacker_change_user          54.5      10.0       3.0       4.0       4.2
+  santos    escalated_sudo_command        29.5      10.0       1.0      10.8       8.4
+  santos    online_cracking               54.5      10.0       8.0       6.3       6.5
+  wardbeck  attacker_change_user          64.5      17.0       2.0      13.6       2.2
+  wardbeck  escalated_sudo_command        30.5      17.0       2.0      26.6       5.5
+  wilson    attacker_change_user          64.0      17.5       3.0       7.2       3.8
+  wilson    escalated_sudo_command        33.0      17.5       3.0      45.7      37.9
+
+  paired first-item counts, non-scan stages (recorded; no test)
+    B2_pooled  vs B_RBA   : n=10  B2_pooled earlier  2, B_RBA earlier  8, tied 0
+    B2_pooled  vs B0_host : n=10  B2_pooled earlier  8, B0_host earlier  2, tied 0
+    B2_pooled  vs B0      : n=10  B2_pooled earlier  9, B0 earlier  1, tied 0
+
+== norecon: first-item rank of non-scan stages
+  scenario  stage                           B0   B0_host     B_RBA        B2 B2_pooled
+  fox       attacker_change_user          60.5      24.0       9.0      18.1       8.8
+  fox       escalated_sudo_command        60.5      24.0       8.0      52.0      34.8
+  fox       online_cracking               60.5      24.0      13.0      11.2       6.5
+  santos    attacker_change_user          43.0       6.0      10.0       8.4       3.8
+  santos    escalated_sudo_command        22.5       6.0       8.0       9.9       4.7
+  santos    online_cracking               43.0       6.0      33.0       2.3       2.8
+  wardbeck  attacker_change_user          52.5      12.5       8.0      12.2       1.4
+  wardbeck  escalated_sudo_command        22.5      12.5       8.0      19.5       3.6
+  wilson    attacker_change_user          49.0      12.0       9.0      16.7       3.5
+  wilson    escalated_sudo_command        25.0      12.0       9.0      27.9      23.4
+
+  paired first-item counts, non-scan stages (norecon; no test)
+    B2_pooled  vs B_RBA   : n=10  B2_pooled earlier  8, B_RBA earlier  2, tied 0
+    B2_pooled  vs B0_host : n=10  B2_pooled earlier  8, B0_host earlier  2, tied 0
+    B2_pooled  vs B0      : n=10  B2_pooled earlier 10, B0 earlier  0, tied 0
+
+== santos: recorded (headline) beside oracle-cleaned (PREREGISTRATION Section 6)
+  system    aNDCG@20 rec  cleaned  MRR rec  cleaned   first-item ranks rec -> cleaned
+  B0_host          0.567    0.567    0.100    0.100   user 10.0->10.0, command 10.0->10.0, cracking 10.0->10.0
+  B0_rank          0.331    0.331    0.059    0.059   user 44.5->44.5, command 7.5->7.5, cracking 44.5->44.5
+  B_RBA            0.725    0.718    0.486    0.492   user 3.0->3.0, command 1.0->1.0, cracking 8.0->7.0
+  B2               0.499    0.390    0.191    0.115   user 4.0->9.2, command 10.8->14.3, cracking 6.3->12.8
+  B2_pooled        0.550    0.535    0.194    0.176   user 4.2->5.2, command 8.4->8.7, cracking 6.5->5.5
+  B3               0.499    0.465    0.191    0.092   user 4.0->10.3, command 10.8->15.0, cracking 6.3->14.3
