@@ -206,7 +206,7 @@ if args.norecon:
 # --- cleaned baseline beside recorded
 if args.cleaned:
     Cl = load(args.cleaned)
-    lines = [r"\begin{table}[t]", rf"\caption{{Contaminated scenario{NOTE}: recorded baseline (headline) and the baseline with its labelled exfiltration alerts removed from training}}",
+    lines = [r"\begin{table}[t]", rf"\caption{{Contaminated scenario{NOTE}: recorded baseline (headline) and the stream with its labelled exfiltration alerts removed before the first attack step, that is, from training and from what the first day's evaluation windows look back on}}",
              r"\label{tab:res-cleaned}", r"\centering\footnotesize", r"\begin{tabular}{@{}llcccc@{}}", r"\toprule",
              r"\textbf{Scenario} & \textbf{System} & \multicolumn{2}{c}{\textbf{recorded}} & \multicolumn{2}{c}{\textbf{cleaned}} \\", r"& & @20 & MRR & @20 & MRR \\", r"\midrule"]
     for sc in sorted(Cl):
