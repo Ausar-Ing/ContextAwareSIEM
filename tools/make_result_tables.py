@@ -233,6 +233,14 @@ out += lines
 
 open(args.out, "w").write("\n".join(out) + "\n")
 
+# each table also on its own, named after its label (tab:res-main -> res-main.tex), so a paper can \input only some
+# (added 2026-11-07; formatting only, the combined file above is unchanged)
+import re as _re
+_text = "\n".join(out)
+for _blk in _re.findall(r"\\begin\{table\*?\}.*?\\end\{table\*?\}", _text, flags=_re.S):
+    _lab = _re.search(r"\\label\{tab:([^}]*)\}", _blk).group(1)
+    open(os.path.join(os.path.dirname(os.path.abspath(args.out)), _lab + ".tex"), "w").write(out[0] + "\n" + _blk + "\n")
+
 # consistency check against ait_holm.py (same statistics, independent code path)
 holm = subprocess.run([sys.executable, os.path.join(args.wb, "ait_holm.py"), args.wb, args.recorded], capture_output=True, text=True)
 if holm.returncode == 0:

@@ -105,12 +105,12 @@ write("fig_withinhost.tex", rf"""\begin{{tikzpicture}}
 \begin{{axis}}[width=\linewidth, height=5.4cm, ybar=1pt, bar width=11pt, {AXIS},
   ymin=0, ymax=1.05, ytick={{0,0.25,0.5,0.75,1}}, ylabel={{within-host AUC}},
   xtick={{0,...,{len(wh) - 1}}}, xticklabels={{{xt}}}, enlarge x limits=0.15,
-  legend style={{draw=none, font=\small, at={{(0.5,1.02)}}, anchor=south, fill=none, legend columns=-1, /tikz/every even column/.append style={{column sep=8pt}}}},
+  legend style={{draw=none, font=\small, at={{(0.5,1.02)}}, anchor=south, fill=none, legend columns=2, /tikz/every even column/.append style={{column sep=8pt}}}},
   area legend, legend cell align=left]
 {chr(10).join(series)}
 \draw[csHost, line width=1.2pt, dash pattern=on 4pt off 2pt] (axis cs:-0.5,0.5) -- (axis cs:{len(wh) - 0.5},0.5);
 \addlegendimage{{line legend, csHost, line width=1.2pt, dash pattern=on 4pt off 2pt}}
-\legend{{level rarity B0$_\mathrm{{rank}}$, B2, risk-based alerting B$_\mathrm{{RBA}}$, host rarity B0$_\mathrm{{host}}$ (0.5 on every host)}}
+\legend{{level rarity B0$_\mathrm{{rank}}$, B2, B$_\mathrm{{RBA}}$, host rarity (0.5)}}
 \end{{axis}}
 \end{{tikzpicture}}
 """)

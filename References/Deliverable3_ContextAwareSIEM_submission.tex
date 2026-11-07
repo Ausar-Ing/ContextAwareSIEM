@@ -12,6 +12,10 @@
 \usepackage{algpseudocode}
 \usepackage{xcolor}
 \usepackage{array}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{patterns,calc}
 
 \newcommand{\phase}[2]{\par\smallskip\noindent\textbf{Phase #1: #2.}\par}
 \newcommand{\step}[2]{\par\noindent\textbf{Step #1: #2.}\ }
@@ -615,6 +619,7 @@ For each scenario, the forest and calibration are fitted on that scenario's acti
 \item \emph{Graded $\alpha$-nDCG@k}, $k \in \{10, 20, 50\}$, the primary metric. With $g_s$ the grade of stage $s$ and $c_{s,i}$ the number of items above rank $i$ that contain $s$, the gain at rank $i$ is $\sum_{s \in i} g_s (1-\alpha)^{c_{s,i}}$, discounted by $\log_2(i+1)$ and normalized by the greedily computed ideal ordering \cite{ref24}. The factor $(1-\alpha)^{c}$, with $\alpha = 0.5$, credits the first item of a stage fully and each repeat less, so a scan that recurs on five hosts does not count five times. An item that bundles several stages earns each stage's gain at its rank, so risk notables, which absorb groups, gain from bundling as well as from position; first-item ranks are reported beside $\alpha$-nDCG for that reason.
 \item \emph{First-item rank} of each non-scan stage and their mean reciprocal rank (MRR): how far the analyst scrolls before first meeting each stage that matters.
 \item \emph{Stage coverage@k}, reported separately for non-scan and scan stages, since scans are surfaced by every system and would otherwise dominate.
+\item \emph{AUC} (area under the ROC curve) judges a score rather than a queue: it is the probability that a randomly chosen attack alert scores higher than a randomly chosen benign alert, ties counting one half. It is 0.5 for a score that cannot tell the two apart, whatever their numbers, and 1 when every attack alert outscores every benign one. It is used in two forms.
 \item \emph{Macro-AUC}: the alert-level AUC of each non-scan stage against benign alerts, averaged over stages so that a stage with thousands of alerts does not outweigh one with ten. It is queue-independent and secondary.
 \item \emph{Within-host AUC}: for each host carrying at least five non-scan attack alerts and five benign alerts, the alert-level AUC of its non-scan attack alerts against its own benign alerts, averaged over those hosts. Host rarity is constant within a host and scores 0.5 by construction, so this measure isolates what the window score adds beyond a host being rarely active (Section~\ref{sec:threats}). It rests on few hosts (four in the tuning scenarios) and is secondary. For B2 and its arms, both AUCs are computed on $S_\mathrm{seq}$, with alerts whose window is not scoreable placed below every scored alert.
 \end{itemize}
@@ -668,6 +673,78 @@ Table~\ref{tab:params} lists every constant of the seven phases and how its valu
 \end{table}
 
 The selection evidence for the tuned values, all on the tuning scenarios, is as follows. \emph{Hybrid weights:} $(0, 0, 0.8, 0.2)$ reaches $\alpha$-nDCG@20 0.526 against 0.501 for the sequence term alone, placing the first item of four of nine non-scan stages earlier and none later; larger novelty weights give the same ranking and the smallest is kept so that the learned term carries most of the weight; the former default $(0.3, 0.2, 0.5, 0)$ scores 0.417, and a level-percentile $S_\mathrm{rule}$ never helped. \emph{$\Delta$:} 24\,h raised $\alpha$-nDCG@20 from 0.471 (1\,h) to 0.501, with six of nine first items earlier and none later; longer gaps tie. \emph{Group score:} the maximum reaches the higher $\alpha$-nDCG@20 (0.525 against 0.501) by filling the top 20 with more stages, scans among them, but $\pi$ places eight of nine first items earlier and doubles their reciprocal rank (0.258 against 0.128), so the veto keeps $\pi$; capping it at $\lambda = 4$ (0.521) places five of nine later and is vetoed. \emph{Calibration:} shrinkage raised $\alpha$-nDCG@20 from 0.399 to 0.450 over the hard switch, and $n_0 = 30$ or 300 lies within about one seed standard deviation of $n_0 = 100$. \emph{Accumulator:} $t_{1/2} = 1$\,h raises B3 from 0.627 to 0.660 with no additional benign notable; a 5\% contribution floor gives 0.697 but doubles the benign incidents, and 20\% loses notables (0.581). \emph{Notable placement}, on four scenarios and nine stage occurrences: without promotion (a notable takes its best group's priority) B3 loses most of its gain (0.554 against 0.660), and without absorption it scores 0.641 and places five first items later and none earlier. Every choice was made before any test scenario was read.
+
+%% ======================================================================
+\section{Results}
+\label{sec:results}
+
+All AIT-ADS results come from one locked run of the pre-registered protocol on the four test scenarios (tag \texttt{freeze-2026-11-04}, ten seeds), made after every choice in Section~\ref{sec:params} was fixed, with no deviation from the protocol. Table~\ref{tab:res-main} gives every system's aggregate measures and Table~\ref{tab:res-paired} every pre-registered paired comparison over the ten non-scan stage occurrences. Statements follow the rules of Section~\ref{sec:stats}; comparisons outside the primary and published-work families are exploratory.
+
+\input{results_test/res-main.tex}
+\input{results_test/res-paired.tex}
+
+\subsection{Temporal context against rankings without it (RQ1)}
+
+\textbf{Primary comparisons.} B2 placed the first item of 6 of the 10 stage occurrences earlier than host rarity and 4 later ($p = 0.846$), and 7 earlier than level rarity and 3 later ($p = 0.049$, Holm $p = 0.098$). Neither difference is significant, so no improvement over host or level rarity is claimed: on AIT-ADS, temporal context cannot be separated from host rarity, which is strong here because every attack lands on its scenario's least active host. The calibration split does not change this. Only wilson's two stages lie on a host calibrated mainly against its own baseline ($n_h \ge n_0$), and there B2 and host rarity split one to one; the other eight lie on hosts dominated by the pooled distribution.
+
+\textbf{Against the default ordering.} Compared with Wazuh's rule level (B0), the order an analyst sees without the layer, B2 placed 9 of 10 stages earlier in both runs (exploratory; Holm $p = 0.107$ recorded, $0.043$ without reconnaissance). B0 places none of the ten stages in the top 20 of its queue, B2 6.4 on average and B$_\mathrm{RBA}$ all ten (Fig.~\ref{fig:coverage}).
+
+\begin{figure}[t]
+\centering
+\input{results_test/fig_coverage.tex}
+\caption{Non-scan stages (of 10) first met in the top 20, summed over the test scenarios (seeded systems: mean over ten seeds). Solid: recorded baselines (headline); hatched: scan alerts removed. B0 places none in either run. B2$_\mathrm{pooled}$ is an ablation, not the method.}
+\label{fig:coverage}
+\end{figure}
+
+\textbf{Within a host.} Fig.~\ref{fig:withinhost} shows the within-host AUC of the one eligible host per scenario. Host rarity gives every alert of a host the same score and is at chance (0.5) by construction; level rarity is close to it (0.49--0.54). The window score separates attack from benign alerts on all four hosts (0.58 on fox, 0.89--0.95 on the others). Risk-based alerting does so better on three of the four, so the pre-registered comparison of the two (B2 higher on one host) is mixed and supports no statement.
+
+\begin{figure}[t]
+\centering
+\input{results_test/fig_withinhost.tex}
+\caption{Within-host AUC of the eligible host in each test scenario, recorded run: the probability that an attack alert of that host outscores one of its benign alerts. Host rarity is 0.5 by construction (dashed). B2 is scored on $S_\mathrm{seq}$, mean over seeds.}
+\label{fig:withinhost}
+\end{figure}
+
+\subsection{The forest and the design choices (RQ2, RQ3)}
+
+\textbf{Forest.} B2 and B2$'$, the robust $z$-score on the same windows, split 7 to 3 ($p = 0.695$) and 3 to 7 without reconnaissance. The forest therefore does not earn its place: the robust $z$-score is an equal alternative, and what B2 achieves is credited to the window representation rather than to the Isolation Forest.
+
+\textbf{Ablations} (all exploratory, Table~\ref{tab:res-paired}). The size-corrected group score is the one component whose removal changes the ranking consistently: B2 met all ten stages earlier than B2$_\mathrm{max}$ (Holm $p = 0.023$). Entries against a five-alert window (B2$_\mathrm{alert}$: 6 to 4, and 3 to 7 without reconnaissance) and the timing features (B2$_\mathrm{notime}$: 3 to 7, and 10 to 0 without reconnaissance, Holm $p = 0.023$) are inconsistent between the two runs. The novelty term adds little to the window (B2$_\mathrm{seq}$: 8 to 2, $p = 0.432$), and the window adds to the novelty flag in the recorded run only (B2$_\mathrm{nov}$: 9 to 1, Holm $p = 0.123$; 5 to 5 without reconnaissance). Per-host calibration does not improve ranking: pooled calibration placed 8 of 10 stages earlier (Holm $p = 0.107$) and 9 of 10 without reconnaissance (Holm $p = 0.043$). Its within-host AUC equals B2's, since calibration changes only how hosts are ordered against each other; per-host calibration was kept, as decided before the run, to keep host rarity out of $S_\mathrm{seq}$.
+
+\subsection{Accumulation and risk-based alerting (RQ4)}
+
+\textbf{Risk-based alerting ranks attack stages earlier than the method:} B$_\mathrm{RBA}$ met 9 of the 10 stages first ($p = 0.006$). Fig.~\ref{fig:firstrank} shows where. B2 reaches password cracking and the user change early (ranks 4 to 14) but sudo escalation late (10.8 to 65.4), which B$_\mathrm{RBA}$ reaches at ranks 1 to 3.
+
+\begin{figure*}[t]
+\centering
+\input{results_test/fig_firstrank.tex}
+\caption{Rank of the first queue item holding each non-scan stage occurrence (log scale; lower is earlier), recorded run (left) and without reconnaissance (right); seeded systems: mean over ten seeds. B2$_\mathrm{pooled}$ (hollow) is an ablation; its comparison with B$_\mathrm{RBA}$ is post hoc (Section~\ref{sec:posthoc}).}
+\label{fig:firstrank}
+\end{figure*}
+
+\textbf{Without reconnaissance} no difference between the two was found (B$_\mathrm{RBA}$ earlier on 7 of 10, $p = 0.131$). Removing the scans lowered B$_\mathrm{RBA}$'s $\alpha$-nDCG@20 from 0.676 to 0.299 and its MRR from 0.425 to 0.106, and B2's from 0.327 to 0.210 and 0.134 to 0.114 (Fig.~\ref{fig:recon}); these changes are descriptive and do not establish that the method is more robust.
+
+\begin{figure}[t]
+\centering
+\input{results_test/fig_recon.tex}
+\caption{Graded $\alpha$-nDCG@20 with recorded baselines (solid) and with the scan alerts removed (hatched). The paired test of B2 against B$_\mathrm{RBA}$ without reconnaissance is not significant ($p = 0.131$).}
+\label{fig:recon}
+\end{figure}
+
+\textbf{Accumulation.} B3 does not change B2's first-item ranks (2 earlier, 5 later, 3 tied; $p = 0.656$) and is later than B$_\mathrm{RBA}$ on 9 of 10 stages. Its $\alpha$-nDCG@20 is higher (0.412 against 0.327), which notables can gain by bundling stages as well as by position (Section~\ref{sec:protocol}, Metrics). In seed 0 it opened one incident containing attack alerts in each of fox, wardbeck and wilson, 24 to 62 hours after the first attack step and spanning three stages, none in santos, and three benign incidents in total. Without promotion (B3$_\mathrm{bestgrp}$) the first items of 6 stages came earlier and none later; without absorption (B3$_\mathrm{noabs}$), 6 later and none earlier (both Holm $p = 0.219$).
+
+\subsection{Santos with a contaminated baseline}
+
+With santos's designed exfiltration left in its baseline (the headline condition), B2 reached $\alpha$-nDCG@20 0.499; with those alerts removed from the stream before the first attack step, 0.390, its first items falling later for all three stages. B$_\mathrm{RBA}$ was nearly unchanged (0.725 and 0.718). This is evidence from one scenario and is not a general claim of tolerance to contamination.
+
+\subsection{Benign promotion on the workstation (RQ5)}
+
+The hold-out week contains 68.9 awake hours, 21{,}615 admitted alerts and 141 queue groups. Against thresholds fixed per system on the AIT tuning scenarios (Metrics), Wazuh's rule level would promote 2.05 queue items per awake hour and level rarity 0.90; B2 (on every seed) and B$_\mathrm{RBA}$ promote none, and B3 raises one notable in the week (0.015 per awake hour). The calibration drifts: 2.3\% of the host's benign windows exceed the 99th baseline percentile, against 1\% under stationarity (day-resampled intervals about 0.1--7\% over the seeds), and 7.5\% of the user's (about 1--18\%). The workstation holds no attacks and its thresholds come from AIT, so these figures bound the benign load, not what the layer would detect. The accumulator's window term was checked against a criterion fixed before its run and is not flat: its benign level sits near 7 of 100, against about 73 without the surprise correction.
+
+\subsection{Post-hoc observations}
+\label{sec:posthoc}
+
+The following were not pre-registered and are reported without tests. The pooled-calibration ablation met the first item earlier than B$_\mathrm{RBA}$ on 2 of 10 stages in the recorded run but on 8 of 10 without reconnaissance ($\alpha$-nDCG@20 0.357 against 0.299), and earlier than host rarity on 8 of 10 in both runs. It is not the method, and part of its gain may be host rarity re-entering the score, so this needs confirmation on new data. The per-host calibration check, which expects about 1\% of benign evaluation windows above $S_\mathrm{seq} = 99$, found 27--100\% on one host (\texttt{internal\_share}) in three of the four scenarios: its behaviour after the split departs from its baseline, and its benign groups occupy positions above the late stages.
 
 %% ======================================================================
 \section{Threats to Validity, Scope and Future Work}
