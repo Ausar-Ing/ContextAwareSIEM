@@ -1,0 +1,90 @@
+{
+  "active_time_G_s": 1800.0,
+  "active_time_intervals": 4,
+  "admitted_alerts": 3965,
+  "admitted_per_awake_hour": 80.61,
+  "admitted_per_calendar_day": 972.0,
+  "agents_kept": [
+    "003"
+  ],
+  "alerts_discarded_outside_window": 3543,
+  "alerts_dropped_other_agents": 107306,
+  "awake_h": 49.19,
+  "checked_at": "2026-10-07T16:52:02+07:00",
+  "corpus_path": "/home/user/baseline_corpus.json",
+  "corpus_sha256": "dee40989649a1f834dce8973eefeb9c5460ba8fd7a8489b5498f49df2b4b9639",
+  "days_elapsed": 4.08,
+  "days_to_floor": 37.1,
+  "days_to_target": 78.3,
+  "dead_features": [],
+  "distinct_rule_ids": 45,
+  "downtime_gap_threshold_s": 1800,
+  "downtime_h": 48.72,
+  "downtime_intervals": 4,
+  "downtime_list": [
+    [
+      "2026-10-04T23:21+07:00",
+      17.05
+    ],
+    [
+      "2026-10-05T19:31+07:00",
+      7.0
+    ],
+    [
+      "2026-10-06T02:35+07:00",
+      8.23
+    ],
+    [
+      "2026-10-07T00:01+07:00",
+      16.43
+    ]
+  ],
+  "downtime_over_24h": 0,
+  "entity_resolution_pct": {
+    "host": 100.0,
+    "srcip": 0.0,
+    "user": 19.39
+  },
+  "excluded_at_admission": 320,
+  "excluded_scan_timed_fim": 312,
+  "feature_distinct_values": {
+    "burst_ratio": 44,
+    "distinct_rule_count": 10,
+    "distinct_tactic_count": 8,
+    "distinct_technique_count": 7,
+    "inter_arrival_mean_s": 4393,
+    "inter_arrival_min_s": 35,
+    "night_fraction": 21,
+    "novel_rule_flag": 2,
+    "repeat_ratio": 43,
+    "rule_level_max": 8,
+    "rule_level_mean": 77,
+    "rule_level_trend": 433,
+    "tactic_progression": 182,
+    "window_duration_s": 4403,
+    "window_size": 18
+  },
+  "first_alert": "2026-10-03T14:57:18+07:00",
+  "floor_windows": 4000,
+  "host_windows": 3963,
+  "kept_agents_stale_h": 0.0,
+  "label": "vm-48h",
+  "last_alert": "2026-10-07T16:51:21+07:00",
+  "projected_total_days": 82.4,
+  "since": "2026-10-03T14:57",
+  "site_utc_offset_h": 7.0,
+  "stride": 10,
+  "target_windows": 8000,
+  "total_alerts": 4285,
+  "training_pool_at_stride": 396,
+  "training_pool_by_type": {
+    "user": 76
+  },
+  "until": null,
+  "verdict": "STOP_AND_REDESIGN",
+  "wall_clock_span_h": 97.9,
+  "windows_by_entity_type": {
+    "host": 3963,
+    "user": 765
+  }
+}
