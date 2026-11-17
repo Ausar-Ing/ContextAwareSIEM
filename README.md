@@ -3,8 +3,8 @@
 A prioritization layer on top of Wazuh. It does not create new detections. It re-orders the alerts Wazuh
 has already raised, using context derived across time within the alert stream: each entity's recent
 activity is a window of 15 features, scored by an Isolation Forest trained without labels and calibrated
-per host. The analyst queue holds repeat groups and risk notables. The paper is
-`References/Deliverable3_ContextAwareSIEM_submission.tex`.
+per host. The analyst queue holds repeat groups and risk notables. The paper is submitted separately;
+this repository holds the code and the recorded evidence behind it.
 
 This README explains how to reproduce the paper's results on your own machine. You can run everything with
 one command (Section 4) or one step at a time (Section 5). Lab operation (starting Wazuh, Sysmon, the agent)
@@ -180,7 +180,6 @@ tools/            all method and evaluation code, frozen at the tag (later addit
                   accumulator.py (risk accumulation) and ait_eval.py (queue, systems, evaluation)
 reproduce.sh      the reproduction entry point described above
 provenance/       recorded outputs, pre-registration, deviations, claims, environment snapshots
-References/       the paper (LaTeX) and the earlier deliverables
 docs/             lab operations, handoff briefs, the locked-run checklist
 figures/          architecture figure
 data/             datasets, not in git (Section 3)
