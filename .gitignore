@@ -85,3 +85,12 @@ References/
 
 # briefs for helpers and session handoffs: kept locally, not part of the submission (2026-11-17)
 docs/handoff/
+
+# early design notes, supervisor briefs and lab setup notes: kept locally, not part of the submission (2026-11-17)
+/FEEDBACK_RESPONSE.md
+/supervisor_meeting_brief.md
+/feature_extraction_pipeline_report.md
+/night_coverage_note.md
+/VM_BASELINE_HANDOFF.md
+/PHASE0_RUNBOOK.md
+/WazuhStartup.md
