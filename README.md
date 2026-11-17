@@ -181,6 +181,5 @@ tools/            all method and evaluation code, frozen at the tag (later addit
 reproduce.sh      the reproduction entry point described above
 provenance/       recorded outputs, pre-registration, deviations, claims, environment snapshots
 docs/             lab operations, the locked-run checklist
-figures/          architecture figure
 data/             datasets, not in git (Section 3)
 ```

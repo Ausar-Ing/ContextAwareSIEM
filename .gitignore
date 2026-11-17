@@ -96,3 +96,6 @@ docs/handoff/
 /WazuhStartup.md
 /system_model.md
 /component6_isolation_forest.md
+
+# paper figures (architecture, early Component 6 study plots): kept locally, not part of the submission (2026-11-17)
+/figures/
