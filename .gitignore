@@ -72,3 +72,6 @@ References/Deliverable3_Example*.pdf
 docs/Code_review_report/
 docs/Locked_run_report/
 Claude outputs/
+
+# reproduce.sh outputs and caches (2026-11-17)
+reproduce/
