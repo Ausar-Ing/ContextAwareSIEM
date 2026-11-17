@@ -75,3 +75,7 @@ Claude outputs/
 
 # reproduce.sh outputs and caches (2026-11-17)
 reproduce/
+
+# local files, not part of the repository (2026-11-17)
+ContextAwareSIEM-refactored-v4.zip
+Supervisor_Meeting_Brief_2026-10-07.pdf
