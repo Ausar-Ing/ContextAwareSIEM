@@ -180,7 +180,7 @@ tools/            all method and evaluation code, frozen at the tag (later addit
                   accumulator.py (risk accumulation) and ait_eval.py (queue, systems, evaluation)
 reproduce.sh      the reproduction entry point described above
 provenance/       recorded outputs, pre-registration, deviations, claims, environment snapshots
-docs/             lab operations, handoff briefs, the locked-run checklist
+docs/             lab operations, the locked-run checklist
 figures/          architecture figure
 data/             datasets, not in git (Section 3)
 ```
