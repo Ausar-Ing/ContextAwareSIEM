@@ -99,3 +99,9 @@ docs/handoff/
 
 # paper figures (architecture, early Component 6 study plots): kept locally, not part of the submission (2026-11-17)
 /figures/
+
+# demo: presenter material, kept locally (2026-11-17)
+/ContextAware_SIEM_demo/screenshots/
+/ContextAware_SIEM_demo/Demo_Walkthrough.html
+/ContextAware_SIEM_demo/Presenter_Guide.html
+/ContextAware_SIEM_demo/Presenter_Guide_harrison.html

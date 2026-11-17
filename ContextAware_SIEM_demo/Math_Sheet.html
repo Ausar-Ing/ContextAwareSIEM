@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The math behind the demo</title>
+<style>
+:root {
+--bg: #f1f3f7; --surface: #ffffff; --soft: #f5f7fa; --line: #e4e9f0; --ink: #0f172a; --ink2: #334155; --muted: #64748b;
+--accent: #2457c5; --accent-soft: #e8effd; --amber-soft: #fdf3d3;
+--k1: #0d366b; --k10: #1c5cab; --k100: #3987e5; --k1000: #86b6ef;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; font-size: 16.5px; line-height: 1.55; }
+main { max-width: 1040px; margin: 0 auto; padding: 28px 16px 60px; }
+header.top { background: var(--ink); color: #fff; border-radius: 16px; padding: 26px 30px 24px; margin-bottom: 18px; }
+header.top h1 { margin: 0 0 4px; font-size: 30px; letter-spacing: -.01em; }
+header.top p { margin: 0; color: #c9d6ea; font-size: 18px; }
+header.top .meta { margin-top: 12px; font-size: 15px; color: #9fb0c8; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+nav.toc a { background: var(--surface); border-radius: 999px; padding: 5px 14px; font-size: 15px; color: var(--ink2); text-decoration: none; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
+nav.toc a:hover { color: var(--accent); }
+section { background: var(--surface); border-radius: 16px; padding: 22px 28px 24px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.05); }
+h2 { margin: 0 0 12px; font-size: 23px; letter-spacing: -.01em; }
+h2 .st { display: inline-block; font-size: 14px; font-weight: 650; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-right: 8px; }
+h3 { margin: 22px 0 8px; font-size: 14px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+p { margin: 0 0 10px; }
+ul, ol { margin: 0 0 10px; padding-left: 22px; }
+li { margin-bottom: 5px; }
+code { font-family: Consolas, "Courier New", monospace; font-size: .92em; background: var(--soft); border-radius: 5px; padding: 1px 5px;  overflow-wrap: anywhere; }
+.eq { font-family: "Cambria Math", Cambria, "Times New Roman", serif; font-size: 23px; background: var(--accent-soft); border-radius: 12px; padding: 14px 20px; margin: 4px 0 12px; overflow-x: auto; white-space: nowrap; }
+.eq small { font-family: "Segoe UI", system-ui, sans-serif; font-size: 14px; color: var(--muted); margin-left: 14px; white-space: normal; }
+.eq + .eq { margin-top: -4px; }
+i.v { font-family: "Cambria Math", Cambria, "Times New Roman", serif; font-style: italic; }
+dl.sym { display: grid; grid-template-columns: 170px 1fr; margin: 0 0 10px; border-top: 1px solid var(--line); }
+dl.sym dt, dl.sym dd { margin: 0; padding: 7px 0; border-bottom: 1px solid var(--line); }
+dl.sym dt { font-family: "Cambria Math", Cambria, "Times New Roman", serif; font-size: 18px; padding-right: 14px; }
+dl.sym dd { color: var(--ink2); }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px; }
+th { text-align: left; font-size: 13px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding: 6px 12px 6px 0; }
+td { border-bottom: 1px solid var(--line); padding: 7px 12px 7px 0; vertical-align: top; color: var(--ink2); }
+td:first-child { color: var(--ink); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tscroll { overflow-x: auto; }
+.sc { font-weight: 400; color: var(--muted); font-size: 14px; }
+.qa { border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 0 12px 12px 0; padding: 12px 18px 6px; margin: 14px 0 12px; background: #fbfcfe; }
+.qa > b.q { display: block; margin-bottom: 6px; color: var(--ink); font-size: 17.5px; }
+.note { color: var(--muted); font-size: 15px; }
+.mine { background: var(--amber-soft); border-radius: 10px; padding: 8px 14px; font-size: 15.5px; color: var(--ink2); margin: 0 0 10px; }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; margin: 6px 0 12px; }
+.chain a { flex: 1 1 130px; text-decoration: none; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; }
+.chain a:hover { border-color: var(--accent); }
+.chain b { display: block; font-size: 15px; }
+.chain span { display: block; font-family: "Cambria Math", Cambria, serif; font-size: 17px; color: var(--accent); }
+.chain em { display: block; font-style: normal; font-size: 13.5px; color: var(--muted); }
+figure.cf { margin: 8px 0 14px; }
+figure.cf figcaption { font-size: 14.5px; color: var(--muted); margin-top: 4px; }
+svg.chart { width: 100%; height: auto; display: block; background: var(--surface); }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .tick { stroke: #cbd5e1; stroke-width: 1; }
+svg .ax { font: 12.5px "Segoe UI", system-ui, sans-serif; fill: var(--muted); }
+svg .ax2 { font: 11.5px "Segoe UI", system-ui, sans-serif; fill: #94a3b8; }
+svg .key { font: 650 13px "Segoe UI", system-ui, sans-serif; fill: var(--ink); }
+svg .lab { font: 12.5px "Segoe UI", system-ui, sans-serif; fill: var(--ink2); }
+svg .guide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+svg .curve { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+svg .pt { fill: #94a3b8; stroke: var(--surface); stroke-width: 2; cursor: default; }
+svg .pt.walk { fill: var(--accent); }
+svg .pt.mark { fill: var(--ink); }
+svg .hit { fill: none; stroke: transparent; stroke-width: 14; }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: #fff; font-size: 13.5px; padding: 6px 10px; border-radius: 8px; max-width: 320px; display: none; z-index: 9; }
+@media (max-width: 640px) {
+  section { padding: 18px 16px 20px; }
+  header.top { padding: 20px 18px; }
+  dl.sym { grid-template-columns: 1fr; }
+  dl.sym dt { border-bottom: 0; padding-bottom: 0; }
+  .eq { font-size: 19px; }
+}
+@media print {
+  body { background: #fff; font-size: 12.5pt; }
+  section, header.top { box-shadow: none; break-inside: avoid-page; }
+  header.top { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  header.top p, header.top .meta { color: var(--ink2); }
+  nav.toc { display: none; }
+  .eq { white-space: normal; }
+}
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <h1>The math behind the demo</h1>
+  <p>Every formula of the layer, what each symbol means, why it has that shape, and the numbers of both walkthroughs</p>
+  <div class="meta">For questions about the math. Every number on this page comes from the seed-0 exports of the frozen tag <code style="background:#1e293b;color:#fff">freeze-2026-11-04</code> (commit b7857b0), the same files the demo pages show: russellmitchell (the user change on the intranet server, rank 3) and harrison (the same alert, rank 1.5). No parameter was changed. Hover a point in a chart for its value.</div>
+</header>
+
+<nav class="toc">
+<a href="#chain">The chain</a><a href="#raw">Raw score s</a><a href="#effect">Feature effect</a><a href="#calib">S<sub>seq</sub> and the weight</a><a href="#group">Queue item</a><a href="#surprise">Surprise &pi;</a><a href="#seq">Sequence term</a><a href="#priority">Priority</a><a href="#ranks">Ranks, ties, top 20</a><a href="#andcg">&alpha;-nDCG@20</a><a href="#comparators">Wazuh and RBA</a><a href="#extras">Two explaining numbers</a><a href="#sources">Where it lives</a>
+</nav>
+
+<section id="chain">
+<h2>The chain at a glance</h2>
+<p>One alert goes through these steps, left to right. The numbers are russellmitchell | harrison for the user change on the intranet server. Click a step to jump to it.</p>
+<div class="chain">
+<a href="#raw"><b>Window</b><span>20 entries</span><em>15 | 20 entries</em></a>
+<a href="#raw"><b>14 features</b><span>x</span><em>counts, levels, gaps</em></a>
+<a href="#raw"><b>Raw score</b><span>s = 2<sup>&minus;E[&ell;]/c</sup></span><em>0.777 | 0.771</em></a>
+<a href="#calib"><b>Percentile</b><span>S<sub>seq</sub></span><em>100 | 99.99868</em></a>
+<a href="#group"><b>Queue item</b><span>u, k</span><em>k = 1 | 1</em></a>
+<a href="#surprise"><b>Surprise</b><span>&pi;</span><em>5.00 | 4.88</em></a>
+<a href="#seq"><b>Sequence term</b><span>12.5 &pi;</span><em>62.5 | 61.0</em></a>
+<a href="#priority"><b>Priority</b><span>P</span><em>70.0 | 68.8</em></a>
+<a href="#ranks"><b>Rank</b><span>average if tied</span><em>3 | 1.5</em></a>
+</div>
+<p>Steps 1 to 4 score one alert; step 5 turns the alerts of one rule on one host into a queue item and ranks it. &alpha;-nDCG@20 scores the whole queue afterwards, with the attack labels.</p>
+</section>
+
+<section id="raw">
+<h2><span class="st">Step 3</span>The raw score s</h2>
+<div class="eq">s = 2<sup>&minus;E[&ell;] / c(&psi;)</sup></div>
+<div class="eq">c(&psi;) = 2 H(&psi; &minus; 1) &minus; 2 (&psi; &minus; 1) / &psi;,&nbsp;&nbsp; H(i) = 1 + &frac12; + &hellip; + 1/i &asymp; ln i + 0.5772</div>
+<h3>Every symbol</h3>
+<dl class="sym">
+<dt>&ell; (the "cuts")</dt><dd>The path length: how many random cuts one tree needs to set this window apart from the other windows it was grown from. A cut picks one of the 14 features at random and a random value between that feature's lowest and highest value in the current group, and splits the group in two. Cuts repeat until the window is alone. If a leaf still holds several training windows, the expected number of further cuts is added (scikit-learn's standard allowance).</dd>
+<dt>E[&ell;]</dt><dd>The average of &ell; over the forest's 200 trees.</dd>
+<dt>&psi;</dt><dd>How many windows each tree is grown from: min(4096, n) for n training windows. Here all of them: 1,138 in russellmitchell, 2,873 in harrison.</dd>
+<dt>c(&psi;)</dt><dd>The average number of cuts a window needs in a random tree of &psi; windows (the average unsuccessful search in a binary search tree). It sets the scale: 13.23 for russellmitchell, 15.08 for harrison.</dd>
+<dt>H(i)</dt><dd>The harmonic number. ln is the natural logarithm, 0.5772 is Euler's constant.</dd>
+<dt>s</dt><dd>The raw score, between 0 and 1. Close to 1: cut off almost at once, so unusual. 0.5: an average number of cuts. Below 0.5: hard to separate, so ordinary.</dd>
+</dl>
+<h3>Why it has this shape</h3>
+<ul>
+<li><b>Few cuts means unusual.</b> A window unlike the others sits in an empty part of the feature space, so a random cut separates it early. Counting cuts needs no attack labels.</li>
+<li><b>Dividing by c(&psi;) removes the tree size.</b> 4.8 cuts means a lot in a tree of 1,138 windows and little in a tree of 40. The ratio E[&ell;] / c(&psi;) is "cuts compared with an average window".</li>
+<li><b>2 to the minus that ratio puts it on 0 to 1 with 0.5 in the middle.</b> A window needing exactly the average number of cuts gets 2<sup>&minus;1</sup> = 0.5; one cut gets close to 1; twice the average gets 2<sup>&minus;2</sup> = 0.25.</li>
+<li><b>It is the standard Isolation Forest score</b> (Liu, Ting and Zhou, 2008), computed by scikit-learn and used unchanged.</li>
+<li><b>Raw scores bunch together:</b> the middle held-out window scores 0.386 (russellmitchell) and 0.375 (harrison). That is why step 4 turns s into a percentile.</li>
+</ul>
+<h3>With our numbers</h3>
+<div class="tscroll"><table>
+<tr><th></th><th class="num">russellmitchell</th><th class="num">harrison</th></tr>
+<tr><td>Windows per tree &psi;</td><td class="num">1,138</td><td class="num">2,873</td></tr>
+<tr><td>Average cuts c(&psi;)</td><td class="num">13.23</td><td class="num">15.08</td></tr>
+<tr><td>This window: average cuts E[&ell;]</td><td class="num">4.81</td><td class="num">5.66</td></tr>
+<tr><td>This window: s</td><td class="num">2<sup>&minus;4.81 / 13.23</sup> = <b>0.777</b></td><td class="num">2<sup>&minus;5.66 / 15.08</sup> = <b>0.771</b></td></tr>
+<tr><td>The middle held-out window</td><td class="num">18.2 cuts, s = 0.386</td><td class="num">21.3 cuts, s = 0.375</td></tr>
+<tr><td>A window cut off at the first cut</td><td class="num">2<sup>&minus;1 / 13.23</sup> = 0.949</td><td class="num">2<sup>&minus;1 / 15.08</sup> = 0.955</td></tr>
+</table></div>
+<p class="note">On the page (step 3) the general formula is written as in the original Isolation Forest paper: s(x) = 2<sup>&minus;E[h(x)] / c(n)</sup>, with h(x) the cuts (&ell; here) and n the windows per tree (&psi; here).</p>
+<p class="note">Read the other way round: cuts = &minus;c(&psi;) &times; log<sub>2</sub> s. That is how the page turns the middle score 0.386 back into 18.2 cuts.</p>
+</section>
+
+<section id="effect">
+<h2><span class="st">Step 2</span>The effect on the forest's score</h2>
+<p>The last column of step 2. It explains a window; it changes no score and no rank.</p>
+<div class="eq">effect<sub>i</sub> = s(x) &minus; s(x with feature i replaced by m<sub>h,i</sub>)</div>
+<h3>Every symbol</h3>
+<dl class="sym">
+<dt>x</dt><dd>The window's 14 model features, as the forest sees them. Four heavy-tailed ones are on a log scale, ln(1 + value): window duration, mean gap, shortest gap and alerts in the current entry. The other ten are used as they are. Night fraction is not among them.</dd>
+<dt>m<sub>h,i</sub></dt><dd>The median of feature i over this host's windows from the training days, on the same scale: 36 windows for russellmitchell's intranet server, 94 for harrison's. It is the column "host's baseline median" on screen.</dd>
+<dt>s( &middot; )</dt><dd>The forest's raw score from step 3: the same 200 trees, nothing refitted.</dd>
+<dt>effect<sub>i</sub></dt><dd>Positive: the window's real value makes it more unusual than the host's usual value would. Negative: the usual value would look odder to the forest.</dd>
+</dl>
+<h3>How it is calculated, step by step</h3>
+<ol>
+<li>Take the window's 14 values.</li>
+<li>Replace one of them by the host's median and keep the other 13. For russellmitchell's user change: "rule new to this host" goes from yes (1) to the host's usual no (0).</li>
+<li>Send the changed window through all 200 trees again and average the cuts: <b>5.52</b> instead of 4.81. Without the new rule the window is harder to set apart.</li>
+<li>Turn that into a raw score: 2<sup>&minus;5.52 / 13.23</sup> = <b>0.749</b>.</li>
+<li>Subtract from the real score: 0.777 &minus; 0.749 = <b>+0.028</b>. That is the effect.</li>
+</ol>
+<p>This is done once for each of the 14 features. On screen the three largest effects are marked "top 3"; each bar is that effect as a share of the largest one in the window, and negative effects point to the left.</p>
+<h3>All 14, russellmitchell (the user change, s = 0.777, 4.81 cuts)</h3>
+<div class="tscroll"><table class="wide">
+<tr><th>Feature</th><th class="num">This window</th><th class="num">Host median</th><th class="num">Cuts after the swap</th><th class="num">s after the swap</th><th class="num">Effect</th></tr>
+<tr><td>rule new to this host <span class="sc">top 3</span></td><td class="num">yes</td><td class="num">no</td><td class="num">5.52</td><td class="num">0.749</td><td class="num"><b>+0.028</b></td></tr>
+<tr><td>mean rule level <span class="sc">top 3</span></td><td class="num">4.60</td><td class="num">3</td><td class="num">5.32</td><td class="num">0.757</td><td class="num"><b>+0.021</b></td></tr>
+<tr><td>distinct ATT&amp;CK techniques <span class="sc">top 3</span></td><td class="num">7</td><td class="num">2</td><td class="num">5.24</td><td class="num">0.760</td><td class="num"><b>+0.017</b></td></tr>
+<tr><td>rule level trend (slope)</td><td class="num">+0.16</td><td class="num">0.00</td><td class="num">5.14</td><td class="num">0.764</td><td class="num"><b>+0.013</b></td></tr>
+<tr><td>distinct rules</td><td class="num">14</td><td class="num">4</td><td class="num">5.13</td><td class="num">0.764</td><td class="num"><b>+0.013</b></td></tr>
+<tr><td>highest rule level</td><td class="num">10</td><td class="num">3</td><td class="num">5.12</td><td class="num">0.765</td><td class="num"><b>+0.012</b></td></tr>
+<tr><td>largest entry's share of the alerts</td><td class="num">92%</td><td class="num">50%</td><td class="num">5.02</td><td class="num">0.769</td><td class="num"><b>+0.009</b></td></tr>
+<tr><td>distinct ATT&amp;CK tactics</td><td class="num">7</td><td class="num">5</td><td class="num">4.95</td><td class="num">0.771</td><td class="num"><b>+0.006</b></td></tr>
+<tr><td>window duration</td><td class="num">18.3 h</td><td class="num">6.1 h</td><td class="num">4.89</td><td class="num">0.774</td><td class="num"><b>+0.003</b></td></tr>
+<tr><td>tactic progression</td><td class="num">&minus;0.08</td><td class="num">0.00</td><td class="num">4.87</td><td class="num">0.775</td><td class="num"><b>+0.002</b></td></tr>
+<tr><td>alerts in the current entry</td><td class="num">1</td><td class="num">2.46</td><td class="num">4.85</td><td class="num">0.776</td><td class="num"><b>+0.002</b></td></tr>
+<tr><td>mean gap between entries</td><td class="num">78 min</td><td class="num">71 min</td><td class="num">4.81</td><td class="num">0.777</td><td class="num"><b>+0.000</b></td></tr>
+<tr><td>shortest gap between entries</td><td class="num">0.001 s</td><td class="num">0.001 s</td><td class="num">4.81</td><td class="num">0.777</td><td class="num"><b>+0.000</b></td></tr>
+<tr><td>entries in the window</td><td class="num">15</td><td class="num">4.50</td><td class="num">4.61</td><td class="num">0.785</td><td class="num"><b>&minus;0.008</b></td></tr>
+</table></div>
+<h3>All 14, harrison (the user change, s = 0.771, 5.66 cuts)</h3>
+<div class="tscroll"><table class="wide">
+<tr><th>Feature</th><th class="num">This window</th><th class="num">Host median</th><th class="num">Cuts after the swap</th><th class="num">s after the swap</th><th class="num">Effect</th></tr>
+<tr><td>rule new to this host <span class="sc">top 3</span></td><td class="num">yes</td><td class="num">no</td><td class="num">7.10</td><td class="num">0.722</td><td class="num"><b>+0.049</b></td></tr>
+<tr><td>highest rule level <span class="sc">top 3</span></td><td class="num">10</td><td class="num">3</td><td class="num">6.44</td><td class="num">0.744</td><td class="num"><b>+0.027</b></td></tr>
+<tr><td>mean rule level <span class="sc">top 3</span></td><td class="num">4.80</td><td class="num">3</td><td class="num">6.42</td><td class="num">0.744</td><td class="num"><b>+0.027</b></td></tr>
+<tr><td>largest entry's share of the alerts</td><td class="num">93%</td><td class="num">21%</td><td class="num">6.16</td><td class="num">0.754</td><td class="num"><b>+0.017</b></td></tr>
+<tr><td>rule level trend (slope)</td><td class="num">&minus;0.12</td><td class="num">0.00</td><td class="num">5.88</td><td class="num">0.763</td><td class="num"><b>+0.008</b></td></tr>
+<tr><td>distinct ATT&amp;CK techniques</td><td class="num">7</td><td class="num">1</td><td class="num">5.86</td><td class="num">0.764</td><td class="num"><b>+0.007</b></td></tr>
+<tr><td>distinct rules</td><td class="num">12</td><td class="num">2</td><td class="num">5.81</td><td class="num">0.766</td><td class="num"><b>+0.005</b></td></tr>
+<tr><td>alerts in the current entry</td><td class="num">1</td><td class="num">1</td><td class="num">5.66</td><td class="num">0.771</td><td class="num"><b>+0.000</b></td></tr>
+<tr><td>tactic progression</td><td class="num">&minus;0.01</td><td class="num">0.00</td><td class="num">5.66</td><td class="num">0.771</td><td class="num"><b>+0.000</b></td></tr>
+<tr><td>entries in the window</td><td class="num">20</td><td class="num">19</td><td class="num">5.59</td><td class="num">0.773</td><td class="num"><b>&minus;0.002</b></td></tr>
+<tr><td>distinct ATT&amp;CK tactics</td><td class="num">8</td><td class="num">1</td><td class="num">5.55</td><td class="num">0.775</td><td class="num"><b>&minus;0.004</b></td></tr>
+<tr><td>window duration</td><td class="num">80 min</td><td class="num">22.8 h</td><td class="num">5.40</td><td class="num">0.780</td><td class="num"><b>&minus;0.009</b></td></tr>
+<tr><td>mean gap between entries</td><td class="num">4 min</td><td class="num">73 min</td><td class="num">5.34</td><td class="num">0.783</td><td class="num"><b>&minus;0.011</b></td></tr>
+<tr><td>shortest gap between entries</td><td class="num">0.001 s</td><td class="num">6 min</td><td class="num">5.23</td><td class="num">0.787</td><td class="num"><b>&minus;0.015</b></td></tr>
+</table></div>
+<h3>Why it is done this way, and what to keep in mind</h3>
+<ul>
+<li><b>The host's median is the reference</b> because the question is "what if this feature were normal for this host?", the same comparison as the column beside it.</li>
+<li><b>The effects do not add up.</b> In russellmitchell the 14 effects sum to 0.118, but setting all 14 to the host's medians at once gives s = 0.642 (8.45 cuts), 0.135 lower. In harrison: sum 0.099, all at once 0.608, 0.163 lower. The forest judges the features together, so one feature at a time is only an approximation.</li>
+<li><b>Negative effects</b> appear when the host's usual value is rarer among all hosts' windows than the window's own value: the forest is one model for all hosts. The full answer is in the harrison guide, step 2, "Why is the effect negative for some features?".</li>
+<li><b>It is worked out afterwards</b> (<span class="ph ph3">3 Looking back</span>) and only for the page: <code>tools/ait_explain.py</code>, <code>explain()</code>; the log scale is <code>tools/window_builder.py</code>, <code>log_transform()</code>.</li>
+</ul>
+</section>
+
+<section id="calib">
+<h2><span class="st">Step 4</span>From s to S<sub>seq</sub>, and the weight w<sub>h</sub></h2>
+<div class="eq">S<sub>seq</sub> = 100 &times; ( w<sub>h</sub> &times; own + (1 &minus; w<sub>h</sub>) &times; pooled ),&nbsp;&nbsp; w<sub>h</sub> = n<sub>h</sub> / (n<sub>h</sub> + 100)</div>
+<div class="eq">own = #{ host's held-out windows with score &le; s } / n<sub>h</sub>,&nbsp;&nbsp; pooled = #{ all hosts' held-out windows with score &le; s } / N</div>
+<h3>Every symbol</h3>
+<dl class="sym">
+<dt>held-out windows</dt><dd>Windows from the training days that were <b>not</b> used to grow the trees. The trees have seen their own training windows, so scoring those would be biased; the held-out ones are a fair yardstick.</dd>
+<dt>n<sub>h</sub></dt><dd>How many held-out windows host h has: 32 for russellmitchell's intranet server, 87 for harrison's.</dd>
+<dt>N</dt><dd>The held-out windows of all hosts: 17,265 | 40,366.</dd>
+<dt>own, pooled</dt><dd>The share of those windows that score no higher than this window: the empirical percentile, once against the host itself, once against everyone.</dd>
+<dt>w<sub>h</sub></dt><dd>How much the host's own yardstick counts.</dd>
+<dt>100 (n<sub>0</sub>)</dt><dd>The number of held-out windows at which both yardsticks count equally.</dd>
+</dl>
+<h3>Why a percentile</h3>
+<p>Raw scores bunch together around 0.4 to 0.5, so a straight rescale would make every window look alike. A percentile says something plain: "this window is more unusual than X% of the normal windows we kept aside".</p>
+
+<div class="qa" id="why-weight"><b class="q">Why is the weight w<sub>h</sub> = n<sub>h</sub> / (n<sub>h</sub> + 100)?</b>
+<p>There are two yardsticks, and each is good at one thing:</p>
+<ul>
+<li><b>Own</b> knows what is normal on <b>this</b> host, but with few windows it is coarse: with 32 windows one window is 3.1 percentile points, and anything above the highest gets 100.</li>
+<li><b>Pooled</b> is fine-grained (tens of thousands of windows) but describes other hosts' normal behaviour.</li>
+</ul>
+<p>The weight decides how far to trust own, and n / (n + n<sub>0</sub>) is the classic answer: <b>B&uuml;hlmann's credibility weight</b> from insurance, where a small group's own claim rate is trusted in proportion to how much data supports it. It has the properties you want:</p>
+<ul>
+<li>no history (n<sub>h</sub> = 0): w = 0, use the pool only;</li>
+<li>n<sub>h</sub> = 100: w = 100 / 200 = 0.5, both count equally;</li>
+<li>more history: w climbs towards 1, never quite reaching it: 1,000 windows give 0.91, 10,000 give 0.99;</li>
+<li>it changes smoothly: no host jumps from one yardstick to the other.</li>
+</ul>
+<p><b>Why 100.</b> The paper calls n<sub>0</sub> = 100 a default, and its parameter table reports that 30 and 300 gave results within one seed's standard deviation, so the choice does not drive the results.</p>
+<p class="mine">One way to see why 100 is a sensible default (my reading, not stated in the paper): with 100 windows, own moves in steps of 1 percentile point, the first size at which it can just about tell the 99th percentile from the 100th.</p>
+<p><b>Why not a hard switch.</b> An earlier version used own above 500 windows and pooled below. The paper reports that the quiet hosts' benign windows then exceeded 99 in 36&ndash;100% of cases; the weight lowered that to 0&ndash;50% wherever a host had more than four such windows.</p>
+</div>
+
+<div class="qa" id="train-length"><b class="q">How long should the training period be?</b>
+<p>Three requirements, from the paper and from this section: the forest needs 4,000 to 8,000 training windows (the paper's floor and target, after taking every 10th window); a quiet host needs about 100 held-out windows before its own yardstick counts half; and the period should cover a full week of normal rhythm. At the rates of the two replays (estimate):</p>
+<div class="tscroll"><table class="wide">
+<tr><th>Replay</th><th class="num">baseline, days</th><th class="num">forest training windows</th><th class="num">days for 4,000&ndash;8,000</th><th>days until a quiet host has 100 own windows</th></tr>
+<tr><td>russellmitchell</td><td class="num">3.1</td><td class="num">1,138</td><td class="num">11&ndash;22</td><td>cloud_share 18, internal_share 14, intranet_server 10</td></tr>
+<tr><td>harrison</td><td class="num">4.3</td><td class="num">2,873</td><td class="num">6&ndash;12</td><td>cloud_share 17, intranet_server 5, internal_share 4</td></tr>
+</table></div>
+<p>So about two to three weeks of clean activity. The replays have three and four days, a limitation the paper states ("short baselines, no weekly cycle"); the paper's workstation study used five weeks of alerts.</p>
+<p><b>If you are asked, in short:</b> "There is no single number; three things decide it. The forest needs 4,000 to 8,000 training windows, the paper's floor and target; the quiet hosts need about 100 windows of their own before their own yardstick counts half; and the period should cover at least a full week of normal rhythm. At the rates in these replays that is about two to three weeks of clean activity. The replays only had three and four days, a limitation the paper states, and the workstation study used five weeks of alerts."</p></div>
+<figure class="cf">
+<svg class="chart" viewBox="0 0 680 300" role="img" aria-labelledby="cw-t"><title id="cw-t">Weight on the host's own history against its number of held-out windows</title>
+<line x1="58" x2="656" y1="254.0" y2="254.0" class="grid"/><text x="50" y="258.0" class="ax" text-anchor="end">0</text>
+<line x1="58" x2="656" y1="195.0" y2="195.0" class="grid"/><text x="50" y="199.0" class="ax" text-anchor="end">0.25</text>
+<line x1="58" x2="656" y1="136.0" y2="136.0" class="grid"/><text x="50" y="140.0" class="ax" text-anchor="end">0.5</text>
+<line x1="58" x2="656" y1="77.0" y2="77.0" class="grid"/><text x="50" y="81.0" class="ax" text-anchor="end">0.75</text>
+<line x1="58" x2="656" y1="18.0" y2="18.0" class="grid"/><text x="50" y="22.0" class="ax" text-anchor="end">1</text>
+<line x1="58.0" x2="58.0" y1="254" y2="259" class="tick"/><text x="58.0" y="274" class="ax" text-anchor="middle">10</text>
+<line x1="144.4" x2="144.4" y1="254" y2="259" class="tick"/><text x="144.4" y="274" class="ax" text-anchor="middle">30</text>
+<line x1="239.2" x2="239.2" y1="254" y2="259" class="tick"/><text x="239.2" y="274" class="ax" text-anchor="middle">100</text>
+<line x1="325.6" x2="325.6" y1="254" y2="259" class="tick"/><text x="325.6" y="274" class="ax" text-anchor="middle">300</text>
+<line x1="420.3" x2="420.3" y1="254" y2="259" class="tick"/><text x="420.3" y="274" class="ax" text-anchor="middle">1,000</text>
+<line x1="506.7" x2="506.7" y1="254" y2="259" class="tick"/><text x="506.7" y="274" class="ax" text-anchor="middle">3,000</text>
+<line x1="601.5" x2="601.5" y1="254" y2="259" class="tick"/><text x="601.5" y="274" class="ax" text-anchor="middle">10,000</text>
+<text x="357.0" y="294" class="ax" text-anchor="middle">held-out windows of the host, n<tspan dy="3" font-size="10">h</tspan><tspan dy="-3"> (log scale)</tspan></text>
+<text x="14" y="136.0" class="ax" text-anchor="middle" transform="rotate(-90 14 136.0)">weight w on own history</text>
+<line x1="239.2" x2="239.2" y1="254.0" y2="136.0" class="guide"/><line x1="58" x2="239.2" y1="136.0" y2="136.0" class="guide"/>
+<text x="247.2" y="230.4" class="lab">n<tspan dy="3" font-size="10">h</tspan><tspan dy="-3"> = 100: both count equally (w = 0.5)</tspan></text>
+<path class="curve" d="M58.0,232.5 L64.0,231.0 L70.0,229.4 L75.9,227.7 L81.9,225.8 L87.9,223.9 L93.9,221.8 L99.9,219.7 L105.8,217.4 L111.8,215.0 L117.8,212.4 L123.8,209.8 L129.8,207.0 L135.7,204.0 L141.7,201.0 L147.7,197.8 L153.7,194.5 L159.7,191.0 L165.6,187.4 L171.6,183.7 L177.6,179.9 L183.6,176.0 L189.6,172.0 L195.5,167.9 L201.5,163.7 L207.5,159.4 L213.5,155.1 L219.5,150.7 L225.4,146.3 L231.4,141.8 L237.4,137.3 L243.4,132.8 L249.4,128.4 L255.3,123.9 L261.3,119.5 L267.3,115.1 L273.3,110.8 L279.3,106.6 L285.2,102.4 L291.2,98.3 L297.2,94.3 L303.2,90.5 L309.2,86.7 L315.1,83.1 L321.1,79.5 L327.1,76.2 L333.1,72.9 L339.1,69.8 L345.0,66.7 L351.0,63.9 L357.0,61.1 L363.0,58.5 L369.0,56.0 L374.9,53.7 L380.9,51.4 L386.9,49.3 L392.9,47.3 L398.9,45.4 L404.8,43.6 L410.8,41.9 L416.8,40.3 L422.8,38.9 L428.8,37.4 L434.7,36.1 L440.7,34.9 L446.7,33.7 L452.7,32.7 L458.7,31.7 L464.6,30.7 L470.6,29.8 L476.6,29.0 L482.6,28.2 L488.6,27.5 L494.5,26.8 L500.5,26.2 L506.5,25.6 L512.5,25.1 L518.5,24.6 L524.4,24.1 L530.4,23.7 L536.4,23.3 L542.4,22.9 L548.4,22.5 L554.3,22.2 L560.3,21.9 L566.3,21.6 L572.3,21.4 L578.3,21.1 L584.2,20.9 L590.2,20.7 L596.2,20.5 L602.2,20.3 L608.2,20.1 L614.1,20.0 L620.1,19.8 L626.1,19.7 L632.1,19.6 L638.1,19.5 L644.0,19.4 L650.0,19.3 L656.0,19.2"/>
+<circle cx="561.5" cy="21.9" r="4.5" class="pt" data-tip="mail, russellmitchell: 6,019 windows, w = 6019 / 6119 = 0.98"><title>mail, russellmitchell: 6,019 windows, w = 6019 / 6119 = 0.98</title></circle>
+<circle cx="525.7" cy="24.0" r="4.5" class="pt" data-tip="inet-firewall, russellmitchell: 3,817 windows, w = 3817 / 3917 = 0.97"><title>inet-firewall, russellmitchell: 3,817 windows, w = 3817 / 3917 = 0.97</title></circle>
+<circle cx="515.9" cy="24.8" r="4.5" class="pt" data-tip="davey_mail, russellmitchell: 3,371 windows, w = 3371 / 3471 = 0.97"><title>davey_mail, russellmitchell: 3,371 windows, w = 3371 / 3471 = 0.97</title></circle>
+<circle cx="448.5" cy="33.4" r="4.5" class="pt" data-tip="morris_mail, russellmitchell: 1,430 windows, w = 1430 / 1530 = 0.93"><title>morris_mail, russellmitchell: 1,430 windows, w = 1430 / 1530 = 0.93</title></circle>
+<circle cx="441.3" cy="34.8" r="4.5" class="pt" data-tip="vpn, russellmitchell: 1,306 windows, w = 1306 / 1406 = 0.93"><title>vpn, russellmitchell: 1,306 windows, w = 1306 / 1406 = 0.93</title></circle>
+<circle cx="437.9" cy="35.5" r="4.5" class="pt" data-tip="webserver, russellmitchell: 1,251 windows, w = 1251 / 1351 = 0.93"><title>webserver, russellmitchell: 1,251 windows, w = 1251 / 1351 = 0.93</title></circle>
+<circle cx="120.0" cy="211.4" r="4.5" class="pt" data-tip="internal_share, russellmitchell: 22 windows, w = 22 / 122 = 0.18"><title>internal_share, russellmitchell: 22 windows, w = 22 / 122 = 0.18</title></circle>
+<circle cx="99.7" cy="219.7" r="4.5" class="pt" data-tip="cloud_share, russellmitchell: 17 windows, w = 17 / 117 = 0.15"><title>cloud_share, russellmitchell: 17 windows, w = 17 / 117 = 0.15</title></circle>
+<circle cx="606.0" cy="20.2" r="4.5" class="pt" data-tip="mail, harrison: 10,596 windows, w = 10596 / 10696 = 0.99"><title>mail, harrison: 10,596 windows, w = 10596 / 10696 = 0.99</title></circle>
+<circle cx="603.5" cy="20.3" r="4.5" class="pt" data-tip="smith_mail, harrison: 10,265 windows, w = 10265 / 10365 = 0.99"><title>smith_mail, harrison: 10,265 windows, w = 10265 / 10365 = 0.99</title></circle>
+<circle cx="558.6" cy="22.0" r="4.5" class="pt" data-tip="inet-firewall, harrison: 5,802 windows, w = 5802 / 5902 = 0.98"><title>inet-firewall, harrison: 5,802 windows, w = 5802 / 5902 = 0.98</title></circle>
+<circle cx="542.6" cy="22.9" r="4.5" class="pt" data-tip="vpn, harrison: 4,733 windows, w = 4733 / 4833 = 0.98"><title>vpn, harrison: 4,733 windows, w = 4733 / 4833 = 0.98</title></circle>
+<circle cx="540.5" cy="23.0" r="4.5" class="pt" data-tip="taylor_mail, harrison: 4,608 windows, w = 4608 / 4708 = 0.98"><title>taylor_mail, harrison: 4,608 windows, w = 4608 / 4708 = 0.98</title></circle>
+<circle cx="532.0" cy="23.6" r="4.5" class="pt" data-tip="webserver, harrison: 4,134 windows, w = 4134 / 4234 = 0.98"><title>webserver, harrison: 4,134 windows, w = 4134 / 4234 = 0.98</title></circle>
+<circle cx="250.8" cy="127.3" r="4.5" class="pt" data-tip="internal_share, harrison: 116 windows, w = 116 / 216 = 0.54"><title>internal_share, harrison: 116 windows, w = 116 / 216 = 0.54</title></circle>
+<circle cx="130.1" cy="206.8" r="4.5" class="pt" data-tip="cloud_share, harrison: 25 windows, w = 25 / 125 = 0.20"><title>cloud_share, harrison: 25 windows, w = 25 / 125 = 0.20</title></circle>
+<circle cx="149.5" cy="196.8" r="5.5" class="pt walk" data-tip="intranet_server, russellmitchell: 32 windows, w = 32 / 132 = 0.24"><title>intranet_server, russellmitchell: 32 windows, w = 32 / 132 = 0.24</title></circle>
+<circle cx="228.2" cy="144.2" r="5.5" class="pt walk" data-tip="intranet_server, harrison: 87 windows, w = 87 / 187 = 0.47"><title>intranet_server, harrison: 87 windows, w = 87 / 187 = 0.47</title></circle>
+<text x="159.5" y="200.8" class="lab">intranet server, russellmitchell: 32 &rarr; 0.24</text>
+<text x="218.2" y="120.2" class="lab" text-anchor="end">intranet server, harrison: 87 &rarr; 0.47</text>
+</svg>
+<figcaption>Line: w = n<sub>h</sub> / (n<sub>h</sub> + 100). Dots: all 18 hosts of the two replays; the two blue ones hold the alert we follow. The dashed lines mark n<sub>h</sub> = 100, where the weight is one half.</figcaption>
+</figure>
+<div class="tscroll"><table>
+<tr><th>Host</th><th class="num">n<sub>h</sub></th><th class="num">n<sub>h</sub> / (n<sub>h</sub> + 100)</th><th class="num">w<sub>h</sub>: weight own</th><th class="num">1 &minus; w<sub>h</sub>: weight pooled</th></tr>
+<tr><td>cloud_share <span class="sc">russellmitchell</span></td><td class="num">17</td><td class="num">17 / 117</td><td class="num">0.15</td><td class="num">0.85</td></tr>
+<tr><td>internal_share <span class="sc">russellmitchell</span></td><td class="num">22</td><td class="num">22 / 122</td><td class="num">0.18</td><td class="num">0.82</td></tr>
+<tr><td>cloud_share <span class="sc">harrison</span></td><td class="num">25</td><td class="num">25 / 125</td><td class="num">0.20</td><td class="num">0.80</td></tr>
+<tr><td>intranet_server <span class="sc">russellmitchell</span> &middot; <b>this walk</b></td><td class="num">32</td><td class="num">32 / 132</td><td class="num">0.24</td><td class="num">0.76</td></tr>
+<tr><td>intranet_server <span class="sc">harrison</span> &middot; <b>this walk</b></td><td class="num">87</td><td class="num">87 / 187</td><td class="num">0.47</td><td class="num">0.53</td></tr>
+<tr><td>internal_share <span class="sc">harrison</span></td><td class="num">116</td><td class="num">116 / 216</td><td class="num">0.54</td><td class="num">0.46</td></tr>
+<tr><td>the twelve busy hosts <span class="sc">both</span></td><td class="num">1,251&ndash;10,596</td><td class="num"></td><td class="num">0.93&ndash;0.99</td><td class="num">0.01&ndash;0.07</td></tr>
+</table></div>
+<h3>With our numbers</h3>
+<div class="tscroll"><table>
+<tr><th></th><th class="num">russellmitchell</th><th class="num">harrison</th></tr>
+<tr><td>w<sub>h</sub></td><td class="num">32 / 132 = 0.24242</td><td class="num">87 / 187 = 0.46524</td></tr>
+<tr><td>own</td><td class="num">32 / 32 = 1</td><td class="num">87 / 87 = 1</td></tr>
+<tr><td>pooled</td><td class="num">17,265 / 17,265 = 1</td><td class="num">40,365 / 40,366 = 0.9999752</td></tr>
+<tr><td>S<sub>seq</sub></td><td class="num">100 &times; (0.24242 &times; 1 + 0.75758 &times; 1) = <b>100</b></td><td class="num">100 &times; (0.46524 &times; 1 + 0.53476 &times; 0.9999752) = <b>99.99868</b></td></tr>
+</table></div>
+<p class="note">In harrison one held-out window of another host (cloud_share) scores higher than ours, so pooled is just below 1 and S<sub>seq</sub> just below 100. The page shows S<sub>seq</sub> with five decimals when it is just under the cap of step 5.</p>
+</section>
+
+<section id="group">
+<h2><span class="st">Step 5</span>From alerts to a queue item</h2>
+<div class="eq">u = max<sub>alerts a in g</sub> S<sub>seq</sub>(a) / 100,&nbsp;&nbsp; k = number of alerts in g</div>
+<dl class="sym">
+<dt>g (queue item)</dt><dd>All alerts of one rule on one host, as long as each follows the previous one within 24 hours. The analyst reads items, not single alerts.</dd>
+<dt>u</dt><dd>The item's most unusual alert, as a fraction: S<sub>seq</sub> 99 becomes 0.99. An alert whose window is too short to score counts as 50 (the baseline median).</dd>
+<dt>k</dt><dd>How many alerts the item holds: 1 for the user change in both replays.</dd>
+</dl>
+</section>
+
+<section id="surprise">
+<h2><span class="st">Step 5</span>The surprise &pi;</h2>
+<div class="eq">&pi;(g) = &minus;log<sub>10</sub>( 1 &minus; u<sup>k</sup> ),&nbsp;&nbsp; u capped at 0.99999 <small>so &pi; is at most 5</small></div>
+<h3>Read it in four steps</h3>
+<ol>
+<li>A normal window scores below the u-th percentile with chance u. That is what a percentile means.</li>
+<li>k independent normal windows all score below it with chance u<sup>k</sup>.</li>
+<li>So 1 &minus; u<sup>k</sup> is the chance that <b>at least one</b> of k normal windows would score this high: a p-value.</li>
+<li>&minus;log<sub>10</sub> counts its zeros: a chance of 0.001 gives 3, 0.00001 gives 5.</li>
+</ol>
+<h3>What it tells us</h3>
+<p>How unlikely it is that normal activity would produce an item like this, in zeros. It says how rare, not how dangerous:</p>
+<div class="tscroll"><table class="wide">
+<tr><th>Item</th><th class="num">S<sub>seq</sub></th><th class="num">alerts k</th><th class="num">surprise &pi;</th><th class="num">chance that normal activity produces it</th></tr>
+<tr><td>User successfully changed UID <span class="sc">russellmitchell, the walkthrough</span></td><td class="num">100</td><td class="num">1</td><td class="num"><b>5.00</b></td><td class="num">1 in 100,000 (the cap)</td></tr>
+<tr><td>User successfully changed UID <span class="sc">harrison, the walkthrough</span></td><td class="num">99.99868</td><td class="num">1</td><td class="num"><b>4.88</b></td><td class="num">1 in 75,000</td></tr>
+<tr><td>Successful sudo to ROOT executed <span class="sc">russellmitchell</span></td><td class="num">99.99561</td><td class="num">2</td><td class="num"><b>4.06</b></td><td class="num">1 in 11,000</td></tr>
+<tr><td>PAM: Login session opened <span class="sc">russellmitchell</span></td><td class="num">99.23</td><td class="num">2</td><td class="num"><b>1.81</b></td><td class="num">1 in 65</td></tr>
+<tr><td>Web server 400 error code <span class="sc">russellmitchell</span></td><td class="num">100</td><td class="num">7,068</td><td class="num"><b>1.17</b></td><td class="num">1 in 15</td></tr>
+<tr><td>Web server 400 error code <span class="sc">harrison</span></td><td class="num">99.99868</td><td class="num">384,473</td><td class="num"><b>0.00</b></td><td class="num">almost certain</td></tr>
+<tr><td>sshd: insecure connection attempt (scan) <span class="sc">russellmitchell, benign</span></td><td class="num">100</td><td class="num">1</td><td class="num"><b>5.00</b></td><td class="num">1 in 100,000 (the cap)</td></tr>
+</table></div>
+<p><b>If you are asked, in short:</b> "The surprise says how unlikely it is that normal activity would produce this item, counted in zeros: 5 means one chance in 100,000, 2 one in 100. It combines how unusual the item's most unusual alert is with how many alerts the item has, so one extreme alert on its own counts far more than one extreme alert among thousands. It says how rare, not how dangerous: a benign alert can be just as surprising."</p>
+<h3>Why it has this shape</h3>
+<ul>
+<li><b>It corrects for the number of chances.</b> One extreme window among 7,068 alerts is expected; one extreme window from a single alert is not. While k &times; (1 &minus; u) is small, &pi; &asymp; (nines of u) &minus; log<sub>10</sub> k: every tenfold more alerts costs one point of surprise.</li>
+<li><b>Its weak point: it counts every alert as an independent chance.</b> The alerts of one item are near-copies: in harrison's scan item 384,448 of 384,473 have exactly S<sub>seq</sub> 99.99868, and in russellmitchell's 7,058 of 7,068 have 100. So the size correction over-corrects for floods. The paper says so ("treats members as independent although their windows overlap"); its milder alternative, one chance per window length (k / 20), gives 0.65 and 2.45 instead of 0.003 and 1.17, and ranked worse on the tuning set: in the comparison of 12 October it gave the non-scan stages a worse mean rank on three of four tuning replays, because every item of up to 20 alerts can then reach the single-alert ceiling. On today's method it would move the user change from 3 to 5.5 (russellmitchell) and from 1.5 to 3.5 (harrison). If asked: "Because on the tuning replays it put the important steps later. In the comparison of 12 October, four tuning replays with five seeds each, counting every alert gave the non-scan stages, the user change, the sudo escalation and the exfiltration, a better rank on three of the four replays. Counting one chance per 20 alerts lets every item of up to 20 alerts reach the same ceiling as the single-alert user change, so the top gets crowded: on today's method the user change would fall from 3 to 5.5 here and from 1.5 to 3.5 in harrison. The full count is wrong in principle but worked better for the takeover steps; it was chosen on the tuning data, which repeats one attack pattern."</li>
+<li><b>The cap: u at most 0.99999, so &pi; at most 5.</b> Why u is capped: the box below. The other cap, in the sequence term, is explained in the next section.</li>
+</ul>
+<div class="qa" id="why-cap"><b class="q">Why is u capped at 0.99999?</b>
+<p>Because S<sub>seq</sub> = 100 is common at the top, and it would break the formula: with u = 1, 1 &minus; 1<sup>k</sup> = 0 for every k, and &minus;log<sub>10</sub> 0 is infinite. The paper: "Since S<sub>seq</sub> = 100 would make &pi;(g) infinite, u<sub>g</sub> is capped". Two things would go wrong without it:</p>
+<ul>
+<li><b>No number.</b> An infinite surprise cannot be put on the 0 to 100 scale or added to the novelty term.</li>
+<li><b>Size would stop mattering.</b> Every item whose best alert reaches 100 would get the same infinite surprise, whatever its size. In russellmitchell 12 items reach 100, among them a flood of 7,068 web-server 400 errors, which would tie with the single user change.</li>
+</ul>
+<p>With u capped at 0.99999, those 12 items are ordered by size, smaller first:</p>
+<div class="tscroll"><table>
+<tr><th class="num">Alerts k</th><th>Item (russellmitchell, S<sub>seq</sub> = 100)</th><th class="num">&pi;</th><th class="num">Priority</th><th class="num">Rank</th></tr>
+<tr><td>1 (five items)</td><td>sshd scan attempt &times; 2 (benign), WordPress scan &times; 2, the user change</td><td class="num">5.00</td><td class="num">70.0</td><td class="num">3 (tie of 5)</td></tr>
+<tr><td>2</td><td>Common web attack</td><td class="num">4.70</td><td class="num">67.0</td><td class="num">6</td></tr>
+<tr><td>3</td><td>Nmap User-Agent scan</td><td class="num">4.52</td><td class="num">65.2</td><td class="num">7</td></tr>
+<tr><td>5</td><td>Web server 400 error code, cloud_share</td><td class="num">4.30</td><td class="num">63.0</td><td class="num">12</td></tr>
+<tr><td>6</td><td>Suspicious URL access</td><td class="num">4.22</td><td class="num">62.2</td><td class="num">13</td></tr>
+<tr><td>7</td><td>Attempt to access forbidden file</td><td class="num">4.15</td><td class="num">61.5</td><td class="num">14</td></tr>
+<tr><td>548</td><td>Multiple web server 400 error codes</td><td class="num">2.26</td><td class="num">42.6</td><td class="num">21</td></tr>
+<tr><td>7,068</td><td>Web server 400 error code</td><td class="num">1.17</td><td class="num">31.7</td><td class="num">41</td></tr>
+</table></div>
+<p><b>Why 5, and not 4 or 6.</b> The paper gives the reason for a cap, not for its value. The data shows why 5 is a sensible one: it is where what we can measure ends. In all five seeds of both replays the highest S<sub>seq</sub> below 100 lies between 99.9956 and 99.9990, a surprise of 4.4 to 5.0, and no item falls between 99.999 and 100. So the cap at 5 cuts nothing the data can tell apart. A lower cap merges items the data does separate; a higher one lets S<sub>seq</sub> = 100 claim more rarity than any window we have (what-if, frozen metric code, five seeds):</p>
+<div class="tscroll"><table class="wide">
+<tr><th>Cap on &pi;</th><th class="num">items merged per seed (russellmitchell, harrison)</th><th class="num">&alpha;-nDCG@20, russellmitchell, mean</th><th class="num">user change rank, seed 0</th><th class="num">&alpha;-nDCG@20, harrison, mean</th><th class="num">user change rank, seed 0</th></tr>
+<tr><td>4 (u at most 0.9999)</td><td class="num">3&ndash;14 and 13&ndash;16</td><td class="num">0.416</td><td class="num">4</td><td class="num">0.608</td><td class="num">2</td></tr>
+<tr><td>5 (frozen, u at most 0.99999)</td><td class="num">none</td><td class="num">0.414</td><td class="num">3</td><td class="num">0.727</td><td class="num">1.5</td></tr>
+<tr><td>6 (u at most 0.999999)</td><td class="num">none</td><td class="num">0.420</td><td class="num">3</td><td class="num">0.727</td><td class="num">1.5</td></tr>
+</table></div>
+<p>A cap of 4 would cost harrison 0.12; a cap of 6 would do about as well as 5 (slightly better on russellmitchell). The value is a fixed constant of the method, not among the tuned parameters, and it stays as frozen.</p>
+<p><b>If you are asked, in short:</b> "Some cap is needed, because S<sub>seq</sub> = 100 would make the surprise infinite. 5 is where what we can measure ends: in our replays the highest S<sub>seq</sub> below 100 never reaches 99.999, so a cap at 5 cuts nothing we can tell apart. A cap of 4 would merge up to 16 items that the data does separate, and harrison's score would fall from 0.727 to 0.608; a cap of 6 changes almost nothing but would claim more rarity than 17,000 to 40,000 windows can show. It is a fixed constant of the method, not a tuned parameter."</p>
+<p>The cap only applies at exactly 100: in neither replay does any S<sub>seq</sub> fall between 99.999 and 100, and in harrison none reaches 100, so there the cap never applies.</p>
+<p><b>What it costs.</b> The five one-alert items with a new rule all get exactly 70 and tie for places 1 to 5: two benign sshd scan attempts, two WordPress-scan items and the user change. Their raw scores differ (0.774 to 0.787), but each is above every held-out window, and a percentile cannot see past the highest window it has. At the very top the method runs out of resolution.</p></div>
+<figure class="cf">
+<svg class="chart" viewBox="0 0 680 330" role="img" aria-labelledby="cs-t"><title id="cs-t">Surprise against the number of nines in S_seq, for items of 1, 10, 100 and 1,000 alerts</title>
+<line x1="58" x2="584" y1="272.0" y2="272.0" class="grid"/><text x="50" y="276.0" class="ax" text-anchor="end">0</text>
+<line x1="58" x2="584" y1="221.2" y2="221.2" class="grid"/><text x="50" y="225.2" class="ax" text-anchor="end">1</text>
+<line x1="58" x2="584" y1="170.4" y2="170.4" class="grid"/><text x="50" y="174.4" class="ax" text-anchor="end">2</text>
+<line x1="58" x2="584" y1="119.6" y2="119.6" class="grid"/><text x="50" y="123.6" class="ax" text-anchor="end">3</text>
+<line x1="58" x2="584" y1="68.8" y2="68.8" class="grid"/><text x="50" y="72.8" class="ax" text-anchor="end">4</text>
+<line x1="58" x2="584" y1="18.0" y2="18.0" class="grid"/><text x="50" y="22.0" class="ax" text-anchor="end">5</text>
+<line x1="58.0" x2="58.0" y1="272" y2="277" class="tick"/><text x="58.0" y="292" class="ax" text-anchor="middle">1</text><text x="58.0" y="308" class="ax2" text-anchor="middle">S 90</text>
+<line x1="189.5" x2="189.5" y1="272" y2="277" class="tick"/><text x="189.5" y="292" class="ax" text-anchor="middle">2</text><text x="189.5" y="308" class="ax2" text-anchor="middle">S 99</text>
+<line x1="321.0" x2="321.0" y1="272" y2="277" class="tick"/><text x="321.0" y="292" class="ax" text-anchor="middle">3</text><text x="321.0" y="308" class="ax2" text-anchor="middle">S 99.9</text>
+<line x1="452.5" x2="452.5" y1="272" y2="277" class="tick"/><text x="452.5" y="292" class="ax" text-anchor="middle">4</text><text x="452.5" y="308" class="ax2" text-anchor="middle">S 99.99</text>
+<line x1="584.0" x2="584.0" y1="272" y2="277" class="tick"/><text x="584.0" y="292" class="ax" text-anchor="middle">5</text><text x="584.0" y="308" class="ax2" text-anchor="middle">S 99.999</text>
+<text x="321.0" y="326" class="ax" text-anchor="middle">nines of the item's highest S<tspan dy="3" font-size="10">seq</tspan><tspan dy="-3">: &minus;log</tspan><tspan dy="3" font-size="10">10</tspan><tspan dy="-3">(1 &minus; u), capped at 5</tspan></text>
+<text x="14" y="145.0" class="ax" text-anchor="middle" transform="rotate(-90 14 145.0)">surprise &pi;</text>
+<path d="M58.0,221.2 L60.6,220.2 L63.3,219.2 L65.9,218.2 L68.5,217.1 L71.2,216.1 L73.8,215.1 L76.4,214.1 L79.0,213.1 L81.7,212.1 L84.3,211.0 L86.9,210.0 L89.6,209.0 L92.2,208.0 L94.8,207.0 L97.5,206.0 L100.1,204.9 L102.7,203.9 L105.3,202.9 L108.0,201.9 L110.6,200.9 L113.2,199.9 L115.9,198.8 L118.5,197.8 L121.1,196.8 L123.8,195.8 L126.4,194.8 L129.0,193.8 L131.6,192.8 L134.3,191.7 L136.9,190.7 L139.5,189.7 L142.2,188.7 L144.8,187.7 L147.4,186.7 L150.1,185.6 L152.7,184.6 L155.3,183.6 L157.9,182.6 L160.6,181.6 L163.2,180.6 L165.8,179.5 L168.5,178.5 L171.1,177.5 L173.7,176.5 L176.3,175.5 L179.0,174.5 L181.6,173.4 L184.2,172.4 L186.9,171.4 L189.5,170.4 L192.1,169.4 L194.8,168.4 L197.4,167.4 L200.0,166.3 L202.7,165.3 L205.3,164.3 L207.9,163.3 L210.5,162.3 L213.2,161.3 L215.8,160.2 L218.4,159.2 L221.1,158.2 L223.7,157.2 L226.3,156.2 L228.9,155.2 L231.6,154.1 L234.2,153.1 L236.8,152.1 L239.5,151.1 L242.1,150.1 L244.7,149.1 L247.4,148.0 L250.0,147.0 L252.6,146.0 L255.2,145.0 L257.9,144.0 L260.5,143.0 L263.1,142.0 L265.8,140.9 L268.4,139.9 L271.0,138.9 L273.7,137.9 L276.3,136.9 L278.9,135.9 L281.6,134.8 L284.2,133.8 L286.8,132.8 L289.4,131.8 L292.1,130.8 L294.7,129.8 L297.3,128.7 L300.0,127.7 L302.6,126.7 L305.2,125.7 L307.9,124.7 L310.5,123.7 L313.1,122.6 L315.7,121.6 L318.4,120.6 L321.0,119.6 L323.6,118.6 L326.3,117.6 L328.9,116.6 L331.5,115.5 L334.2,114.5 L336.8,113.5 L339.4,112.5 L342.0,111.5 L344.7,110.5 L347.3,109.4 L349.9,108.4 L352.6,107.4 L355.2,106.4 L357.8,105.4 L360.4,104.4 L363.1,103.3 L365.7,102.3 L368.3,101.3 L371.0,100.3 L373.6,99.3 L376.2,98.3 L378.9,97.2 L381.5,96.2 L384.1,95.2 L386.8,94.2 L389.4,93.2 L392.0,92.2 L394.6,91.2 L397.3,90.1 L399.9,89.1 L402.5,88.1 L405.2,87.1 L407.8,86.1 L410.4,85.1 L413.1,84.0 L415.7,83.0 L418.3,82.0 L420.9,81.0 L423.6,80.0 L426.2,79.0 L428.8,77.9 L431.5,76.9 L434.1,75.9 L436.7,74.9 L439.3,73.9 L442.0,72.9 L444.6,71.8 L447.2,70.8 L449.9,69.8 L452.5,68.8 L455.1,67.8 L457.8,66.8 L460.4,65.8 L463.0,64.7 L465.6,63.7 L468.3,62.7 L470.9,61.7 L473.5,60.7 L476.2,59.7 L478.8,58.6 L481.4,57.6 L484.1,56.6 L486.7,55.6 L489.3,54.6 L491.9,53.6 L494.6,52.5 L497.2,51.5 L499.8,50.5 L502.5,49.5 L505.1,48.5 L507.7,47.5 L510.4,46.4 L513.0,45.4 L515.6,44.4 L518.2,43.4 L520.9,42.4 L523.5,41.4 L526.1,40.4 L528.8,39.3 L531.4,38.3 L534.0,37.3 L536.7,36.3 L539.3,35.3 L541.9,34.3 L544.5,33.2 L547.2,32.2 L549.8,31.2 L552.4,30.2 L555.1,29.2 L557.7,28.2 L560.3,27.1 L563.0,26.1 L565.6,25.1 L568.2,24.1 L570.9,23.1 L573.5,22.1 L576.1,21.0 L578.7,20.0 L581.4,19.0 L584.0,18.0" fill="none" stroke="var(--k1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M58.0,221.2 L60.6,220.2 L63.3,219.2 L65.9,218.2 L68.5,217.1 L71.2,216.1 L73.8,215.1 L76.4,214.1 L79.0,213.1 L81.7,212.1 L84.3,211.0 L86.9,210.0 L89.6,209.0 L92.2,208.0 L94.8,207.0 L97.5,206.0 L100.1,204.9 L102.7,203.9 L105.3,202.9 L108.0,201.9 L110.6,200.9 L113.2,199.9 L115.9,198.8 L118.5,197.8 L121.1,196.8 L123.8,195.8 L126.4,194.8 L129.0,193.8 L131.6,192.8 L134.3,191.7 L136.9,190.7 L139.5,189.7 L142.2,188.7 L144.8,187.7 L147.4,186.7 L150.1,185.6 L152.7,184.6 L155.3,183.6 L157.9,182.6 L160.6,181.6 L163.2,180.6 L165.8,179.5 L168.5,178.5 L171.1,177.5 L173.7,176.5 L176.3,175.5 L179.0,174.5 L181.6,173.4 L184.2,172.4 L186.9,171.4 L189.5,170.4 L192.1,169.4 L194.8,168.4 L197.4,167.4 L200.0,166.3 L202.7,165.3 L205.3,164.3 L207.9,163.3 L210.5,162.3 L213.2,161.3 L215.8,160.2 L218.4,159.2 L221.1,158.2 L223.7,157.2 L226.3,156.2 L228.9,155.2 L231.6,154.1 L234.2,153.1 L236.8,152.1 L239.5,151.1 L242.1,150.1 L244.7,149.1 L247.4,148.0 L250.0,147.0 L252.6,146.0 L255.2,145.0 L257.9,144.0 L260.5,143.0 L263.1,142.0 L265.8,140.9 L268.4,139.9 L271.0,138.9 L273.7,137.9 L276.3,136.9 L278.9,135.9 L281.6,134.8 L284.2,133.8 L286.8,132.8 L289.4,131.8 L292.1,130.8 L294.7,129.8 L297.3,128.7 L300.0,127.7 L302.6,126.7 L305.2,125.7 L307.9,124.7 L310.5,123.7 L313.1,122.6 L315.7,121.6 L318.4,120.6 L321.0,119.6 L323.6,118.6 L326.3,117.6 L328.9,116.6 L331.5,115.5 L334.2,114.5 L336.8,113.5 L339.4,112.5 L342.0,111.5 L344.7,110.5 L347.3,109.4 L349.9,108.4 L352.6,107.4 L355.2,106.4 L357.8,105.4 L360.4,104.4 L363.1,103.3 L365.7,102.3 L368.3,101.3 L371.0,100.3 L373.6,99.3 L376.2,98.3 L378.9,97.2 L381.5,96.2 L384.1,95.2 L386.8,94.2 L389.4,93.2 L392.0,92.2 L394.6,91.2 L397.3,90.1 L399.9,89.1 L402.5,88.1 L405.2,87.1 L407.8,86.1 L410.4,85.1 L413.1,84.0 L415.7,83.0 L418.3,82.0 L420.9,81.0 L423.6,80.0 L426.2,79.0 L428.8,77.9 L431.5,76.9 L434.1,75.9 L436.7,74.9 L439.3,73.9 L442.0,72.9 L444.6,71.8 L447.2,70.8 L449.9,69.8 L452.5,68.8 L455.1,67.8 L457.8,66.8 L460.4,65.8 L463.0,64.7 L465.6,63.7 L468.3,62.7 L470.9,61.7 L473.5,60.7 L476.2,59.7 L478.8,58.6 L481.4,57.6 L484.1,56.6 L486.7,55.6 L489.3,54.6 L491.9,53.6 L494.6,52.5 L497.2,51.5 L499.8,50.5 L502.5,49.5 L505.1,48.5 L507.7,47.5 L510.4,46.4 L513.0,45.4 L515.6,44.4 L518.2,43.4 L520.9,42.4 L523.5,41.4 L526.1,40.4 L528.8,39.3 L531.4,38.3 L534.0,37.3 L536.7,36.3 L539.3,35.3 L541.9,34.3 L544.5,33.2 L547.2,32.2 L549.8,31.2 L552.4,30.2 L555.1,29.2 L557.7,28.2 L560.3,27.1 L563.0,26.1 L565.6,25.1 L568.2,24.1 L570.9,23.1 L573.5,22.1 L576.1,21.0 L578.7,20.0 L581.4,19.0 L584.0,18.0" class="hit" data-tip="items of 1 alert: surprise = nines"><title>items of 1 alert: surprise = nines</title></path>
+<text x="592.0" y="22.0" class="lab">k = 1: 5.0</text>
+<path d="M58.0,262.5 L60.6,261.9 L63.3,261.3 L65.9,260.7 L68.5,260.0 L71.2,259.3 L73.8,258.6 L76.4,257.9 L79.0,257.2 L81.7,256.5 L84.3,255.8 L86.9,255.0 L89.6,254.2 L92.2,253.5 L94.8,252.7 L97.5,251.9 L100.1,251.1 L102.7,250.3 L105.3,249.5 L108.0,248.6 L110.6,247.8 L113.2,247.0 L115.9,246.1 L118.5,245.2 L121.1,244.4 L123.8,243.5 L126.4,242.6 L129.0,241.7 L131.6,240.9 L134.3,240.0 L136.9,239.1 L139.5,238.1 L142.2,237.2 L144.8,236.3 L147.4,235.4 L150.1,234.5 L152.7,233.5 L155.3,232.6 L157.9,231.7 L160.6,230.7 L163.2,229.8 L165.8,228.9 L168.5,227.9 L171.1,226.9 L173.7,226.0 L176.3,225.0 L179.0,224.1 L181.6,223.1 L184.2,222.1 L186.9,221.2 L189.5,220.2 L192.1,219.2 L194.8,218.3 L197.4,217.3 L200.0,216.3 L202.7,215.3 L205.3,214.4 L207.9,213.4 L210.5,212.4 L213.2,211.4 L215.8,210.4 L218.4,209.4 L221.1,208.4 L223.7,207.4 L226.3,206.5 L228.9,205.5 L231.6,204.5 L234.2,203.5 L236.8,202.5 L239.5,201.5 L242.1,200.5 L244.7,199.5 L247.4,198.5 L250.0,197.5 L252.6,196.5 L255.2,195.5 L257.9,194.5 L260.5,193.5 L263.1,192.5 L265.8,191.5 L268.4,190.5 L271.0,189.5 L273.7,188.5 L276.3,187.5 L278.9,186.4 L281.6,185.4 L284.2,184.4 L286.8,183.4 L289.4,182.4 L292.1,181.4 L294.7,180.4 L297.3,179.4 L300.0,178.4 L302.6,177.4 L305.2,176.4 L307.9,175.4 L310.5,174.3 L313.1,173.3 L315.7,172.3 L318.4,171.3 L321.0,170.3 L323.6,169.3 L326.3,168.3 L328.9,167.3 L331.5,166.3 L334.2,165.2 L336.8,164.2 L339.4,163.2 L342.0,162.2 L344.7,161.2 L347.3,160.2 L349.9,159.2 L352.6,158.2 L355.2,157.1 L357.8,156.1 L360.4,155.1 L363.1,154.1 L365.7,153.1 L368.3,152.1 L371.0,151.1 L373.6,150.0 L376.2,149.0 L378.9,148.0 L381.5,147.0 L384.1,146.0 L386.8,145.0 L389.4,144.0 L392.0,142.9 L394.6,141.9 L397.3,140.9 L399.9,139.9 L402.5,138.9 L405.2,137.9 L407.8,136.9 L410.4,135.8 L413.1,134.8 L415.7,133.8 L418.3,132.8 L420.9,131.8 L423.6,130.8 L426.2,129.7 L428.8,128.7 L431.5,127.7 L434.1,126.7 L436.7,125.7 L439.3,124.7 L442.0,123.7 L444.6,122.6 L447.2,121.6 L449.9,120.6 L452.5,119.6 L455.1,118.6 L457.8,117.6 L460.4,116.5 L463.0,115.5 L465.6,114.5 L468.3,113.5 L470.9,112.5 L473.5,111.5 L476.2,110.4 L478.8,109.4 L481.4,108.4 L484.1,107.4 L486.7,106.4 L489.3,105.4 L491.9,104.4 L494.6,103.3 L497.2,102.3 L499.8,101.3 L502.5,100.3 L505.1,99.3 L507.7,98.3 L510.4,97.2 L513.0,96.2 L515.6,95.2 L518.2,94.2 L520.9,93.2 L523.5,92.2 L526.1,91.1 L528.8,90.1 L531.4,89.1 L534.0,88.1 L536.7,87.1 L539.3,86.1 L541.9,85.1 L544.5,84.0 L547.2,83.0 L549.8,82.0 L552.4,81.0 L555.1,80.0 L557.7,79.0 L560.3,77.9 L563.0,76.9 L565.6,75.9 L568.2,74.9 L570.9,73.9 L573.5,72.9 L576.1,71.8 L578.7,70.8 L581.4,69.8 L584.0,68.8" fill="none" stroke="var(--k10)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M58.0,262.5 L60.6,261.9 L63.3,261.3 L65.9,260.7 L68.5,260.0 L71.2,259.3 L73.8,258.6 L76.4,257.9 L79.0,257.2 L81.7,256.5 L84.3,255.8 L86.9,255.0 L89.6,254.2 L92.2,253.5 L94.8,252.7 L97.5,251.9 L100.1,251.1 L102.7,250.3 L105.3,249.5 L108.0,248.6 L110.6,247.8 L113.2,247.0 L115.9,246.1 L118.5,245.2 L121.1,244.4 L123.8,243.5 L126.4,242.6 L129.0,241.7 L131.6,240.9 L134.3,240.0 L136.9,239.1 L139.5,238.1 L142.2,237.2 L144.8,236.3 L147.4,235.4 L150.1,234.5 L152.7,233.5 L155.3,232.6 L157.9,231.7 L160.6,230.7 L163.2,229.8 L165.8,228.9 L168.5,227.9 L171.1,226.9 L173.7,226.0 L176.3,225.0 L179.0,224.1 L181.6,223.1 L184.2,222.1 L186.9,221.2 L189.5,220.2 L192.1,219.2 L194.8,218.3 L197.4,217.3 L200.0,216.3 L202.7,215.3 L205.3,214.4 L207.9,213.4 L210.5,212.4 L213.2,211.4 L215.8,210.4 L218.4,209.4 L221.1,208.4 L223.7,207.4 L226.3,206.5 L228.9,205.5 L231.6,204.5 L234.2,203.5 L236.8,202.5 L239.5,201.5 L242.1,200.5 L244.7,199.5 L247.4,198.5 L250.0,197.5 L252.6,196.5 L255.2,195.5 L257.9,194.5 L260.5,193.5 L263.1,192.5 L265.8,191.5 L268.4,190.5 L271.0,189.5 L273.7,188.5 L276.3,187.5 L278.9,186.4 L281.6,185.4 L284.2,184.4 L286.8,183.4 L289.4,182.4 L292.1,181.4 L294.7,180.4 L297.3,179.4 L300.0,178.4 L302.6,177.4 L305.2,176.4 L307.9,175.4 L310.5,174.3 L313.1,173.3 L315.7,172.3 L318.4,171.3 L321.0,170.3 L323.6,169.3 L326.3,168.3 L328.9,167.3 L331.5,166.3 L334.2,165.2 L336.8,164.2 L339.4,163.2 L342.0,162.2 L344.7,161.2 L347.3,160.2 L349.9,159.2 L352.6,158.2 L355.2,157.1 L357.8,156.1 L360.4,155.1 L363.1,154.1 L365.7,153.1 L368.3,152.1 L371.0,151.1 L373.6,150.0 L376.2,149.0 L378.9,148.0 L381.5,147.0 L384.1,146.0 L386.8,145.0 L389.4,144.0 L392.0,142.9 L394.6,141.9 L397.3,140.9 L399.9,139.9 L402.5,138.9 L405.2,137.9 L407.8,136.9 L410.4,135.8 L413.1,134.8 L415.7,133.8 L418.3,132.8 L420.9,131.8 L423.6,130.8 L426.2,129.7 L428.8,128.7 L431.5,127.7 L434.1,126.7 L436.7,125.7 L439.3,124.7 L442.0,123.7 L444.6,122.6 L447.2,121.6 L449.9,120.6 L452.5,119.6 L455.1,118.6 L457.8,117.6 L460.4,116.5 L463.0,115.5 L465.6,114.5 L468.3,113.5 L470.9,112.5 L473.5,111.5 L476.2,110.4 L478.8,109.4 L481.4,108.4 L484.1,107.4 L486.7,106.4 L489.3,105.4 L491.9,104.4 L494.6,103.3 L497.2,102.3 L499.8,101.3 L502.5,100.3 L505.1,99.3 L507.7,98.3 L510.4,97.2 L513.0,96.2 L515.6,95.2 L518.2,94.2 L520.9,93.2 L523.5,92.2 L526.1,91.1 L528.8,90.1 L531.4,89.1 L534.0,88.1 L536.7,87.1 L539.3,86.1 L541.9,85.1 L544.5,84.0 L547.2,83.0 L549.8,82.0 L552.4,81.0 L555.1,80.0 L557.7,79.0 L560.3,77.9 L563.0,76.9 L565.6,75.9 L568.2,74.9 L570.9,73.9 L573.5,72.9 L576.1,71.8 L578.7,70.8 L581.4,69.8 L584.0,68.8" class="hit" data-tip="items of 10 alerts: about nines &minus; 1"><title>items of 10 alerts: about nines &minus; 1</title></path>
+<text x="592.0" y="72.8" class="lab">k = 10: 4.0</text>
+<path d="M58.0,272.0 L60.6,272.0 L63.3,272.0 L65.9,272.0 L68.5,272.0 L71.2,272.0 L73.8,272.0 L76.4,272.0 L79.0,272.0 L81.7,272.0 L84.3,272.0 L86.9,272.0 L89.6,271.9 L92.2,271.9 L94.8,271.9 L97.5,271.9 L100.1,271.8 L102.7,271.8 L105.3,271.7 L108.0,271.7 L110.6,271.6 L113.2,271.5 L115.9,271.4 L118.5,271.3 L121.1,271.2 L123.8,271.1 L126.4,270.9 L129.0,270.8 L131.6,270.6 L134.3,270.4 L136.9,270.2 L139.5,270.0 L142.2,269.7 L144.8,269.4 L147.4,269.2 L150.1,268.8 L152.7,268.5 L155.3,268.2 L157.9,267.8 L160.6,267.4 L163.2,267.0 L165.8,266.6 L168.5,266.1 L171.1,265.7 L173.7,265.2 L176.3,264.7 L179.0,264.2 L181.6,263.6 L184.2,263.1 L186.9,262.5 L189.5,261.9 L192.1,261.3 L194.8,260.7 L197.4,260.1 L200.0,259.5 L202.7,258.8 L205.3,258.1 L207.9,257.4 L210.5,256.7 L213.2,256.0 L215.8,255.3 L218.4,254.6 L221.1,253.8 L223.7,253.1 L226.3,252.3 L228.9,251.5 L231.6,250.7 L234.2,249.9 L236.8,249.1 L239.5,248.3 L242.1,247.5 L244.7,246.6 L247.4,245.8 L250.0,244.9 L252.6,244.1 L255.2,243.2 L257.9,242.4 L260.5,241.5 L263.1,240.6 L265.8,239.7 L268.4,238.8 L271.0,237.9 L273.7,237.0 L276.3,236.1 L278.9,235.2 L281.6,234.3 L284.2,233.4 L286.8,232.4 L289.4,231.5 L292.1,230.6 L294.7,229.7 L297.3,228.7 L300.0,227.8 L302.6,226.8 L305.2,225.9 L307.9,224.9 L310.5,224.0 L313.1,223.0 L315.7,222.0 L318.4,221.1 L321.0,220.1 L323.6,219.1 L326.3,218.2 L328.9,217.2 L331.5,216.2 L334.2,215.3 L336.8,214.3 L339.4,213.3 L342.0,212.3 L344.7,211.3 L347.3,210.4 L349.9,209.4 L352.6,208.4 L355.2,207.4 L357.8,206.4 L360.4,205.4 L363.1,204.4 L365.7,203.4 L368.3,202.4 L371.0,201.4 L373.6,200.4 L376.2,199.5 L378.9,198.5 L381.5,197.5 L384.1,196.5 L386.8,195.5 L389.4,194.5 L392.0,193.5 L394.6,192.5 L397.3,191.4 L399.9,190.4 L402.5,189.4 L405.2,188.4 L407.8,187.4 L410.4,186.4 L413.1,185.4 L415.7,184.4 L418.3,183.4 L420.9,182.4 L423.6,181.4 L426.2,180.4 L428.8,179.4 L431.5,178.4 L434.1,177.4 L436.7,176.4 L439.3,175.3 L442.0,174.3 L444.6,173.3 L447.2,172.3 L449.9,171.3 L452.5,170.3 L455.1,169.3 L457.8,168.3 L460.4,167.3 L463.0,166.2 L465.6,165.2 L468.3,164.2 L470.9,163.2 L473.5,162.2 L476.2,161.2 L478.8,160.2 L481.4,159.2 L484.1,158.1 L486.7,157.1 L489.3,156.1 L491.9,155.1 L494.6,154.1 L497.2,153.1 L499.8,152.1 L502.5,151.1 L505.1,150.0 L507.7,149.0 L510.4,148.0 L513.0,147.0 L515.6,146.0 L518.2,145.0 L520.9,144.0 L523.5,142.9 L526.1,141.9 L528.8,140.9 L531.4,139.9 L534.0,138.9 L536.7,137.9 L539.3,136.8 L541.9,135.8 L544.5,134.8 L547.2,133.8 L549.8,132.8 L552.4,131.8 L555.1,130.8 L557.7,129.7 L560.3,128.7 L563.0,127.7 L565.6,126.7 L568.2,125.7 L570.9,124.7 L573.5,123.7 L576.1,122.6 L578.7,121.6 L581.4,120.6 L584.0,119.6" fill="none" stroke="var(--k100)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M58.0,272.0 L60.6,272.0 L63.3,272.0 L65.9,272.0 L68.5,272.0 L71.2,272.0 L73.8,272.0 L76.4,272.0 L79.0,272.0 L81.7,272.0 L84.3,272.0 L86.9,272.0 L89.6,271.9 L92.2,271.9 L94.8,271.9 L97.5,271.9 L100.1,271.8 L102.7,271.8 L105.3,271.7 L108.0,271.7 L110.6,271.6 L113.2,271.5 L115.9,271.4 L118.5,271.3 L121.1,271.2 L123.8,271.1 L126.4,270.9 L129.0,270.8 L131.6,270.6 L134.3,270.4 L136.9,270.2 L139.5,270.0 L142.2,269.7 L144.8,269.4 L147.4,269.2 L150.1,268.8 L152.7,268.5 L155.3,268.2 L157.9,267.8 L160.6,267.4 L163.2,267.0 L165.8,266.6 L168.5,266.1 L171.1,265.7 L173.7,265.2 L176.3,264.7 L179.0,264.2 L181.6,263.6 L184.2,263.1 L186.9,262.5 L189.5,261.9 L192.1,261.3 L194.8,260.7 L197.4,260.1 L200.0,259.5 L202.7,258.8 L205.3,258.1 L207.9,257.4 L210.5,256.7 L213.2,256.0 L215.8,255.3 L218.4,254.6 L221.1,253.8 L223.7,253.1 L226.3,252.3 L228.9,251.5 L231.6,250.7 L234.2,249.9 L236.8,249.1 L239.5,248.3 L242.1,247.5 L244.7,246.6 L247.4,245.8 L250.0,244.9 L252.6,244.1 L255.2,243.2 L257.9,242.4 L260.5,241.5 L263.1,240.6 L265.8,239.7 L268.4,238.8 L271.0,237.9 L273.7,237.0 L276.3,236.1 L278.9,235.2 L281.6,234.3 L284.2,233.4 L286.8,232.4 L289.4,231.5 L292.1,230.6 L294.7,229.7 L297.3,228.7 L300.0,227.8 L302.6,226.8 L305.2,225.9 L307.9,224.9 L310.5,224.0 L313.1,223.0 L315.7,222.0 L318.4,221.1 L321.0,220.1 L323.6,219.1 L326.3,218.2 L328.9,217.2 L331.5,216.2 L334.2,215.3 L336.8,214.3 L339.4,213.3 L342.0,212.3 L344.7,211.3 L347.3,210.4 L349.9,209.4 L352.6,208.4 L355.2,207.4 L357.8,206.4 L360.4,205.4 L363.1,204.4 L365.7,203.4 L368.3,202.4 L371.0,201.4 L373.6,200.4 L376.2,199.5 L378.9,198.5 L381.5,197.5 L384.1,196.5 L386.8,195.5 L389.4,194.5 L392.0,193.5 L394.6,192.5 L397.3,191.4 L399.9,190.4 L402.5,189.4 L405.2,188.4 L407.8,187.4 L410.4,186.4 L413.1,185.4 L415.7,184.4 L418.3,183.4 L420.9,182.4 L423.6,181.4 L426.2,180.4 L428.8,179.4 L431.5,178.4 L434.1,177.4 L436.7,176.4 L439.3,175.3 L442.0,174.3 L444.6,173.3 L447.2,172.3 L449.9,171.3 L452.5,170.3 L455.1,169.3 L457.8,168.3 L460.4,167.3 L463.0,166.2 L465.6,165.2 L468.3,164.2 L470.9,163.2 L473.5,162.2 L476.2,161.2 L478.8,160.2 L481.4,159.2 L484.1,158.1 L486.7,157.1 L489.3,156.1 L491.9,155.1 L494.6,154.1 L497.2,153.1 L499.8,152.1 L502.5,151.1 L505.1,150.0 L507.7,149.0 L510.4,148.0 L513.0,147.0 L515.6,146.0 L518.2,145.0 L520.9,144.0 L523.5,142.9 L526.1,141.9 L528.8,140.9 L531.4,139.9 L534.0,138.9 L536.7,137.9 L539.3,136.8 L541.9,135.8 L544.5,134.8 L547.2,133.8 L549.8,132.8 L552.4,131.8 L555.1,130.8 L557.7,129.7 L560.3,128.7 L563.0,127.7 L565.6,126.7 L568.2,125.7 L570.9,124.7 L573.5,123.7 L576.1,122.6 L578.7,121.6 L581.4,120.6 L584.0,119.6" class="hit" data-tip="items of 100 alerts: about nines &minus; 2"><title>items of 100 alerts: about nines &minus; 2</title></path>
+<text x="592.0" y="123.6" class="lab">k = 100: 3.0</text>
+<path d="M58.0,272.0 L60.6,272.0 L63.3,272.0 L65.9,272.0 L68.5,272.0 L71.2,272.0 L73.8,272.0 L76.4,272.0 L79.0,272.0 L81.7,272.0 L84.3,272.0 L86.9,272.0 L89.6,272.0 L92.2,272.0 L94.8,272.0 L97.5,272.0 L100.1,272.0 L102.7,272.0 L105.3,272.0 L108.0,272.0 L110.6,272.0 L113.2,272.0 L115.9,272.0 L118.5,272.0 L121.1,272.0 L123.8,272.0 L126.4,272.0 L129.0,272.0 L131.6,272.0 L134.3,272.0 L136.9,272.0 L139.5,272.0 L142.2,272.0 L144.8,272.0 L147.4,272.0 L150.1,272.0 L152.7,272.0 L155.3,272.0 L157.9,272.0 L160.6,272.0 L163.2,272.0 L165.8,272.0 L168.5,272.0 L171.1,272.0 L173.7,272.0 L176.3,272.0 L179.0,272.0 L181.6,272.0 L184.2,272.0 L186.9,272.0 L189.5,272.0 L192.1,272.0 L194.8,272.0 L197.4,272.0 L200.0,272.0 L202.7,272.0 L205.3,272.0 L207.9,272.0 L210.5,272.0 L213.2,272.0 L215.8,272.0 L218.4,271.9 L221.1,271.9 L223.7,271.9 L226.3,271.9 L228.9,271.9 L231.6,271.8 L234.2,271.8 L236.8,271.7 L239.5,271.7 L242.1,271.6 L244.7,271.5 L247.4,271.4 L250.0,271.3 L252.6,271.2 L255.2,271.1 L257.9,270.9 L260.5,270.7 L263.1,270.6 L265.8,270.4 L268.4,270.1 L271.0,269.9 L273.7,269.7 L276.3,269.4 L278.9,269.1 L281.6,268.8 L284.2,268.5 L286.8,268.1 L289.4,267.7 L292.1,267.4 L294.7,266.9 L297.3,266.5 L300.0,266.1 L302.6,265.6 L305.2,265.1 L307.9,264.6 L310.5,264.1 L313.1,263.6 L315.7,263.0 L318.4,262.5 L321.0,261.9 L323.6,261.3 L326.3,260.7 L328.9,260.0 L331.5,259.4 L334.2,258.7 L336.8,258.1 L339.4,257.4 L342.0,256.7 L344.7,256.0 L347.3,255.2 L349.9,254.5 L352.6,253.8 L355.2,253.0 L357.8,252.2 L360.4,251.5 L363.1,250.7 L365.7,249.9 L368.3,249.1 L371.0,248.3 L373.6,247.4 L376.2,246.6 L378.9,245.8 L381.5,244.9 L384.1,244.1 L386.8,243.2 L389.4,242.3 L392.0,241.5 L394.6,240.6 L397.3,239.7 L399.9,238.8 L402.5,237.9 L405.2,237.0 L407.8,236.1 L410.4,235.2 L413.1,234.3 L415.7,233.4 L418.3,232.4 L420.9,231.5 L423.6,230.6 L426.2,229.6 L428.8,228.7 L431.5,227.8 L434.1,226.8 L436.7,225.9 L439.3,224.9 L442.0,224.0 L444.6,223.0 L447.2,222.0 L449.9,221.1 L452.5,220.1 L455.1,219.1 L457.8,218.2 L460.4,217.2 L463.0,216.2 L465.6,215.3 L468.3,214.3 L470.9,213.3 L473.5,212.3 L476.2,211.3 L478.8,210.3 L481.4,209.4 L484.1,208.4 L486.7,207.4 L489.3,206.4 L491.9,205.4 L494.6,204.4 L497.2,203.4 L499.8,202.4 L502.5,201.4 L505.1,200.4 L507.7,199.4 L510.4,198.4 L513.0,197.5 L515.6,196.5 L518.2,195.5 L520.9,194.5 L523.5,193.5 L526.1,192.4 L528.8,191.4 L531.4,190.4 L534.0,189.4 L536.7,188.4 L539.3,187.4 L541.9,186.4 L544.5,185.4 L547.2,184.4 L549.8,183.4 L552.4,182.4 L555.1,181.4 L557.7,180.4 L560.3,179.4 L563.0,178.4 L565.6,177.4 L568.2,176.4 L570.9,175.3 L573.5,174.3 L576.1,173.3 L578.7,172.3 L581.4,171.3 L584.0,170.3" fill="none" stroke="var(--k1000)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M58.0,272.0 L60.6,272.0 L63.3,272.0 L65.9,272.0 L68.5,272.0 L71.2,272.0 L73.8,272.0 L76.4,272.0 L79.0,272.0 L81.7,272.0 L84.3,272.0 L86.9,272.0 L89.6,272.0 L92.2,272.0 L94.8,272.0 L97.5,272.0 L100.1,272.0 L102.7,272.0 L105.3,272.0 L108.0,272.0 L110.6,272.0 L113.2,272.0 L115.9,272.0 L118.5,272.0 L121.1,272.0 L123.8,272.0 L126.4,272.0 L129.0,272.0 L131.6,272.0 L134.3,272.0 L136.9,272.0 L139.5,272.0 L142.2,272.0 L144.8,272.0 L147.4,272.0 L150.1,272.0 L152.7,272.0 L155.3,272.0 L157.9,272.0 L160.6,272.0 L163.2,272.0 L165.8,272.0 L168.5,272.0 L171.1,272.0 L173.7,272.0 L176.3,272.0 L179.0,272.0 L181.6,272.0 L184.2,272.0 L186.9,272.0 L189.5,272.0 L192.1,272.0 L194.8,272.0 L197.4,272.0 L200.0,272.0 L202.7,272.0 L205.3,272.0 L207.9,272.0 L210.5,272.0 L213.2,272.0 L215.8,272.0 L218.4,271.9 L221.1,271.9 L223.7,271.9 L226.3,271.9 L228.9,271.9 L231.6,271.8 L234.2,271.8 L236.8,271.7 L239.5,271.7 L242.1,271.6 L244.7,271.5 L247.4,271.4 L250.0,271.3 L252.6,271.2 L255.2,271.1 L257.9,270.9 L260.5,270.7 L263.1,270.6 L265.8,270.4 L268.4,270.1 L271.0,269.9 L273.7,269.7 L276.3,269.4 L278.9,269.1 L281.6,268.8 L284.2,268.5 L286.8,268.1 L289.4,267.7 L292.1,267.4 L294.7,266.9 L297.3,266.5 L300.0,266.1 L302.6,265.6 L305.2,265.1 L307.9,264.6 L310.5,264.1 L313.1,263.6 L315.7,263.0 L318.4,262.5 L321.0,261.9 L323.6,261.3 L326.3,260.7 L328.9,260.0 L331.5,259.4 L334.2,258.7 L336.8,258.1 L339.4,257.4 L342.0,256.7 L344.7,256.0 L347.3,255.2 L349.9,254.5 L352.6,253.8 L355.2,253.0 L357.8,252.2 L360.4,251.5 L363.1,250.7 L365.7,249.9 L368.3,249.1 L371.0,248.3 L373.6,247.4 L376.2,246.6 L378.9,245.8 L381.5,244.9 L384.1,244.1 L386.8,243.2 L389.4,242.3 L392.0,241.5 L394.6,240.6 L397.3,239.7 L399.9,238.8 L402.5,237.9 L405.2,237.0 L407.8,236.1 L410.4,235.2 L413.1,234.3 L415.7,233.4 L418.3,232.4 L420.9,231.5 L423.6,230.6 L426.2,229.6 L428.8,228.7 L431.5,227.8 L434.1,226.8 L436.7,225.9 L439.3,224.9 L442.0,224.0 L444.6,223.0 L447.2,222.0 L449.9,221.1 L452.5,220.1 L455.1,219.1 L457.8,218.2 L460.4,217.2 L463.0,216.2 L465.6,215.3 L468.3,214.3 L470.9,213.3 L473.5,212.3 L476.2,211.3 L478.8,210.3 L481.4,209.4 L484.1,208.4 L486.7,207.4 L489.3,206.4 L491.9,205.4 L494.6,204.4 L497.2,203.4 L499.8,202.4 L502.5,201.4 L505.1,200.4 L507.7,199.4 L510.4,198.4 L513.0,197.5 L515.6,196.5 L518.2,195.5 L520.9,194.5 L523.5,193.5 L526.1,192.4 L528.8,191.4 L531.4,190.4 L534.0,189.4 L536.7,188.4 L539.3,187.4 L541.9,186.4 L544.5,185.4 L547.2,184.4 L549.8,183.4 L552.4,182.4 L555.1,181.4 L557.7,180.4 L560.3,179.4 L563.0,178.4 L565.6,177.4 L568.2,176.4 L570.9,175.3 L573.5,174.3 L576.1,173.3 L578.7,172.3 L581.4,171.3 L584.0,170.3" class="hit" data-tip="items of 1,000 alerts: about nines &minus; 3"><title>items of 1,000 alerts: about nines &minus; 3</title></path>
+<text x="592.0" y="174.3" class="lab">k = 1,000: 2.0</text>
+<circle cx="584.0" cy="18.0" r="5" class="pt mark" data-tip="user change, russellmitchell (k 1): 5.00"><title>a: user change, russellmitchell (k 1): 5.00</title></circle><text x="574.0" y="10.0" class="key" text-anchor="end">a</text>
+<circle cx="567.9" cy="24.2" r="5" class="pt mark" data-tip="user change, harrison (k 1): 4.88"><title>b: user change, harrison (k 1): 4.88</title></circle><text x="571.9" y="42.2" class="key" text-anchor="start">b</text>
+<circle cx="499.5" cy="65.9" r="5" class="pt mark" data-tip="sudo, russellmitchell (k 2): 4.06"><title>c: sudo, russellmitchell (k 2): 4.06</title></circle><text x="508.5" y="70.9" class="key" text-anchor="start">c</text>
+<circle cx="584.0" cy="212.8" r="5" class="pt mark" data-tip="400 errors, russellmitchell (k 7,068): 1.17"><title>d: 400 errors, russellmitchell (k 7,068): 1.17</title></circle><text x="574.0" y="217.8" class="key" text-anchor="end">d</text>
+</svg>
+<figcaption>Surprise for items of 1, 10, 100 and 1,000 alerts, against the nines of their highest S<sub>seq</sub> (2 nines = 99, 3 = 99.9, 5 = the cap). Each tenfold more alerts shifts the line down by one. The dark dots are real items: <b>a</b> user change, russellmitchell (k 1): 5.00; <b>b</b> user change, harrison (k 1): 4.88; <b>c</b> sudo, russellmitchell (k 2): 4.06; <b>d</b> 400 errors, russellmitchell (k 7,068): 1.17.</figcaption>
+</figure>
+<div class="tscroll"><table class="wide">
+<tr><th>Item</th><th class="num">S<sub>seq</sub></th><th class="num">k</th><th class="num">nines</th><th class="num">nines &minus; log<sub>10</sub> k</th><th class="num">&pi; exact</th><th class="num">sequence term</th></tr>
+<tr><td>User successfully changed UID <span class="sc">russellmitchell</span></td><td class="num">100</td><td class="num">1</td><td class="num">5.00</td><td class="num">5.00</td><td class="num"><b>5.00</b></td><td class="num">62.5</td></tr>
+<tr><td>Common web attack <span class="sc">russellmitchell</span></td><td class="num">100</td><td class="num">2</td><td class="num">5.00</td><td class="num">4.70</td><td class="num"><b>4.70</b></td><td class="num">58.7</td></tr>
+<tr><td>Successful sudo to ROOT executed <span class="sc">russellmitchell</span></td><td class="num">99.99561</td><td class="num">2</td><td class="num">4.36</td><td class="num">4.06</td><td class="num"><b>4.06</b></td><td class="num">50.7</td></tr>
+<tr><td>User successfully changed UID <span class="sc">harrison</span></td><td class="num">99.99868</td><td class="num">1</td><td class="num">4.88</td><td class="num">4.88</td><td class="num"><b>4.88</b></td><td class="num">61.0</td></tr>
+<tr><td>Web server 400 error code <span class="sc">russellmitchell</span></td><td class="num">100</td><td class="num">7,068</td><td class="num">5.00</td><td class="num">1.15</td><td class="num"><b>1.17</b></td><td class="num">14.6</td></tr>
+<tr><td>Web server 400 error code <span class="sc">harrison</span></td><td class="num">99.99868</td><td class="num">384,473</td><td class="num">4.88</td><td class="num">&minus;0.71</td><td class="num"><b>0.00</b></td><td class="num">0.0</td></tr>
+</table></div>
+<h3>Would more training data make a big item more surprising?</h3>
+<p>No. More normal windows only make S<sub>seq</sub> more precise; with u at most 0.99999 a big item cannot get far: for 384,473 alerts the most is 0.009. Only a higher cap would raise it, which needs far more data, and it raises a single alert by the same amount:</p>
+<div class="tscroll"><table>
+<tr><th>If the window reached S<sub>seq</sub> 100 and the cap were</th><th class="num">harrison scan (384,473 alerts)</th><th class="num">russellmitchell scan (7,068)</th><th class="num">user change (1)</th></tr>
+<tr><td>u at most 0.99999 (frozen)</td><td class="num">0.009</td><td class="num">1.17</td><td class="num">5.00</td></tr>
+<tr><td>u at most 0.999999</td><td class="num">0.50</td><td class="num">2.15</td><td class="num">6.00</td></tr>
+<tr><td>u at most 0.9999999</td><td class="num">1.42</td><td class="num">3.15</td><td class="num">7.00</td></tr>
+<tr><td>u at most 0.99999999</td><td class="num">2.42</td><td class="num">4.15</td><td class="num">8.00</td></tr>
+</table>
+</div>
+<p><b>If you are asked, in short:</b> "No. More training data only shows more precisely how rare a window is; the scan's low surprise comes from its size. Even if its window reached the cap, its surprise would be 0.009, because among 384,473 alerts one window that rare is expected. Raising the cap would need about 950 times as many normal windows, years of training, and it would raise the user change just as much, so a single alert always stays about five and a half points ahead of a flood of 384,473."</p>
+<p class="note">The approximation fails only when k &times; (1 &minus; u) is large, as in the last row: with 384,473 alerts, at least one normal window that high is almost certain, so &pi; is nearly 0.</p>
+<h3>With our numbers</h3>
+<div class="tscroll"><table>
+<tr><th></th><th class="num">russellmitchell</th><th class="num">harrison</th></tr>
+<tr><td>u</td><td class="num">0.99999 (capped)</td><td class="num">0.9999868</td></tr>
+<tr><td>1 &minus; u<sup>k</sup>, k = 1</td><td class="num">0.00001</td><td class="num">0.0000132</td></tr>
+<tr><td>&pi;</td><td class="num"><b>5.00</b></td><td class="num"><b>4.88</b></td></tr>
+</table></div>
+</section>
+
+<section id="seq">
+<h2><span class="st">Step 5</span>The sequence term</h2>
+<div class="eq">seq(g) = 100 &times; min( 1, &pi;(g) / &lambda; ),&nbsp;&nbsp; &lambda; = 8 <small>in practice seq = 12.5 &times; &pi;</small></div>
+<div class="qa" id="never-100"><b class="q">So the sequence term can never be 100?</b>
+<p>Right. &pi; is at most 5 because u is capped at 0.99999, so &pi; / 8 is at most 0.625 and the sequence term at most <b>62.5</b>. The min( 1, &hellip; ) never comes into play; the paper says so itself: "the sequence term lies in [0, 62.5], and &lambda; acts as a scale rather than a cap". The code says the same (<code>tools/ait_eval.py</code>, the comment of <code>surprise()</code>).</p>
+<ul>
+<li><b>If you are asked, in three sentences:</b> "S<sub>seq</sub> itself goes up to 100; 62.5 is the sequence term, 100 &times; &pi; / 8. The surprise &pi; is capped at 5, because S<sub>seq</sub> = 100 only means that none of our 17,000 to 40,000 normal windows scored higher, and without the cap it would become an infinite surprise. So the top is 100 &times; 5 / 8 = 62.5. The 8 is a fixed scale set before the test, and since every item is on the same scale, the ceiling changes no rank."</li>
+<li><b>If you are asked why &lambda; is 8, in short:</b> "&lambda; only sets the scale of the sequence term: the surprise cannot pass 5, so with &lambda; = 8 nothing is ever cut. 8 was the default fixed when the queue was built, before any tuning; the weights 0.8 and 0.2 were then tuned on the four tuning replays with &lambda; = 8, and together they set the balance: one point of surprise is worth 10 priority points, a rule new to the host 20. &lambda; = 4 was tried and vetoed, because the top items would all tie at 100, and 8 is the value in the pre-registration."</li>
+<li><b>Why 8 and not 5,</b> which would let it reach 100? The paper's parameter table lists &lambda; = 8 as a default and reports that &lambda; = 4 was vetoed by the tuning protocol. With &lambda; = 4 every item with &pi; of 4 or more would hit the cap and tie at 100, so the top of the queue would lose its order. &lambda; = 5 was not reported.</li>
+<li><b>&lambda; and the weights set the balance between the two parts of the priority.</b> With &lambda; = 8 and weight 0.8, one point of surprise is worth 0.8 &times; 12.5 = 10 priority points, and a rule new to the host (20 points) is worth exactly 2 points of surprise.</li>
+</ul></div>
+<div class="qa" id="seq-cap"><b class="q">Why is there a cap, min(1, &hellip;), if it never cuts anything? And would it be a problem if it did?</b>
+<p><b>Why it is there.</b> It keeps the sequence term between 0 and 100, like every other term of the priority, whatever &lambda; is. That matters because &lambda; was a tuning parameter: values below 5 were tried, and for them &pi; / &lambda; can exceed 1. The same capped form, 100 &times; min(1, &minus;log<sub>10</sub>(&hellip;) / &lambda;), is used by the risk accumulator, where &lambda; = 4 does make it saturate. With the frozen &lambda; = 8 it is only a guard: &pi; is at most 5, so &pi; / 8 is at most 0.625.</p>
+<p><b>Yes, it would be a problem if it cut.</b> Every item above the cap would be cut to the same 100 and tie, and the order among them would be lost. This is what that would do to the two replays (seed 0, ranks and &alpha;-nDCG@20 by the frozen metric code):</p>
+<div class="tscroll"><table class="wide">
+<tr><th></th><th class="num">russellmitchell: items cut</th><th class="num">top tie</th><th class="num">user change rank</th><th class="num">&alpha;-nDCG@20</th><th class="num">harrison: items cut</th><th class="num">top tie</th><th class="num">user change rank</th><th class="num">&alpha;-nDCG@20</th></tr>
+<tr><td>&lambda; = 8 (frozen)</td><td class="num">0</td><td class="num">5 at 70.0</td><td class="num">3</td><td class="num">0.430</td><td class="num">0</td><td class="num">2 at 68.8</td><td class="num">1.5</td><td class="num">0.661</td></tr>
+<tr><td>&lambda; = 5</td><td class="num">0</td><td class="num">5 at 100.0</td><td class="num">3</td><td class="num">0.430</td><td class="num">0</td><td class="num">2 at 98.0</td><td class="num">1.5</td><td class="num">0.661</td></tr>
+<tr><td>&lambda; = 4 (vetoed)</td><td class="num">15</td><td class="num">15 at 100.0</td><td class="num">8</td><td class="num">0.414</td><td class="num">6</td><td class="num">6 at 100.0</td><td class="num">3.5</td><td class="num">0.670</td></tr>
+<tr><td>&lambda; = 3</td><td class="num">16</td><td class="num">15 at 100.0</td><td class="num">8</td><td class="num">0.414</td><td class="num">12</td><td class="num">11 at 100.0</td><td class="num">6</td><td class="num">0.595</td></tr>
+</table></div>
+<ul>
+<li><b>&lambda; = 4</b> cuts 15 items in russellmitchell: all get priority 100 and share places 1 to 15, so all five attack stages land on rank 8 (the user change from 3, the sudo escalation from 15). In harrison it cuts 6: the user change falls from 1.5 to 3.5, although &alpha;-nDCG rises a little. The paper reports that the tuning protocol vetoed &lambda; = 4.</li>
+<li><b>&lambda; = 5</b> is the border: the items at &pi; = 5 reach the cap exactly, but nothing is cut. Any &lambda; of 5 or more cuts nothing; it only changes how much surprise counts against novelty.</li>
+<li><b>The five-way tie at 70 is not this cap.</b> Those five items have exactly the same &pi; = 5.00, from the cap on u; the sequence term only passes it on.</li>
+</ul>
+<p class="note">With &lambda; = 3 one cut item in each replay has no novelty point, so it ties lower, at 80; that is why "items cut" and "top tie" differ there. This is a what-if on seed 0 of two replays; the veto in the paper was decided on the four tuning replays.</p></div>
+<div class="qa" id="lambda5"><b class="q">Could &lambda; be 5 instead of 8? It would still cut nothing.</b>
+<p>Mathematically, yes: &pi; is at most 5, so with &lambda; = 5 the cap is reached exactly but nothing is cut, the sequence term runs from 0 to 100, and the priority can reach 100 instead of 70. But &lambda; is not only the cap. With the weights 0.8 and 0.2 fixed, it also sets how much surprise counts against novelty:</p>
+<ul>
+<li>&lambda; = 8: one point of surprise is worth 0.8 &times; 12.5 = 10 priority points, so the novelty flag (20 points) equals 2 points of surprise;</li>
+<li>&lambda; = 5: one point is worth 0.8 &times; 20 = 16, so novelty equals only 1.25 points of surprise. That is the same as keeping &lambda; = 8 and moving the weights to about 0.865 and 0.135.</li>
+</ul>
+<p><b>What it would change here.</b> On the two demo replays, over all 5 seeds, &alpha;-nDCG@20 is identical in every seed (means 0.414 and 0.727). The only difference: harrison's DNS exfiltration would come two places later in 3 of the 5 seeds (28 to 30, 27 to 29, 28 to 30). On the four tuning replays, the weight tuning (run with &lambda; = 8) found that 0.9 / 0.1, which gives surprise even more say than &lambda; = 5 would, scored slightly lower than the adopted 0.8 / 0.2 (0.522 against 0.526, <code>provenance/ait/weight_lab_verdict.txt</code>); &lambda; = 5 lies between the two.</p>
+<p><b>Why it stays 8.</b> The method was frozen before the test replays were run, and every result was produced with &lambda; = 8. Changing a parameter after seeing results is what the pre-registration forbids, and the gain would only be cosmetic: ranks do not depend on whether the scale ends at 70 or 100.</p></div>
+<div class="qa" id="rank-swap"><b class="q">If nothing is cut, how can a rank change?</b>
+<p>Because the rank is the order of the priority, and the priority adds two parts: 0.8 &times; sequence term and 20 &times; novelty. Changing &lambda; from 8 to 5 makes every point of surprise worth 16 instead of 10, while novelty stays at 20. So an item <b>without</b> a new rule but with more surprise can now pass an item <b>with</b> a new rule. It passes it when its surprise is higher by more than 20 / 10 = 2 points with &lambda; = 8, but already by more than 20 / 16 = 1.25 points with &lambda; = 5.</p>
+<p>That is what happens to harrison's DNS exfiltration (seed 0):</p>
+<div class="tscroll"><table class="wide">
+<tr><th>Item</th><th class="num">&pi;</th><th class="num">new rule</th><th class="num">P, &lambda; = 8</th><th class="num">rank</th><th class="num">P, &lambda; = 5</th><th class="num">rank</th></tr>
+<tr><td>DNS exfiltration <span class="sc">inet-firewall, 486 alerts</span></td><td class="num">0.769</td><td class="num">yes</td><td class="num">10 &times; 0.769 + 20 = <b>27.7</b></td><td class="num">28</td><td class="num">16 &times; 0.769 + 20 = <b>32.3</b></td><td class="num">30</td></tr>
+<tr><td>PAM: User login failed <span class="sc">mail, 1 alert, benign</span></td><td class="num">2.461</td><td class="num">no</td><td class="num">10 &times; 2.461 = <b>24.6</b></td><td class="num">30</td><td class="num">16 &times; 2.461 = <b>39.4</b></td><td class="num">28</td></tr>
+<tr><td>Dovecot Invalid User Login Attempt <span class="sc">smith_mail, 21 alerts, benign</span></td><td class="num">2.165</td><td class="num">no</td><td class="num">10 &times; 2.165 = <b>21.7</b></td><td class="num">31</td><td class="num">16 &times; 2.165 = <b>34.6</b></td><td class="num">29</td></tr>
+</table></div>
+<p>The two benign login items have 1.69 and 1.40 more points of surprise than the DNS item: less than 2, so they stay behind it with &lambda; = 8; more than 1.25, so they pass it with &lambda; = 5. Every item gains, but by different amounts: the DNS item only 4.6 points (6 &times; 0.769), the login items 14.8 and 13.0. &alpha;-nDCG@20 does not notice, because places 28 to 31 are below the first 20.</p></div>
+<p>Our numbers: 100 &times; 5.00 / 8 = <b>62.5</b> (russellmitchell) and 100 &times; 4.88 / 8 = <b>61.0</b> (harrison).</p>
+</section>
+
+<section id="priority">
+<h2><span class="st">Step 5</span>The priority</h2>
+<div class="eq">P(g) = w<sub>r</sub> S<sub>rule</sub> + w<sub>c</sub> S<sub>exp</sub> + w<sub>s</sub> seq(g) + w<sub>n</sub> &times; 100 &nu;(g),&nbsp;&nbsp; (w<sub>r</sub>, w<sub>c</sub>, w<sub>s</sub>, w<sub>n</sub>) = (0, 0, 0.8, 0.2)</div>
+<div class="eq">P(g) = 0.8 &times; seq(g) + 20 &times; &nu;(g) <small>at most 0.8 &times; 62.5 + 20 = 70</small></div>
+<dl class="sym">
+<dt>S<sub>rule</sub>, S<sub>exp</sub></dt><dd>The rule level (100 &times; level / 15) and the host's exposure. Both have weight 0: the tuning on the four tuning replays (all weight combinations in steps of 0.1) chose 0.8 sequence and 0.2 novelty. They are shown on the page but do not count.</dd>
+<dt>&nu;(g)</dt><dd>Novelty: 1 if the rule never fired on this host during the training days, else 0. The list of known rules is frozen when training ends, so a new rule stays new for every later alert until the model is refitted; a refit would have to leave the attack out. If asked: "No, it keeps working without retraining: &ldquo;new&rdquo; means never seen on this host during the training days, and that list is frozen when training ends, so the rule stays new for every later alert, like the 7,068 web-server errors on the intranet server, which all count as new. But in real use you would refit from time to time anyway, because behaviour drifts, as on the mail servers. Then the attack has to be left out of the new training data, or its rules become known and its windows start to look normal. The paper does not evaluate refitting; it is future work."</dd>
+<dt>70</dt><dd>The ceiling: an item of one alert, S<sub>seq</sub> at the cap and a new rule. Five russellmitchell items reach exactly 70, which is why the user change ties for places 1 to 5.</dd>
+</dl>
+<p>Our numbers: 0.8 &times; 62.5 + 20 &times; 1 = <b>70.0</b>, rank 3 (tie of 5) in russellmitchell; 0.8 &times; 61.0 + 20 &times; 1 = <b>68.8</b>, rank 1.5 (tie of 2) in harrison.</p>
+</section>
+
+<section id="ranks">
+<h2>Ranks, ties and "stages in top 20"</h2>
+<div class="eq">rank of a tied item = ( first place + last place ) / 2</div>
+<p>Items with exactly the same score are tied, and each gets the average of the places the group occupies: the place it would get on average if the tie were broken at random. Russellmitchell: five items at 70 hold places 1 to 5, so each gets 3; in Wazuh's queue 39 items at level 3 hold places 30 to 68, so each gets 49.</p>
+<div class="eq">stages in top 20 = number of attack stages whose best item has rank &le; 20</div>
+<div class="qa" id="top20-more"><b class="q">Then can more than 20 items count as "in the top 20"?</b>
+<p>Yes. If the items at places 15 to 21 tie, each gets (15 + 21) / 2 = 18, and all seven count as in the top 20, although only six of them fit on the first 20 places. The opposite happens too: in russellmitchell's Wazuh queue the service scan is one of 13 items tied at places 17 to 29, so each gets 23 and none counts, although four of them fit.</p>
+<p>So the count is blunt in both directions, which is why it is not the main score: &alpha;-nDCG@20 (next section) shuffles tied items and gives partial credit. In the two demo replays no tie crosses place 20 with an average at or below 20 (harrison's Wazuh tie of 15 fills places 6 to 20 exactly), so the first case does not occur on screen.</p></div>
+<div class="qa" id="tie-cut"><b class="q">Is it a problem when place 20 cuts through a tie?</b>
+<p>For the count of stages, yes, as above. For the main score, no: &alpha;-nDCG puts tied items in a random order 50 times and averages, so in each order only the items that land on places 1 to 20 earn credit, and a tie cut by place 20 gets credit in proportion to how often its items land inside. In the two replays this happens once: Wazuh's 13 items at places 17 to 29 in russellmitchell, four of whose places are inside.</p>
+<p>Two things are worth knowing, though.</p>
+<ul>
+<li><b>Order inside a tie matters most at the top, not at place 20.</b> Our russellmitchell queue would score 0.543 if its five-way tie at 70 always fell the best way, and 0.352 if it always fell the worst way. The fair value is the expected one, 0.432.</li>
+<li><b>The reported value is an estimate.</b> 50 orders with a fixed seed make it reproducible, but another 50 orders would give a slightly different number. The table gives the range 95% of such averages fall in, and the expected value from 20,000 orders.</li>
+</ul>
+<div class="tscroll"><table class="wide">
+<tr><th>Queue (seed 0)</th><th class="num">Reported, 50 orders</th><th class="num">Expected, 20,000 orders</th><th class="num">95% of 50-order averages</th><th class="num">Attack items first in every tie</th><th class="num">Attack items last</th></tr>
+<tr><td>Wazuh, russellmitchell</td><td class="num">0.165</td><td class="num">0.161</td><td class="num">0.150&ndash;0.173</td><td class="num">0.264</td><td class="num">0.100</td></tr>
+<tr><td>Ours, russellmitchell</td><td class="num">0.430</td><td class="num">0.432</td><td class="num">0.416&ndash;0.447</td><td class="num">0.543</td><td class="num">0.352</td></tr>
+<tr><td>Wazuh, harrison</td><td class="num">0.251</td><td class="num">0.251</td><td class="num">0.249&ndash;0.253</td><td class="num">0.266</td><td class="num">0.236</td></tr>
+<tr><td>Ours, harrison</td><td class="num">0.661</td><td class="num">0.661</td><td class="num">0.661&ndash;0.661</td><td class="num">0.661</td><td class="num">0.661</td></tr>
+<tr><td>Risk-based alerting, russellmitchell</td><td class="num">0.777</td><td class="num" colspan="4">no ties: one order only</td></tr>
+<tr><td>Risk-based alerting, harrison</td><td class="num">0.564</td><td class="num" colspan="4">no ties: one order only</td></tr>
+</table></div>
+<p>None of this changes the order of the three queues in either replay: the gaps between them are 0.26 or more in russellmitchell and about 0.10 or more in harrison, far larger than the shuffle noise.</p></div>
+</section>
+
+<section id="andcg">
+<h2>&alpha;-nDCG@20, the main score</h2>
+<div class="eq">gain(i) = &Sigma;<sub>stages s in item i</sub> g<sub>s</sub> &times; (1 &minus; &alpha;)<sup>c<sub>s</sub>(i)</sup>,&nbsp;&nbsp; DCG = &Sigma;<sub>i = 1..20</sub> gain(i) / log<sub>2</sub>(i + 1),&nbsp;&nbsp; &alpha;-nDCG@20 = DCG / DCG<sub>ideal</sub></div>
+<dl class="sym">
+<dt>g<sub>s</sub></dt><dd>The grade of a stage, fixed before any result: 3 for user change, sudo escalation and DNS exfiltration (control or data), 2 for password cracking, 1 for the three scans, 0 for benign.</dd>
+<dt>&alpha; = 0.5</dt><dd>The second item of the same stage earns half, the third a quarter. Finding a new stage is worth more than finding the same stage again.</dd>
+<dt>c<sub>s</sub>(i)</dt><dd>How many items above place i already hold stage s.</dd>
+<dt>log<sub>2</sub>(i + 1)</dt><dd>The discount: place 1 counts fully, place 3 half, place 15 a quarter.</dd>
+<dt>DCG<sub>ideal</sub></dt><dd>The DCG of the best possible order of the same items (built greedily, the standard approach). Dividing by it puts every queue on 0 to 1.</dd>
+<dt>ties</dt><dd>Tied items are put in 50 random orders and the score is averaged, so a tied method gets its expected value, not a lucky order.</dd>
+</dl>
+<h3>A small worked example</h3>
+<p>A queue of four items: A (user change), B (benign), C (user change again), D (service scan).</p>
+<div class="tscroll"><table>
+<tr><th>Place</th><th>Item</th><th class="num">gain</th><th class="num">log<sub>2</sub>(i + 1)</th><th class="num">gain / discount</th></tr>
+<tr><td>1</td><td>A: user change</td><td class="num">3</td><td class="num">1.000</td><td class="num">3.000</td></tr>
+<tr><td>2</td><td>B: benign</td><td class="num">0</td><td class="num">1.585</td><td class="num">0.000</td></tr>
+<tr><td>3</td><td>C: user change</td><td class="num">1.5</td><td class="num">2.000</td><td class="num">0.750</td></tr>
+<tr><td>4</td><td>D: service scan</td><td class="num">1</td><td class="num">2.322</td><td class="num">0.431</td></tr>
+</table></div>
+<p>DCG = 4.181. The ideal order is A, C, D, B: 3 + 1.5 / 1.585 + 1 / 2 = 4.446. So &alpha;-nDCG = 4.181 / 4.446 = <b>0.940</b>. C earns only 1.5 because the user change was already found at place 1.</p>
+<h3>The demo's values (seed 0)</h3>
+<div class="tscroll"><table>
+<tr><th>Queue</th><th class="num">russellmitchell</th><th class="num">harrison</th></tr>
+<tr><td>Wazuh rule level</td><td class="num">0.165</td><td class="num">0.251</td></tr>
+<tr><td>Ours</td><td class="num">0.430 <span class="sc">(mean of 5 seeds 0.414)</span></td><td class="num">0.661 <span class="sc">(mean of 5 seeds 0.727)</span></td></tr>
+<tr><td>Risk-based alerting</td><td class="num">0.777</td><td class="num">0.564</td></tr>
+</table></div>
+</section>
+
+<section id="comparators">
+<h2>The two comparators</h2>
+<div class="eq">Wazuh: S<sub>rule</sub> = 100 &times; level / 15</div>
+<p>Wazuh's own order: the rule level, 0 to 15, as a share. The user change has level 3, so 20.0, and ranks 49 (tie of 39) in russellmitchell and 39 (tie of 35) in harrison. With only a handful of levels in use, big ties are normal.</p>
+<div class="eq">Risk-based alerting: risk = 0.9 &times; variety + 0.1 &times; rarity <small>item = its highest alert, windows of the past day</small></div>
+<dl class="sym">
+<dt>variety</dt><dd>How many different rule types the same host raised in the past day, the nearer in time the more they count (a triangle weighting), on 0 to 1.</dd>
+<dt>rarity</dt><dd>(N &minus; 1) / (c + N &minus; 2) with N = 1 + E: c is how often this rule type fired in the window, E how often it was expected to from the training days. A rule firing once gives 1.</dd>
+<dt>0.9, 0.1</dt><dd>The weights, tuned on the four tuning replays (after Uetz et al. 2026 and their CATS tool; other modules got weight 0).</dd>
+</dl>
+<p>The user change: 0.9 &times; 0.645 + 0.1 &times; 1.000 = <b>0.681</b>, rank 4 (russellmitchell); 0.9 &times; 0.599 + 0.1 &times; 1.000 = <b>0.639</b>, rank 9 (harrison).</p>
+</section>
+
+<section id="extras">
+<h2>Two numbers that only explain</h2>
+<p>Neither changes a score or a rank.</p>
+<div class="eq">effect of feature i = s(x) &minus; s(x with feature i set to the host's median)</div>
+<p>Step 2's last column. Positive: the window's real value makes it more unusual than the host's usual value would. Negative: the usual value would look odder to the forest, which compares against all hosts' windows. How it is calculated, with all 14 features of both walks: <a href="#effect">The effect on the forest's score</a>.</p>
+<div class="eq">benign windows above 99 = #{ benign windows after training with S<sub>seq</sub> &gt; 99 } / #{ benign windows after training }</div>
+<p>Step 4's check, per host, using the labels to leave attack alerts out. On the training windows themselves about 1% of a busy host's windows score above 99; on a quiet host more, because one window is a big share: 2 of the 32 on russellmitchell's intranet server (6%), 2 of the 87 on harrison's (2.3%). A benign window can still hold attack alerts, which raises the share during an attack.</p>
+</section>
+
+<section id="sources">
+<h2>Where each formula lives</h2>
+<div class="tscroll"><table class="wide">
+<tr><th>Formula</th><th>Code (frozen tag)</th><th>Paper</th></tr>
+<tr><td>raw score s, c(&psi;)</td><td>scikit-learn <code>IsolationForest.score_samples</code>, negated</td><td>Eq. (iforest), Section on the Isolation Forest</td></tr>
+<tr><td>own, pooled, w<sub>h</sub>, S<sub>seq</sub></td><td><code>tools/seq_scoring.py</code>, <code>_calibrate</code> and <code>_to_percent</code> (lines 142, 167); n<sub>0</sub> = <code>SHRINK_N0</code>, line 62</td><td>Eq. (calib), Phase 4 step 3</td></tr>
+<tr><td>queue item (24 h gap)</td><td><code>tools/seq_scoring.py</code>, <code>GROUP_GAP_S</code>, line 60</td><td>Phase 6</td></tr>
+<tr><td>surprise &pi;, cap</td><td><code>tools/ait_eval.py</code>, <code>surprise()</code>, line 178</td><td>Phase 6</td></tr>
+<tr><td>sequence term, &lambda; = 8</td><td><code>tools/ait_eval.py</code>, <code>pi_term()</code> line 189, <code>LAMBDA_Q</code> line 63</td><td>Eq. (grouppriority); parameter table</td></tr>
+<tr><td>priority weights</td><td><code>tools/ait_eval.py</code>, <code>mix()</code>, line 297</td><td>Eq. (grouppriority); parameter table</td></tr>
+<tr><td>average ranks, &alpha;-nDCG@20, grades</td><td><code>tools/eval_metrics.py</code>, <code>ranks_desc</code> line 31, <code>alpha_ndcg</code> line 48, <code>GRADES</code> line 24</td><td>Section IV-C</td></tr>
+<tr><td>risk-based alerting</td><td><code>tools/rba.py</code>, <code>tools/rba_config.json</code></td><td>Comparators</td></tr>
+</table></div>
+</section>
+</main>
+</body>
+</html>

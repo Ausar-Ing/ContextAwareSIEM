@@ -171,7 +171,21 @@ printed digit) or `DIFFERENT`. With the pinned library versions and the default 
 | Workstation false promotion, window-surprise check | `provenance/workstation/ws_eval.json`, `ws_qcheck.json` |
 | Run record of the locked run (commit, versions, machine) | `provenance/ait/test/RUN_RECORD.txt`, `pip_freeze.txt` |
 
-## 8. Repository layout
+## 8. Offline demo
+
+`ContextAware_SIEM_demo/` replays two tuning scenarios through the layer in the browser, with no installation
+and no internet connection:
+
+| File | What it shows |
+|---|---|
+| `index.html` | the demo on the russellmitchell replay |
+| `harrison.html` | the same demo on the harrison replay (or click "harrison" at the top of `index.html`) |
+| `Math_Sheet.html` | the formulas behind the scores |
+
+Open `index.html` in Chrome, Edge or Firefox. Keys: left / right arrow for the previous / next step, 1 to 5 to
+jump to a scene, S to switch replays, T for a light / dark theme.
+
+## 9. Repository layout
 
 ```
 tools/            all method and evaluation code, frozen at the tag (later additions only format the
@@ -179,6 +193,8 @@ tools/            all method and evaluation code, frozen at the tag (later addit
                   (admission, entities, windows), seq_scoring.py (Isolation Forest, calibration),
                   accumulator.py (risk accumulation) and ait_eval.py (queue, systems, evaluation)
 reproduce.sh      the reproduction entry point described above
+ContextAware_SIEM_demo/
+                  the offline demo (Section 8)
 provenance/       recorded outputs, pre-registration, deviations, claims, environment snapshots
 docs/             lab operations, the locked-run checklist
 data/             datasets, not in git (Section 3)
